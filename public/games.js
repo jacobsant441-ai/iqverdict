@@ -653,6 +653,59 @@
     if (pre) { pre.textContent = stateTxt(r); pre.classList.add(r.state === 'in' ? 'lvon' : 'lvdone'); }
   }
 
+
+  // UFC: live round and clock on a fight card (or the fight page header), and the winner as soon as ESPN names one.
+  function ufcLive(r) {
+    return liveRows('livegames').find((x) => x.sport === 'ufc' && ((nsim(x.away_name, r.a) && nsim(x.home_name, r.b)) || (nsim(x.away_name, r.b) && nsim(x.home_name, r.a)))) || null;
+  }
+  function liveUfc(b, r, head) {
+    if (!head) b.addEventListener('click', refreshLive);
+    const lr = ufcLive(r); if (!lr || lr.state === 'pre') return;
+    const pre = head ? null : b.querySelector('.mid .pre'), pk = head ? null : b.querySelector('.mid .pk');
+    let ex = {}; try { ex = JSON.parse(lr.extra || '{}') || {}; } catch (e) { /* none */ }
+    const done = lr.state === 'post', w = ex.winner;
+    const txt = !done ? 'LIVE · ' + lr.status_text : 'FINAL' + (w ? ' · ' + w.split(' ').slice(-1)[0] + ' won' : '');
+    if (pre) { pre.textContent = txt; pre.classList.add(done ? 'lvdone' : 'lvon'); }
+    else { const t = el('span', txt, 'pre ' + (done ? 'lvdone' : 'lvon')); (head ? b : b.querySelector('.mid')).append(t); }
+    if (done && w && r.pick && pk) { const hit = nsim(w, r.pick); pk.textContent = (hit ? '✓ ' : '✕ ') + 'Pick ' + r.pick; pk.classList.add(hit ? 'lvhit' : 'lvmiss'); }
+    if (done && w && !head) { const tms = b.querySelectorAll('.tm'); if (tms.length === 2) { tms[0].classList.toggle('win', nsim(w, r.a)); tms[1].classList.toggle('win', nsim(w, r.b)); } }
+    b.classList.add(done ? 'lvdone' : 'lvon');
+  }
+  // UFC fight page: live fight stats (from the livebox rows), shown while a fight is on and after it ends.
+  function ufcLiveCard(r) {
+    const lr = ufcLive(r); if (!lr || lr.state === 'pre') return null;
+    const pl = liveRows('livebox').filter((b) => b.sport === 'ufc' && String(b.espn_id) === String(lr.espn_id)).map((b) => { let st = {}; try { st = JSON.parse(b.stats || '{}'); } catch (e) { st = {}; } return { name: b.player, st }; });
+    const A = pl.find((p) => nsim(p.name, r.a)), B = pl.find((p) => nsim(p.name, r.b));
+    const done = lr.state === 'post', card = el('div', null, 'fglive');
+    card.append(el('div', done ? 'Fight stats · final' : 'LIVE · ' + lr.status_text, 'fglh ' + (done ? 'done' : 'on')));
+    if (!A || !B) { card.append(el('p', 'Live stats appear once the first round is under way.', 'muted')); return card; }
+    const n = (p, k) => Number(p.st[k] || 0), clk = (v) => { v = Math.round(Number(v) || 0); return Math.floor(v / 60) + ':' + String(v % 60).padStart(2, '0'); };
+    const rowsDef = [
+      ['Significant strikes', (p) => n(p, 'sigStrikesLanded') + '/' + n(p, 'sigStrikesAttempted'), (p) => n(p, 'sigStrikesLanded')],
+      ['Total strikes', (p) => n(p, 'totalStrikesLanded') + '/' + n(p, 'totalStrikesAttempted'), (p) => n(p, 'totalStrikesLanded')],
+      ['Knockdowns', (p) => String(n(p, 'knockDowns')), (p) => n(p, 'knockDowns')],
+      ['Takedowns', (p) => n(p, 'takedownsLanded') + '/' + n(p, 'takedownsAttempted'), (p) => n(p, 'takedownsLanded')],
+      ['Submission attempts', (p) => String(n(p, 'submissions')), (p) => n(p, 'submissions')],
+      ['Control time', (p) => clk(p.st.timeInControl), (p) => n(p, 'timeInControl')],
+      ['Head strikes', (p) => String(n(p, 'sigDistanceHeadStrikesLanded') + n(p, 'sigClinchHeadStrikesLanded') + n(p, 'sigGroundHeadStrikesLanded')), (p) => n(p, 'sigDistanceHeadStrikesLanded') + n(p, 'sigClinchHeadStrikesLanded') + n(p, 'sigGroundHeadStrikesLanded')],
+    ];
+    const head = el('div', null, 'fglr fglnames'); head.append(el('b', r.a.replace(/ \(c\)$/, '')), el('span', ''), el('b', r.b.replace(/ \(c\)$/, ''))); card.append(head);
+    rowsDef.forEach(([lab, f, v]) => {
+      const row = el('div', null, 'fglr'), va = v(A), vb = v(B);
+      const a = el('b', f(A), va > vb ? 'win' : ''), b = el('b', f(B), vb > va ? 'win' : '');
+      row.append(a, el('span', lab), b); card.append(row);
+    });
+    return card;
+  }
+  // Home page UFC tile: red dot + LIVE · Round, or FINAL with the winner.
+  function liveUfcHome(c, f) {
+    const lr = ufcLive(f); if (!lr || lr.state === 'pre') return c;
+    let ex = {}; try { ex = JSON.parse(lr.extra || '{}') || {}; } catch (e) { /* none */ }
+    const done = lr.state === 'post', tm = c.querySelector('.tm'), pk = c.querySelector('.pk');
+    if (tm) tm.textContent = done ? 'FINAL' : 'LIVE · ' + lr.status_text;
+    if (done && ex.winner && pk) pk.textContent = (f.pick ? (nsim(ex.winner, f.pick) ? '✓ ' : '✗ ') : '') + 'Won: ' + ex.winner;
+    c.classList.add(done ? 'lvdone' : 'lvon'); return c;
+  }
   // Home page cards: the live score and status for a game that is on (or just finished but not graded yet).
   function liveHome(b, sp, ref, day) {
     const r = liveOf(sp, ref, day); if (!r || r.state === 'pre') return;
@@ -784,7 +837,7 @@
     return { T, lg, rk, n: T.length, pct };
   };
   const tier = (r, n) => (r <= Math.round(n / 3) ? 'g' : r > Math.round((2 * n) / 3) ? 'r' : 'a');
-  const COL = { g: '#1f9d55', a: '#c9971a', r: '#d64545' };
+  const COL = { g: '#1fd56b', a: '#a9aeb7', r: '#ff5a5f' };
   function courtSvg(team, Z, label) {
     const t = Z.T.find((x) => x.team === team); if (!t) return null;
     const c = (k) => COL[tier(Z.rk[k][team] || Z.n, Z.n)];
@@ -1044,6 +1097,11 @@
       live.forEach((r) => {
         const c = el('button', null, 'hlc'); c.type = 'button';
         const top = el('div', null, 'hlt'); top.append(el('span', 'LIVE', 'hlive'), el('span', r.status_text || '', 'muted'));
+        if (r.sport === 'ufc') { // fights: names only, no photo circle and no score
+          const f = rows('ufcfights').find((q) => (nsim(q.a, r.away_name) && nsim(q.b, r.home_name)) || (nsim(q.a, r.home_name) && nsim(q.b, r.away_name)));
+          const nm = (n) => { const d = el('div', null, 'hls'); d.append(el('b', n)); return d; };
+          c.classList.add('hlu'); c.append(top, nm(r.away_name), nm(r.home_name)); c.addEventListener('click', () => { if (f) X.openGame('ufc', f.id, ''); }); row.append(c); return;
+        }
         const side = (code, name, pts) => { const d = el('div', null, 'hls'); d.append(r.sport === 'nba' ? X.badge(code) : X.bdX(code), el('b', code || name), el('span', String(pts == null ? 0 : pts))); return d; };
         c.append(top, side(r.away_code, r.away_name, r.away_score), side(r.home_code, r.home_name, r.home_score));
         c.addEventListener('click', () => X.openGame(r.sport, r.game_id, dayKey(new Date(r.start_time)))); row.append(c);
@@ -1154,5 +1212,5 @@
     p.dataset.ct = '1'; const card = p.closest('.hg, .gcard'); if (card && /\b(won|lost|rgres|lvdone)\b/.test(card.className)) return;
     const m = p.textContent.match(/(\d+(?:\.\d+)?)%/); if (!m) return; const v = +m[1]; p.classList.add(v >= 70 ? 'cHi' : v >= 60 ? 'cMd' : 'cLo'); });
   new MutationObserver(() => { clearTimeout(tintAll.t); tintAll.t = setTimeout(tintAll, 60); }).observe(document.body, { childList: true, subtree: true });
-  window.SSG = { boxTable, newsOf, newsItem, teamTabs, defCourt, b2bCard, b2bInfo, gameBets, ufcMethods, ufcTabs, liveHome, betPill, candidates, mainCard, pickMain, liveCard, liveDecor, merge, slipChips, provisional };
+  window.SSG = { boxTable, newsOf, newsItem, teamTabs, defCourt, b2bCard, b2bInfo, gameBets, ufcMethods, ufcTabs, liveHome, betPill, candidates, mainCard, pickMain, liveCard, liveDecor, liveUfc, liveUfcHome, ufcLiveCard, ufcLive, merge, slipChips, provisional };
 })();

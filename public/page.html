@@ -16,7 +16,7 @@
 <section class="hs" data-sp="nba"><header class="hsh"><span class="hsi" data-draw="hsicon" data-sp="nba"></span><div class="hst"><h2>NBA</h2><span class="hsc" data-draw="hscount" data-sp="nba" data-source="games schedule history">—</span></div><button type="button" class="hsgo" data-go-sp="nba" aria-label="Open NBA">Open <span aria-hidden="true">›</span></button></header><div class="hstrip" data-draw="hstrip" data-sp="nba" data-source="games schedule pred history final livegames"></div></section>
 <section class="hs" data-sp="fb"><header class="hsh"><span class="hsi" data-draw="hsicon" data-sp="fb"></span><div class="hst"><h2>Football</h2><span class="hsc" data-draw="hscount" data-sp="fb" data-source="fixtures schedule history">—</span></div><button type="button" class="hsgo" data-go-sp="fb" aria-label="Open Football">Open <span aria-hidden="true">›</span></button></header><div class="hstrip" data-draw="hstrip" data-sp="fb" data-source="fixtures schedule history livegames"></div></section>
 <section class="hs" data-sp="nfl"><header class="hsh"><span class="hsi" data-draw="hsicon" data-sp="nfl"></span><div class="hst"><h2>NFL</h2><span class="hsc" data-draw="hscount" data-sp="nfl" data-source="nflgames schedule history">—</span></div><button type="button" class="hsgo" data-go-sp="nfl" aria-label="Open NFL">Open <span aria-hidden="true">›</span></button></header><div class="hstrip" data-draw="hstrip" data-sp="nfl" data-source="nflgames schedule history livegames"></div></section>
-<section class="hs" data-sp="ufc"><header class="hsh"><span class="hsi" data-draw="hsicon" data-sp="ufc"></span><div class="hst"><h2>UFC</h2><span class="hsc" data-draw="hscount" data-sp="ufc" data-source="ufcfights schedule history">—</span></div><button type="button" class="hsgo" data-go-sp="ufc" aria-label="Open UFC">Open <span aria-hidden="true">›</span></button></header><div class="hstrip" data-draw="hstrip" data-sp="ufc" data-source="ufcfights ufcevents schedule history"></div></section>
+<section class="hs" data-sp="ufc"><header class="hsh"><span class="hsi" data-draw="hsicon" data-sp="ufc"></span><div class="hst"><h2>UFC</h2><span class="hsc" data-draw="hscount" data-sp="ufc" data-source="ufcfights schedule history">—</span></div><button type="button" class="hsgo" data-go-sp="ufc" aria-label="Open UFC">Open <span aria-hidden="true">›</span></button></header><div class="hstrip" data-draw="hstrip" data-sp="ufc" data-source="ufcfights ufcevents schedule history livegames"></div></section>
 </div>
 <section class="card hcard" id="hnews"><h2>Latest news</h2><div data-draw="hnews" data-source="news"></div></section>
 <section class="card hcard" id="hinj"><h2>New injuries · last 2 days</h2><div data-draw="hinj" data-source="troster pgl games pred fixtures nflgames odds propbook altlines history hs_nba"></div></section>
@@ -113,7 +113,7 @@
 <div class="view" id="view-fight" hidden>
 <div class="topbar"><button type="button" class="backbtn" id="fgback">‹ Back</button></div>
 <div class="rvres" data-draw="rvres" data-source="history archive"></div>
-<header class="fghero" id="fghero" data-draw="fghero" data-source="ufcfights ufcp pidx hs_ufc hs_ufc_hd"></header>
+<header class="fghero" id="fghero" data-draw="fghero" data-source="ufcfights ufcp pidx hs_ufc hs_ufc_hd livegames livebox"></header>
 <section class="card sec fgsec"><div data-draw="fgtape" data-source="ufcfights ufcp pidx"></div></section>
 </div>
 <div class="view" id="view-ufc" hidden>
@@ -123,7 +123,7 @@
 <p class="muted">Every announced fight with records, odds where posted and a basic win chance. Dates and times are Sydney time. Open a fight's All stats for age, reach, striking and takedown numbers and the striker vs wrestler matchup notes.</p>
 <div class="stats" id="ufcstats" data-draw="ufcstats" data-source="ufcfights ufcevents"></div>
 </header>
-<section class="sec" id="ufcsec"><div id="ufcgrid" data-draw="ufcgrid" data-source="ufcfights ufcevents pidx hs_ufc ufcp"></div></section>
+<section class="sec" id="ufcsec"><div id="ufcgrid" data-draw="ufcgrid" data-source="ufcfights ufcevents pidx hs_ufc ufcp livegames"></div></section>
 </div>
 <div class="view" id="view-nfl" hidden>
 <div class="view" id="nflmain">
@@ -1541,7 +1541,7 @@ function ufcCard(r) {
   chips.append(pc); if (r.title) chips.append(el('span', 'Title fight', 'chip'));
   ft.append(chips); b.append(mu, ft);
   ft.append(el('span', 'Full breakdown ›', 'go'));
-  b.classList.add('ufclink'); b.addEventListener('click', () => openFight(r.id));
+  b.classList.add('ufclink'); b.addEventListener('click', () => openFight(r.id)); if (window.SSG) SSG.liveUfc(b, r);
   return b;
 }
 // Tale of the tape and the rest of a fight's breakdown, for the fight page.
@@ -2109,7 +2109,7 @@ const hsCards = (sp, day) => {
   } else if (sp === 'nfl') {
     hsGames('nfl', day).forEach((x) => { const hr = hsRes('nfl', x.id, day); const c = (hsCard(hsResCls(hr), hr ? (hr.status === 'Final' ? 'Final · ' : 'Live · ') + hr.away_pts + '-' + hr.home_pts : String(x.kick).split(',').slice(1).join(',').trim() || x.title || '', hsTwoL(x.away, x.away_name, x.home, '@ ' + x.home_name), (hr ? hsTick(hr) : '') + (x.pick ? x.pick + (x.pick_pct ? ' · ' + Math.round(x.pick_pct) + '%' : '') : 'Open breakdown'), () => { ssOpenDay('nfl', day); nflNav.go(x.id); })); if (!(hr && hr.status === 'Final') && window.SSG) SSG.liveHome(c, 'nfl', x.id, day); out.push(c); });
   } else if (sp === 'ufc') {
-    hsGames('ufc', day).slice().sort((a, b) => (a.order || 99) - (b.order || 99)).forEach((f) => out.push(hsCard('', (f.card || '') + (f.weight ? ' · ' + f.weight : ''), hsTwo(f.a, 'vs ' + f.b), f.status === 'Final' && f.result ? (f.pick ? (f.result === f.pick ? '✓ ' : '✗ ') : '') + 'Won: ' + f.result : f.pick ? f.pick + (f.pick_pct ? ' · ' + Math.round(f.pick_pct) + '%' : '') : 'Open card', () => { selDay = day; sport = 'ufc'; openFight(f.id); })));
+    hsGames('ufc', day).slice().sort((a, b) => (a.order || 99) - (b.order || 99)).forEach((f) => out.push(SSG.liveUfcHome(hsCard('', (f.card || '') + (f.weight ? ' · ' + f.weight : ''), hsTwo(f.a, 'vs ' + f.b), f.status === 'Final' && f.result ? (f.pick ? (f.result === f.pick ? '✓ ' : '✗ ') : '') + 'Won: ' + f.result : f.pick ? f.pick + (f.pick_pct ? ' · ' + Math.round(f.pick_pct) + '%' : '') : 'Open card', () => { selDay = day; sport = 'ufc'; openFight(f.id); }), f)));
   }
   schedFor(sp, day).forEach((h) => out.push(hsCard('sched', h.kick || 'Scheduled', sp === 'nba' ? hsTeams(h.away, h.home, '@') : hsTwo(h.away_name || h.away, '@ ' + (h.home_name || h.home)), 'Scheduled · picks to come', () => { ssOpenDay(sp, day); })));
   // live games first, then games still to play, then finished ones
@@ -2546,7 +2546,7 @@ dash.draw('tmstats', (box) => {
     top.append(el('span', s.label), el('span', s.rank && s.better !== 'none' ? tmOrd(s.rank) : '', 'tmpill ' + cls));
     const val = String(s.v) + (/%/.test(s.label) ? '%' : '');
     d.append(top, el('b', val));
-    if (s.rank && s.better !== 'none') { const bar = el('div', null, 'bar'), i = document.createElement('i'); i.style.width = Math.round(100 * (1 - (s.rank - 1) / Math.max(1, t.n_group - 1))) + '%'; i.style.setProperty('--tcol', cls === 'g' ? '#1fd56b' : cls === 'b' ? '#ff5a5f' : '#f5b83d'); bar.append(i); d.append(bar); }
+    if (s.rank && s.better !== 'none') { const bar = el('div', null, 'bar'), i = document.createElement('i'); i.style.width = Math.round(100 * (1 - (s.rank - 1) / Math.max(1, t.n_group - 1))) + '%'; i.style.setProperty('--tcol', cls === 'g' ? '#1fd56b' : cls === 'b' ? '#ff5a5f' : '#a9aeb7'); bar.append(i); d.append(bar); }
     return d;
   }));
 });
@@ -2686,19 +2686,20 @@ dash.draw('fghero', (box) => {
   const mid = el('div', null, 'fgmid');
   mid.append(el('div', 'VS', 'fgvs'), el('div', r.event_name || '', 'ev'), el('div', normDay(r.date) + (r.kick ? ' · ' + r.kick : ''), 'when'), el('div', [r.weight, r.rounds ? r.rounds + ' rounds' : ''].filter(Boolean).join(' · '), 'wc'));
   if (r.card) mid.append(el('span', r.title ? 'Title fight' : r.card, 'ct'));
+  if (window.SSG) SSG.liveUfc(mid, r, true);
   top.append(fgPhoto(r.a, 'red', fin ? r.result === r.a : r.pick === r.a), mid, fgPhoto(r.b, 'blue', fin ? r.result === r.b : r.pick === r.b));
   const pk = el('div', null, 'fgpick');
   const ln = el('div', null, 'ln'); const l1 = el('span'); l1.append(document.createTextNode('Our pick: '), el('b', r.pick || 'none yet')); ln.append(l1, el('span', r.pick ? (r.pick_pct ? r.pick_pct + '% · ' : '') + (r.conf && r.conf !== 'None' ? r.conf + ' confidence' : '') : 'Made once odds are posted'));
   pk.append(ln);
   if (r.pick && r.pick_pct) {
     const pa = r.pick === r.a ? r.pick_pct : 100 - r.pick_pct;
-    const bar = el('div', null, 'fgbar'), ia = el('i', null, 'a'), ib = el('i', null, 'b'); ia.style.width = pa + '%'; ib.style.width = (100 - pa) + '%'; bar.append(ia, ib);
+    const bar = el('div', null, 'fgbar'), ia = el('i', null, 'a'), ib = el('i', null, 'b'); ia.style.width = pa + '%'; ib.style.width = (100 - pa) + '%'; bar.append(ia, ib); if (pa < 50) bar.classList.add('flip');
     const pc = el('div', null, 'fgpct'); pc.append(el('span', r.a.split(' ').slice(-1)[0] + ' ' + Math.round(pa) + '%'), el('span', Math.round(100 - pa) + '% ' + r.b.split(' ').slice(-1)[0])); pk.append(bar, pc);
   }
   const odds = r.a_price ? 'Best price ' + ufcPx(r.a_price, r.a_book) + ' / ' + ufcPx(r.b_price, r.b_book) + (ufcRounds(r) ? ' · ' + ufcRounds(r) : '') : r.a_odds != null ? 'Odds ' + ufcOdds(r.a_odds) + ' / ' + ufcOdds(r.b_odds) : 'Odds not posted yet';
   pk.append(el('div', odds, 'muted'));
   if (fin) { const hit = r.pick ? r.result === r.pick : null; pk.append(el('div', (hit === true ? '✓ ' : hit === false ? '✗ ' : '') + 'Result: ' + r.result + (r.method ? ' by ' + r.method : ''), 'fgres ' + (hit === true ? 'hit' : hit === false ? 'miss' : ''))); }
-  box.replaceChildren(top, pk);
+  box.replaceChildren(top, pk, ...(window.SSG ? [SSG.ufcLiveCard(r)].filter(Boolean) : []));
 });
 dash.draw('fgtape', (box) => { const r = fgRow(); if (!r) { box.replaceChildren(); return; } box.replaceChildren(ufcTape(r)); });
 const openFight = (id) => { if (window.UFT) delete UFT[id]; if (sec !== 'fight') FG.prev = snapView(); FG.id = id; sec = 'fight'; applyView(); ['fghero', 'fgtape'].forEach((n) => dash.draw(n)); toView('view-fight'); };
@@ -2724,7 +2725,7 @@ const navTo = (p) => {
   setTimeout(() => window.scrollTo(0, p.y || 0), 80);
 };
 const openBetResults = () => { sec = 'review'; applyView(); setTimeout(() => { const c = document.getElementById('mybetsrv'); if (c) { c.classList.add('open'); const hb = c.querySelector('.mbhead'); if (hb) hb.setAttribute('aria-expanded', 'true'); const d = c.querySelector('details'); if (d) d.open = true; c.scrollIntoView({ block: 'start' }); window.scrollBy(0, -120); } }, 60); };
-window.SSX = { navBack, navDepth: () => NAV.length, navList: () => NAV.map(pageKey), openBetResults, openBets, openGame: (sp, id, day) => { ssOpenDay(sp, day); if (sp === 'nba') goDetail(id); else if (sp === 'fb') fbNav.go(id); else nflNav.go(id); }, get current() { return current; }, el, rows, plCur, plNeed, atNeed, plTeamNames, plRow, plGames, h2hGames, plUpcoming, plDate, plDraw, atLabel, atKeys, atGames, atRow, badge, bdX, norm, f1, avatar, openTeam, openFighter, openPlayer, openAthlete, toView, MON, PL, AT, AT_DS, AT_HS, AT_CUR, get sec() { return sec; }, get selDay() { return selDay; }, get dataGen() { return dataGen; } };
+window.SSX = { navBack, navDepth: () => NAV.length, navList: () => NAV.map(pageKey), openBetResults, openBets, openGame: (sp, id, day) => { if (sp === 'ufc') return openFight(id); ssOpenDay(sp, day); if (sp === 'nba') goDetail(id); else if (sp === 'fb') fbNav.go(id); else nflNav.go(id); }, get current() { return current; }, el, rows, plCur, plNeed, atNeed, plTeamNames, plRow, plGames, h2hGames, plUpcoming, plDate, plDraw, atLabel, atKeys, atGames, atRow, badge, bdX, norm, f1, avatar, openTeam, openFighter, openPlayer, openAthlete, toView, MON, PL, AT, AT_DS, AT_HS, AT_CUR, get sec() { return sec; }, get selDay() { return selDay; }, get dataGen() { return dataGen; } };
 </script>
 <script src="player.js"></script>
 <script src="games.js"></script><script src="standings.js"></script>

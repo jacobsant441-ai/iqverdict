@@ -15,8 +15,9 @@ const LEAGUES = [
   { sp: 'fb', league: 'Premier League', path: 'soccer/eng.1' },
   { sp: 'fb', league: 'La Liga', path: 'soccer/esp.1' },
   { sp: 'fb', league: 'Champions League', path: 'soccer/uefa.champions' },
+  { sp: 'ufc', league: 'UFC', path: 'mma/ufc' },
 ];
-const CODE = { nba: { GS: 'GSW', NO: 'NOP', NY: 'NYK', SA: 'SAS', UTAH: 'UTA', WSH: 'WAS' }, nfl: { JAX: 'JAC', LAR: 'LA', WSH: 'WAS' }, fb: {} };
+const CODE = { ufc: {}, nba: { GS: 'GSW', NO: 'NOP', NY: 'NYK', SA: 'SAS', UTAH: 'UTA', WSH: 'WAS' }, nfl: { JAX: 'JAC', LAR: 'LA', WSH: 'WAS' }, fb: {} };
 const RECENT_HOURS = Number(process.env.RECENT_HOURS) || 5; // keep writing finished games this long after kick-off so the final score lands
 
 async function getJson(url) {
@@ -44,6 +45,38 @@ function gameRow(L, ev) {
     home_score: num(H.score), away_score: num(A.score),
     linescore: JSON.stringify(hl.map((v, i) => [v, al[i] ?? null])), extra: null,
   };
+}
+
+// UFC: one row per fight (ESPN lists every bout of the event on one scoreboard). Fighters are the two competitors,
+// "pre-fight" with no round yet counts as not started, and the winner (once ESPN names one) goes in extra.
+function ufcRows(L, ev) {
+  const out = [];
+  for (const c of ev.competitions || []) {
+    const st = c.status || {}, t = st.type || {};
+    const [A, H] = c.competitors; if (!A || !H) continue;
+    const per = num(st.period) || 0;
+    const state = t.state === 'post' ? 'post' : t.state === 'in' && per > 0 ? 'in' : 'pre';
+    const w = c.competitors.find((x) => x.winner);
+    const name = (x) => x.athlete.displayName;
+    out.push({
+      sport: 'ufc', league: L.league, espn_id: String(c.id), game_id: String(c.id),
+      start_time: new Date(c.date || ev.date).toISOString(), state,
+      status_text: state === 'in' ? 'Round ' + per + ' · ' + (st.displayClock || '') : state === 'post' ? 'Final' : '',
+      period: per, clock: st.displayClock || '', home_code: '', away_code: '', home_name: name(H), away_name: name(A),
+      home_score: null, away_score: null, linescore: '[]', extra: state === 'post' ? JSON.stringify({ winner: w ? name(w) : '', rounds: per }) : null,
+    });
+  }
+  return out;
+}
+
+// UFC live fight stats (strikes, takedowns, control time) from ESPN's core API: one line per fighter, kept in live_box.
+const UFC_KEYS = ['knockDowns', 'sigStrikesLanded', 'sigStrikesAttempted', 'totalStrikesLanded', 'totalStrikesAttempted', 'sigDistanceHeadStrikesLanded', 'sigDistanceBodyStrikesLanded', 'sigDistanceLegStrikesLanded', 'sigClinchHeadStrikesLanded', 'sigGroundHeadStrikesLanded', 'takedownsLanded', 'takedownsAttempted', 'submissions', 'reversals', 'advances', 'timeInControl'];
+async function ufcStats(evId, g, x) {
+  const j = await getJson('https://sports.core.api.espn.com/v2/sports/mma/leagues/ufc/events/' + evId + '/competitions/' + g.espn_id + '/competitors/' + x.id + '/statistics');
+  const stats = {};
+  for (const c of (j && j.splits && j.splits.categories) || []) for (const s of c.stats || []) if (UFC_KEYS.includes(s.name)) stats[s.name] = s.value;
+  if (!Object.keys(stats).length) return null;
+  return { sport: 'ufc', espn_id: g.espn_id, game_id: g.espn_id, team: '', player_id: String(x.id), player: x.athlete.displayName, starter: false, stats: JSON.stringify(stats) };
 }
 // Player lines from an ESPN summary: NBA has one stat group, NFL one per category (passing, rushing …).
 function boxRows(L, g, s) {
@@ -79,6 +112,15 @@ async function collect() {
   for (const L of LEAGUES) {
     const sb = await getJson(SITE + L.path + '/scoreboard');
     for (const ev of (sb && sb.events) || []) {
+      if (L.sp === 'ufc') {
+        for (const g of ufcRows(L, ev)) {
+          const s0 = new Date(g.start_time).getTime(); if (!(g.state === 'in' || (g.state === 'post' && now - s0 < 8 * 3600000))) continue;
+          games.push(g);
+          const comp = ev.competitions.find((c) => String(c.id) === g.espn_id);
+          for (const x of (comp && comp.competitors) || []) { const r = await ufcStats(ev.id, g, x); if (r) box.push(r); }
+        }
+        continue;
+      }
       const t = (ev.status && ev.status.type) || {};
       const start = new Date(ev.date).getTime();
       const live = t.state === 'in', recent = t.state === 'post' && now - start < RECENT_HOURS * 3600000;
