@@ -1,4 +1,4 @@
-// Bundles StatSniper into one self-contained HTML file: dist/statsniper.html
+// Bundles IQVerdict into one self-contained HTML file: dist/iqverdict.html
 // Usage: npm run build
 // The output needs no server: open it directly or publish it as a single page.
 const fs = require('fs');
@@ -26,7 +26,7 @@ const dataTags = Object.keys(JSON.parse(manifest)).map((id) =>
 
 // Order matters: data, logos and the runtime come first so the page's own
 // script finds `dash` and its data ready when it runs inline.
-const html = `<title>StatSniper</title>
+const html = `<title>IQVerdict</title>
 ${fontLink}
 ${style}
 <script type="application/json" id="ss-manifest">${safeJson(manifest)}</script>
@@ -37,5 +37,5 @@ ${logoFiles.map((f) => `<script>${read(f)}</script>`).join('\n')}
 `;
 
 fs.mkdirSync(OUT, { recursive: true });
-fs.writeFileSync(path.join(OUT, 'statsniper.html'), html);
-console.log(`Wrote dist/statsniper.html (${(html.length / 1024 / 1024).toFixed(2)} MB)`);
+fs.writeFileSync(path.join(OUT, 'iqverdict.html'), html);
+console.log(`Wrote dist/iqverdict.html (${(html.length / 1024 / 1024).toFixed(2)} MB)`);

@@ -1,7 +1,7 @@
-# Draws the StatSniper logo (owner design, traced to SVG) and writes logo.svg, logo_mark.svg,
+# Draws the IQVerdict logo (owner design, traced to SVG) and writes logo.svg, logo_mark.svg,
 # logo_maskable.svg and logo_header.svg in the current folder. App icons in public/icons were
 # rendered from these with Playwright.
-# StatSniper "S" mark, traced from the owner's design (1206x921 source). Mark centred on the circle.
+# IQVerdict "S" mark, traced from the owner's design (1206x921 source). Mark centred on the circle.
 cx,cy=613,437
 top="M407 415 A206 206 0 0 1 595 113 L890 113 L785 235 L613 235 A202 202 0 0 0 407 415 Z"
 bot="M805 460 A202 202 0 0 1 613 639 L425 640 L318 762 L628 762 A206 206 0 0 0 805 460 Z"

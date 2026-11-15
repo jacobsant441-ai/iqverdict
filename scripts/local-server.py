@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Local StatSniper server with live scores.
+"""Local IQVerdict server with live scores.
 
 Serves public/ like server.js does, and adds the `livegames` and `livebox`
-datasets by reading BigQuery (dataset statsniper_live) through the `bq` CLI,
+datasets by reading BigQuery (dataset iqverdict_live) through the `bq` CLI,
 using whatever Google login is active on this Mac. Read-only. Results are
 cached for CACHE_SECONDS so the page's 30 s refresh never hammers BigQuery.
 
@@ -21,9 +21,9 @@ ENV = {**os.environ, "PATH": "/opt/homebrew/bin:/usr/local/bin:" + os.environ.ge
 FMT = "FORMAT_TIMESTAMP('%Y-%m-%dT%H:%M:%SZ', {c})"
 QUERIES = {
     "livegames": f"SELECT * REPLACE({FMT.format(c='start_time')} AS start_time, {FMT.format(c='updated_at')} AS updated_at) "
-                 f"FROM `{PROJECT}.statsniper_live.live_games`",
+                 f"FROM `{PROJECT}.iqverdict_live.live_games`",
     "livebox": f"SELECT * REPLACE({FMT.format(c='updated_at')} AS updated_at) "
-               f"FROM `{PROJECT}.statsniper_live.live_box`",
+               f"FROM `{PROJECT}.iqverdict_live.live_box`",
 }
 INT_COLS = {"period", "home_score", "away_score"}
 BOOL_COLS = {"starter"}
@@ -139,20 +139,20 @@ def autopull():
 
 def settle_bets():
     """Settle logged bets from final results (private: bets.json stays on this Mac, never in git).
-    Keeps the previous copy in ~/Desktop/StatSniper/backups if anything changed."""
+    Keeps the previous copy in ~/Desktop/IQVerdict/backups if anything changed."""
     f = ROOT / "data" / "bets.json"
     try:
         before = f.read_bytes() if f.exists() else b""
         subprocess.run(["node", "scripts/grade-bets.js"], cwd=str(ROOT.parent), capture_output=True, text=True, timeout=120, env=ENV)
         # public site: publish the cleaned copies (open bets + record, our picks, no money or prices) when they
-        # change. Off until ~/Desktop/StatSniper/publish-public.on exists (the owner turns it on).
-        if (Path.home() / "Desktop" / "StatSniper" / "publish-public.on").exists():
+        # change. Off until ~/Desktop/IQVerdict/publish-public.on exists (the owner turns it on).
+        if (Path.home() / "Desktop" / "IQVerdict" / "publish-public.on").exists():
             r = subprocess.run(["node", "scripts/export-public.js", "--upload"], cwd=str(ROOT.parent), capture_output=True, text=True, timeout=120, env=ENV)
             if r.returncode:
                 sys.stderr.write("[public] export failed: " + (r.stderr.strip() or r.stdout.strip())[:200] + "\n")
         # (the track record, valuelog.json, is graded in the cloud now and pulled from the odds-data branch above)
         if f.exists() and f.read_bytes() != before and before:
-            bk = Path.home() / "Desktop" / "StatSniper" / "backups"
+            bk = Path.home() / "Desktop" / "IQVerdict" / "backups"
             if bk.is_dir():
                 (bk / "bets-before-last-auto-settle.json").write_bytes(before)
     except Exception as e:
@@ -162,5 +162,5 @@ def settle_bets():
 if __name__ == "__main__":
     if not os.environ.get("NO_AUTOPULL"):
         threading.Thread(target=autopull, daemon=True).start()
-    print(f"StatSniper (with live scores) on http://localhost:{PORT}")
+    print(f"IQVerdict (with live scores) on http://localhost:{PORT}")
     ThreadingHTTPServer(("127.0.0.1", PORT), Handler).serve_forever()

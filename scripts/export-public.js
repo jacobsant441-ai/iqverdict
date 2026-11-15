@@ -14,7 +14,7 @@ const { execFileSync } = require('child_process');
 const DATA = path.join(__dirname, '..', 'public', 'data');
 const OUT = process.argv[2] && !process.argv[2].startsWith('--') ? process.argv[2] : DATA;
 const UPLOAD = process.argv.includes('--upload');
-const REPO = 'jacobsant441-ai/statsniper';
+const REPO = 'jacobsant441-ai/iqverdict';
 const read = (f) => { try { return JSON.parse(fs.readFileSync(path.join(DATA, f), 'utf8')); } catch (e) { return []; } };
 const MIN = 75, PRICE = 1.3, now = Date.now();
 

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# StatSniper live: deploy the Cloud Function and its every-minute schedule.
+# IQVerdict live: deploy the Cloud Function and its every-minute schedule.
 # Run in Google Cloud Shell from the folder holding index.js, package.json and this file:
 #   bash deploy.sh
 set -euo pipefail
 PROJECT=project-ab030f51-2215-481e-bfa
 REGION=us-central1
-FN=statsniper-live
+FN=iqverdict-live
 
 gcloud config set project "$PROJECT"
 gcloud services enable cloudfunctions.googleapis.com run.googleapis.com cloudbuild.googleapis.com \
@@ -41,4 +41,4 @@ gcloud scheduler jobs run "$FN" --location="$REGION"
 sleep 20
 gcloud functions logs read "$FN" --gen2 --region="$REGION" --limit=5
 echo
-echo "Done. StatSniper live is checking games every minute."
+echo "Done. IQVerdict live is checking games every minute."

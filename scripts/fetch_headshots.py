@@ -1,4 +1,4 @@
-"""Downloads ESPN headshots for every player and fighter in StatSniper's data files and
+"""Downloads ESPN headshots for every player and fighter in IQVerdict's data files and
 writes them as small square WebP data URLs, one file per sport:
   public/data/hs_nba.json, hs_nfl.json, hs_soc.json, hs_ufc.json  ->  [{"id": ..., "img": ...}]
 Players without an ESPN photo are left out (the app shows initials instead).
@@ -35,7 +35,7 @@ SPORTS = {
 def fetch(folder, pid):
     url = f'https://a.espncdn.com/combiner/i?img=/i/headshots/{folder}/players/full/{pid}.png&w=320&h=233&scale=crop&cquality=85'
     try:
-        req = urllib.request.Request(url, headers={'User-Agent': 'StatSniper/1.0'})
+        req = urllib.request.Request(url, headers={'User-Agent': 'IQVerdict/1.0'})
         with urllib.request.urlopen(req, timeout=30) as r:
             raw = r.read()
     except urllib.error.HTTPError as e:
@@ -59,7 +59,7 @@ def fetch_portrait(pid):
     """Full-size ESPN headshot, cropped to a 3:4 portrait for the fight page."""
     url = f'https://a.espncdn.com/i/headshots/mma/players/full/{pid}.png'
     try:
-        req = urllib.request.Request(url, headers={'User-Agent': 'StatSniper/1.0'})
+        req = urllib.request.Request(url, headers={'User-Agent': 'IQVerdict/1.0'})
         with urllib.request.urlopen(req, timeout=30) as r:
             im = Image.open(io.BytesIO(r.read())).convert('RGBA')
     except Exception:

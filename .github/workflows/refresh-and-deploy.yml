@@ -1,4 +1,4 @@
-# Refreshes StatSniper's ESPN data every morning, commits it, and publishes the website
+# Refreshes IQVerdict's ESPN data every morning, commits it, and publishes the website
 # (dist/web) to GitHub Pages. Also redeploys on every push to main, and can be run by hand
 # from the Actions tab ("Run workflow").
 #
@@ -28,7 +28,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: statsniper-deploy
+  group: iqverdict-deploy
   cancel-in-progress: false
 
 jobs:
@@ -67,7 +67,7 @@ jobs:
 
       - name: Commit refreshed data
         run: |
-          git config user.name "StatSniper data bot"
+          git config user.name "IQVerdict data bot"
           git config user.email "actions@users.noreply.github.com"
           git add public/data public/logos*.js
           if git diff --cached --quiet; then echo "No data changes"; else git commit -m "Daily data refresh $(date -u +%F)" && git push; fi
@@ -105,7 +105,7 @@ jobs:
       - name: Commit changed data
         id: commit
         run: |
-          git config user.name "StatSniper data bot"
+          git config user.name "IQVerdict data bot"
           git config user.email "actions@users.noreply.github.com"
           git add public/data
           if git diff --cached --quiet; then
@@ -174,7 +174,7 @@ jobs:
       - name: Commit changed data
         id: commit
         run: |
-          git config user.name "StatSniper data bot"
+          git config user.name "IQVerdict data bot"
           git config user.email "actions@users.noreply.github.com"
           git add public/data
           if git diff --cached --quiet; then
@@ -210,7 +210,7 @@ jobs:
       - run: bash scripts/odds-branch.sh push
       - name: Save the repriced UFC fight cards (main)
         run: |
-          git config user.name "StatSniper data bot"
+          git config user.name "IQVerdict data bot"
           git config user.email "actions@users.noreply.github.com"
           git add public/data/ufcfights.json
           if git diff --cached --quiet; then echo "UFC cards unchanged"; else
@@ -239,12 +239,12 @@ jobs:
       - name: Bookmaker data (odds-data branch, into this build)
         run: bash scripts/odds-branch.sh pull
       - run: node scripts/build-web.js
-      - name: Publish to Cloudflare Pages (https://statsniper.pages.dev, the only public address)
+      - name: Publish to Cloudflare Pages (https://iqverdict.pages.dev, the only public address)
         if: env.CF_TOKEN != '' && env.CF_ACCOUNT != ''
         run: |
           # the secrets as pasted can carry a stray space or line break: strip them
           export CLOUDFLARE_API_TOKEN="$(printf '%s' "$CF_TOKEN" | tr -d '[:space:]')"
           export CLOUDFLARE_ACCOUNT_ID="$(printf '%s' "$CF_ACCOUNT" | tr -d '[:space:]')"
           # first run only: create the Pages project (ignored if it already exists)
-          npx --yes wrangler@3.114.0 pages project create statsniper --production-branch=main || true
-          npx --yes wrangler@3.114.0 pages deploy dist/web --project-name=statsniper --branch=main --commit-dirty=true
+          npx --yes wrangler@3.114.0 pages project create iqverdict --production-branch=main || true
+          npx --yes wrangler@3.114.0 pages deploy dist/web --project-name=iqverdict --branch=main --commit-dirty=true

@@ -34,7 +34,7 @@ fs.mkdirSync(CACHE, { recursive: true });
 
 const read = (f, d = []) => { try { return JSON.parse(fs.readFileSync(path.join(DATA, f), 'utf8')); } catch (e) { return d; } };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-async function getJson(url, tries = 4, headers = { 'User-Agent': 'StatSniper/1.0' }) {
+async function getJson(url, tries = 4, headers = { 'User-Agent': 'IQVerdict/1.0' }) {
   for (let i = 0; i < tries; i++) {
     try { const r = await fetch(url, { headers }); if (r.status === 404) return null; if (!r.ok) throw new Error('HTTP ' + r.status); return await r.json(); } catch (e) { if (i === tries - 1) { console.warn('failed', url.slice(0, 120), e.message); return null; } await sleep(600 * 2 ** i); }
   }

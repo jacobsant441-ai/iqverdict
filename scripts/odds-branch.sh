@@ -25,7 +25,7 @@ case "${1:-}" in
     [ -n "$entries" ] || { echo "odds-data: no files to push"; exit 0; }
     tree=$(printf '%s' "$entries" | git mktree)
     if git fetch -q origin odds-data 2>/dev/null && [ "$(git rev-parse 'origin/odds-data^{tree}')" = "$tree" ]; then echo "odds-data: unchanged"; exit 0; fi
-    commit=$(git -c user.name="StatSniper data bot" -c user.email="actions@users.noreply.github.com" commit-tree "$tree" -m "Odds data $(date -u '+%F %H:%M') UTC")
+    commit=$(git -c user.name="IQVerdict data bot" -c user.email="actions@users.noreply.github.com" commit-tree "$tree" -m "Odds data $(date -u '+%F %H:%M') UTC")
     for i in 1 2 3; do git push -q -f origin "$commit:refs/heads/odds-data" && break; sleep 5; done
     echo "odds-data: pushed ($(printf '%s' "$entries" | grep -c .) files)"
     ;;

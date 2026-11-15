@@ -42,7 +42,7 @@ const fmtPt = (p) => (p > 0 ? '+' + p : String(p));
 let left = null, used = null;
 
 async function get(url) {
-  const r = await fetch(url, { headers: { 'User-Agent': 'StatSniper/1.0' } });
+  const r = await fetch(url, { headers: { 'User-Agent': 'IQVerdict/1.0' } });
   left = r.headers.get('x-requests-remaining') ?? left; used = r.headers.get('x-requests-used') ?? used;
   if (r.status === 404 || r.status === 422) return [];
   if (!r.ok) throw new Error(url.replace(KEY, '…') + ': HTTP ' + r.status + ' ' + (await r.text()).slice(0, 200));

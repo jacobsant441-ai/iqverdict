@@ -1,8 +1,8 @@
 {
-  "name": "statsniper",
+  "name": "iqverdict",
   "version": "1.0.0",
   "private": true,
-  "description": "StatSniper: sharp picks, broken down. NBA, football, NFL and UFC picks with stats, props, slips and a daily review.",
+  "description": "IQVerdict: sharp picks, broken down. NBA, football, NFL and UFC picks with stats, props, slips and a daily review.",
   "scripts": {
     "start": "node server.js",
     "build": "node scripts/build-single.js",

@@ -17,7 +17,7 @@ const Z = ['ra', 'paint', 'mid', 'lc', 'rc', 'atb'];
 const sydKey = (iso) => { const p = Object.fromEntries(new Intl.DateTimeFormat('en-AU', { timeZone: 'Australia/Sydney', weekday: 'short', day: 'numeric', month: 'short' }).formatToParts(new Date(iso)).map((x) => [x.type, x.value])); return `${p.weekday} ${p.day} ${p.month}`; };
 async function getJson(url) {
   for (let i = 0; i < 3; i++) {
-    try { const r = await fetch(url, { headers: { 'User-Agent': 'StatSniper/1.0' } }); if (r.status === 404) return null; if (r.ok) return await r.json(); } catch (e) { /* retry */ }
+    try { const r = await fetch(url, { headers: { 'User-Agent': 'IQVerdict/1.0' } }); if (r.status === 404) return null; if (r.ok) return await r.json(); } catch (e) { /* retry */ }
     await new Promise((res) => setTimeout(res, 1000 * (i + 1)));
   }
   return null;

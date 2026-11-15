@@ -1,4 +1,4 @@
-// Zero-dependency static server for StatSniper.
+// Zero-dependency static server for IQVerdict.
 //   npm start     serves public/ (the editable app) at http://localhost:3000
 //   npm run preview   serves dist/web (the built website) at http://localhost:4173, gzipped like a real host
 const http = require('http');
@@ -30,4 +30,4 @@ http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': type, 'Cache-Control': 'no-cache', ...(gzip ? { 'Content-Encoding': 'gzip' } : {}) });
     res.end(gzip ? zlib.gzipSync(buf) : buf);
   });
-}).listen(PORT, () => console.log(`StatSniper running at http://localhost:${PORT}`));
+}).listen(PORT, () => console.log(`IQVerdict running at http://localhost:${PORT}`));

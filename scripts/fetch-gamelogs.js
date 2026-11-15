@@ -12,7 +12,7 @@ const path = require('path');
 
 const SEASONS = [2025, 2026, 2027]; // ESPN labels a season by its end year: 2027 = 2026-27
 const OUT = path.join(__dirname, '..', 'public', 'data', 'pgl.json');
-// ESPN abbreviations that differ from the codes StatSniper uses.
+// ESPN abbreviations that differ from the codes IQVerdict uses.
 const CODE = { GS: 'GSW', NO: 'NOP', NY: 'NYK', SA: 'SAS', UTAH: 'UTA', WSH: 'WAS' };
 const code = (a) => CODE[a] || a;
 
@@ -20,7 +20,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 async function getJson(url, tries = 4) {
   for (let i = 0; i < tries; i++) {
     try {
-      const res = await fetch(url, { headers: { 'User-Agent': 'StatSniper/1.0' } });
+      const res = await fetch(url, { headers: { 'User-Agent': 'IQVerdict/1.0' } });
       if (res.status === 404) return null;
       if (!res.ok) throw new Error('HTTP ' + res.status);
       return await res.json();

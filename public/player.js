@@ -1,4 +1,4 @@
-// StatSniper NBA player page: market bar, Graph / Shooting / Similar / Types tabs, line card,
+// IQVerdict NBA player page: market bar, Graph / Shooting / Similar / Types tabs, line card,
 // filters, and a strip of the other players in his next game. Loaded after the main page script,
 // so it uses that script's helpers (el, rows, plRow, plGames, h2hGames, plUpcoming, avatar, badge …).
 // Data: pgl (game logs), h2h (older games vs each team), pbp (play-by-play extras, this season),

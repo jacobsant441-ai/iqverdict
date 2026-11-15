@@ -16,7 +16,7 @@ const MON = { Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06', 
 const ymd = (d, plus = 0) => { const m = String(d || '').match(/(\d+) (\w{3})/); if (!m) return null; const dt = new Date(Date.UTC(2026, Number(MON[m[2]]) - 1, Number(m[1]) + plus)); return dt.toISOString().slice(0, 10).replace(/-/g, ''); };
 async function get(url) {
   for (let i = 0; i < 3; i++) {
-    try { const r = await fetch(url, { headers: { 'User-Agent': 'StatSniper/1.0' } }); if (r.ok) return await r.json(); if (r.status === 404) return null; } catch (e) { /* retry */ }
+    try { const r = await fetch(url, { headers: { 'User-Agent': 'IQVerdict/1.0' } }); if (r.ok) return await r.json(); if (r.status === 404) return null; } catch (e) { /* retry */ }
     await new Promise((res) => setTimeout(res, 500 * (i + 1)));
   }
   return null;

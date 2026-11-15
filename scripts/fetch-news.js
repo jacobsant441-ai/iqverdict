@@ -19,7 +19,7 @@ const KEEP_H = 72; // hours of news to keep
 
 async function getJson(url) {
   for (let i = 0; i < 3; i++) {
-    try { const r = await fetch(url, { headers: { 'User-Agent': 'StatSniper/1.0' } }); if (r.ok) return await r.json(); } catch (e) { /* retry */ }
+    try { const r = await fetch(url, { headers: { 'User-Agent': 'IQVerdict/1.0' } }); if (r.ok) return await r.json(); } catch (e) { /* retry */ }
     await new Promise((res) => setTimeout(res, 1500));
   }
   return null;

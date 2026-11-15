@@ -1,8 +1,8 @@
-# StatSniper
+# IQVerdict
 
 *Sharp picks, broken down.* A daily picks app covering the **NBA, football (Premier League, La Liga and Champions League), the NFL and the UFC**: each game's most likely result, win chances, lines, team and player stats, injuries and lineups, player props, same-game slips, and a **Review** tab that grades the picks against final scores.
 
-This is a standalone rebuild of the StatSniper dashboard that originally ran as a claude.ai artifact. It needs no dependencies and no build step.
+This is a standalone rebuild of the IQVerdict dashboard that originally ran as a claude.ai artifact. It needs no dependencies and no build step.
 
 ## Run it
 
@@ -47,7 +47,7 @@ server.js                 zero-dependency static file server
 public/
   index.html              app shell and theme tokens
   dash-runtime.js         local stand-in for the dashboard host (the `dash` API)
-  page.html               the StatSniper UI: markup, styles and all app logic
+  page.html               the IQVerdict UI: markup, styles and all app logic
   logos*.js               team and league logos as data URLs
   data/
     manifest.json         every dataset's title, description and last update

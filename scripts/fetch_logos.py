@@ -1,5 +1,5 @@
 """Builds public/logos_nba.js, logos_epl.js, logos_laliga.js and logos_nfl.js: current NBA, football (Premier League, La Liga) and NFL team logos
-as small WebP data URLs keyed by StatSniper's team codes, from ESPN's public feed.
+as small WebP data URLs keyed by IQVerdict's team codes, from ESPN's public feed.
 Prefers ESPN's dark-background variant of each logo, since the app is dark.
 
 Usage: python3 scripts/fetch_logos.py   (needs Pillow)
@@ -25,7 +25,7 @@ LEAGUES = [
 
 
 def get(url):
-    req = urllib.request.Request(url, headers={'User-Agent': 'StatSniper/1.0'})
+    req = urllib.request.Request(url, headers={'User-Agent': 'IQVerdict/1.0'})
     with urllib.request.urlopen(req, timeout=30) as r:
         return r.read()
 

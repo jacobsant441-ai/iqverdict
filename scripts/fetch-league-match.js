@@ -17,7 +17,7 @@ const read = (f, d = []) => { try { return JSON.parse(fs.readFileSync(path.join(
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 async function getJson(url, tries = 4) {
   for (let i = 0; i < tries; i++) {
-    try { const r = await fetch(url, { headers: { 'User-Agent': 'StatSniper/1.0' } }); if (r.status === 404) return null; if (!r.ok) throw new Error('HTTP ' + r.status); return await r.json(); } catch (e) { if (i === tries - 1) { console.warn('failed', url, e.message); return null; } await sleep(600 * 2 ** i); }
+    try { const r = await fetch(url, { headers: { 'User-Agent': 'IQVerdict/1.0' } }); if (r.status === 404) return null; if (!r.ok) throw new Error('HTTP ' + r.status); return await r.json(); } catch (e) { if (i === tries - 1) { console.warn('failed', url, e.message); return null; } await sleep(600 * 2 ** i); }
   }
 }
 async function pool(items, n, fn) { const out = new Array(items.length); let next = 0; await Promise.all(Array.from({ length: n }, async () => { while (next < items.length) { const i = next++; out[i] = await fn(items[i], i); } })); return out; }

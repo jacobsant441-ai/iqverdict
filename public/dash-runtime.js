@@ -1,4 +1,4 @@
-// StatSniper local runtime.
+// IQVerdict local runtime.
 // Stands in for the claude.ai dashboard host: loads every dataset from
 // /data/<id>.json, injects page.html, runs its scripts in order, and
 // provides the same `dash` API the page was written against.
@@ -110,7 +110,7 @@
   };
   window.dash = dash;
 
-  // Single-file build (dist/statsniper.html) embeds the page and data in the
+  // Single-file build (dist/iqverdict.html) embeds the page and data in the
   // document instead of serving them as separate files.
   const embedded = (id) => document.getElementById(id);
   const readJson = (id) => JSON.parse(embedded(id).textContent);

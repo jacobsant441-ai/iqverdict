@@ -21,7 +21,7 @@ const code = (a) => CODE[a] || a;
 const read = (f) => { try { return JSON.parse(fs.readFileSync(path.join(DATA, f + '.json'), 'utf8')); } catch (e) { return []; } };
 const write = (f, d) => fs.writeFileSync(path.join(DATA, f + '.json'), JSON.stringify(d));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-async function getJson(url, tries = 4) { for (let i = 0; i < tries; i++) { try { const r = await fetch(url, { headers: { 'User-Agent': 'StatSniper/1.0' } }); if (r.status === 404) return null; if (!r.ok) throw new Error('HTTP ' + r.status); return await r.json(); } catch (e) { if (i === tries - 1) { console.warn('failed', url, e.message); return null; } await sleep(600 * 2 ** i); } } }
+async function getJson(url, tries = 4) { for (let i = 0; i < tries; i++) { try { const r = await fetch(url, { headers: { 'User-Agent': 'IQVerdict/1.0' } }); if (r.status === 404) return null; if (!r.ok) throw new Error('HTTP ' + r.status); return await r.json(); } catch (e) { if (i === tries - 1) { console.warn('failed', url, e.message); return null; } await sleep(600 * 2 ** i); } } }
 const r1 = (x) => Math.round(x * 10) / 10;
 const sydKey = (iso) => { const p = Object.fromEntries(new Intl.DateTimeFormat('en-AU', { timeZone: 'Australia/Sydney', weekday: 'short', day: 'numeric', month: 'short' }).formatToParts(new Date(iso)).map((x) => [x.type, x.value])); return `${p.weekday} ${p.day} ${p.month}`; };
 const sydTime = (iso) => new Intl.DateTimeFormat('en-US', { timeZone: 'Australia/Sydney', hour: 'numeric', minute: '2-digit', hour12: true }).format(new Date(iso));

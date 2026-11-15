@@ -1,12 +1,12 @@
-// StatSniper live: every minute (Cloud Scheduler -> this Cloud Function), read ESPN's free scoreboards for
+// IQVerdict live: every minute (Cloud Scheduler -> this Cloud Function), read ESPN's free scoreboards for
 // the NBA, NFL, Premier League, La Liga and Champions League. For each game that is live, or finished in
 // the last few hours, read its ESPN summary and write the score, status, quarter / half scores, the
 // player box score (NBA, NFL) and team stats with key events (football) to BigQuery
-// (dataset statsniper_live). When nothing is live it only reads the scoreboards and writes nothing.
+// (dataset iqverdict_live). When nothing is live it only reads the scoreboards and writes nothing.
 //
 // Local test without BigQuery: DRY=1 node index.js   (prints what it would write)
 const PROJECT = process.env.GOOGLE_CLOUD_PROJECT || process.env.GCLOUD_PROJECT || 'project-ab030f51-2215-481e-bfa';
-const DS = '`' + PROJECT + '.statsniper_live`';
+const DS = '`' + PROJECT + '.iqverdict_live`';
 const SITE = 'https://site.api.espn.com/apis/site/v2/sports/';
 const SUM = 'https://site.web.api.espn.com/apis/site/v2/sports/';
 const LEAGUES = [
@@ -22,7 +22,7 @@ const RECENT_HOURS = Number(process.env.RECENT_HOURS) || 5; // keep writing fini
 
 async function getJson(url) {
   for (let i = 0; i < 3; i++) {
-    try { const r = await fetch(url, { headers: { 'User-Agent': 'StatSniper/1.0' } }); if (r.ok) return await r.json(); if (r.status === 404) return null; } catch (e) { /* retry */ }
+    try { const r = await fetch(url, { headers: { 'User-Agent': 'IQVerdict/1.0' } }); if (r.ok) return await r.json(); if (r.status === 404) return null; } catch (e) { /* retry */ }
     await new Promise((res) => setTimeout(res, 400 * (i + 1)));
   }
   return null;

@@ -1,4 +1,4 @@
-// StatSniper: main play for NBA and NFL games, Best bets on Home, My bets in Review.
+// IQVerdict: main play for NBA and NFL games, Best bets on Home, My bets in Review.
 // Loaded after the main page script; uses its helpers through window.SSX (each script file runs in its own scope).
 //
 // Main play: of the bets we can put a chance on (winner, spread, total), the one with the highest
@@ -742,7 +742,7 @@
 
 
   // ---- Live: scores, box scores and how our picks are tracking, from BigQuery (datasets livegames, livebox),
-  // written every minute during games by the statsniper-live Cloud Function. The page reads them when it
+  // written every minute during games by the iqverdict-live Cloud Function. The page reads them when it
   // opens and whenever a game is opened or Refresh is tapped.
   ['livegames', 'livebox'].forEach((id) => dash.loader(id, { description: 'BigQuery’s answer as rows', fn: ({ answer, read }) => read.bigquery(answer) }));
   const liveRows = (id) => { const g = dash.data(id); return g.status === 'ok' && Array.isArray(g.data) ? g.data : []; };

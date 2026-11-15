@@ -1,8 +1,8 @@
-// Adds the Champions League to StatSniper's football data, in the same shape as the
+// Adds the Champions League to IQVerdict's football data, in the same shape as the
 // Premier League and La Liga rows, from ESPN's public feed.
 // Usage: npm run fetch:ucl
 //
-// Writes public/data/ucl_teams.json (the 36 clubs: ESPN id, StatSniper code, name,
+// Writes public/data/ucl_teams.json (the 36 clubs: ESPN id, IQVerdict code, name,
 // domestic league, logo) and replaces the Champions League rows in fixtures.json
 // (next matchday, with picks), table.json (league phase) and results.json (last matchday).
 //
@@ -23,7 +23,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 async function getJson(url, tries = 4) {
   for (let i = 0; i < tries; i++) {
     try {
-      const res = await fetch(url, { headers: { 'User-Agent': 'StatSniper/1.0' } });
+      const res = await fetch(url, { headers: { 'User-Agent': 'IQVerdict/1.0' } });
       if (res.status === 404) return null;
       if (!res.ok) throw new Error('HTTP ' + res.status);
       return await res.json();
@@ -153,7 +153,7 @@ function buildPick(league, id, e, c, H, A, fh, fa, checked, keep) {
 async function uclMain() {
   const table = read('table.json').filter((r) => r.league !== LEAGUE);
   const domestic = new Map(table.map((r) => [r.abbr, r.team]));
-  // 1. The 36 clubs, with StatSniper codes that clash with nothing else.
+  // 1. The 36 clubs, with IQVerdict codes that clash with nothing else.
   const st = await getJson('https://site.api.espn.com/apis/v2/sports/soccer/uefa.champions/standings');
   const entries = st.children[0].standings.entries;
   const used = new Set([...NFL_CODES]);

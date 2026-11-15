@@ -1,4 +1,4 @@
-// Refreshes Premier League and La Liga in StatSniper's football data from ESPN, the same way
+// Refreshes Premier League and La Liga in IQVerdict's football data from ESPN, the same way
 // fetch-ucl.js does the Champions League: league table, last round's results, and every
 // fixture in the next 8 days with picks (DraftKings odds blended 50/50 with a goals model
 // from each club's games this season). Hand-researched head-to-head, lineups and team news

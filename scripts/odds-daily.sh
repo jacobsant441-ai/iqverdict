@@ -12,11 +12,11 @@
 # Turn the schedule on / off:
 #   launchctl load   ~/Library/LaunchAgents/com.statsniper.odds.plist
 #   launchctl unload ~/Library/LaunchAgents/com.statsniper.odds.plist
-# Log: ~/Desktop/StatSniper/logs/odds-daily.log
+# Log: ~/Desktop/IQVerdict/logs/odds-daily.log
 set -u
 export PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin
 cd "${0:A:h}/.." || exit 1
-LOG=~/Desktop/StatSniper/logs; mkdir -p "$LOG"
+LOG=~/Desktop/IQVerdict/logs; mkdir -p "$LOG"
 exec >>"$LOG/odds-daily.log" 2>&1
 echo "=== $(TZ=Australia/Sydney date) ${1:-am}"
 KEY=$(security find-generic-password -a "$USER" -s statsniper-odds -w 2>/dev/null) || { echo "No Odds API key in the Keychain (see top of this file)."; exit 1; }

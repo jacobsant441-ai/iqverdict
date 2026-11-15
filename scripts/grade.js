@@ -1,4 +1,4 @@
-// Grades StatSniper's picks against final results from ESPN, for every sport, and keeps
+// Grades IQVerdict's picks against final results from ESPN, for every sport, and keeps
 // the `history` dataset (one row per pick per day) that the Review page shows with ticks
 // and crosses. Safe to run as often as you like: rows are added or updated, never removed,
 // and verdicts or factors written by a person or a summary run are kept.
@@ -36,7 +36,7 @@ async function getJson(url) {
   if (cache.has(url)) return cache.get(url);
   const p = (async () => {
     for (let i = 0; i < 3; i++) {
-      try { const r = await fetch(url, { headers: { 'User-Agent': 'StatSniper/1.0' } }); if (r.status === 404) return null; if (!r.ok) throw new Error('HTTP ' + r.status); return await r.json(); } catch (e) { if (i === 2) { console.warn('fetch failed', url, e.message); return null; } await new Promise((r) => setTimeout(r, 800 * (i + 1))); }
+      try { const r = await fetch(url, { headers: { 'User-Agent': 'IQVerdict/1.0' } }); if (r.status === 404) return null; if (!r.ok) throw new Error('HTTP ' + r.status); return await r.json(); } catch (e) { if (i === 2) { console.warn('fetch failed', url, e.message); return null; } await new Promise((r) => setTimeout(r, 800 * (i + 1))); }
     }
   })();
   cache.set(url, p); return p;

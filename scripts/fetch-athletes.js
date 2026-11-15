@@ -13,7 +13,7 @@ const path = require('path');
 const DATA = path.join(__dirname, '..', 'public', 'data');
 const API = 'https://site.web.api.espn.com/apis/common/v3/sports/';
 const SITE = 'https://site.api.espn.com/apis/site/v2/sports/';
-// ESPN abbreviations that differ from StatSniper's team codes.
+// ESPN abbreviations that differ from IQVerdict's team codes.
 const NFL_CODE = { JAX: 'JAC', LAR: 'LA', WSH: 'WAS' };
 const SOC_CODE = { BHA: 'BRI', CHE: 'CFC', LIV: 'LFC', MNC: 'MCI', MAN: 'MUN', CEL: 'RCC', RAY: 'RVC', BET: 'RBB', VAL: 'VCF' };
 // Offensive linemen and long snappers have no box score stats worth a page.
@@ -23,7 +23,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 async function getJson(url, tries = 4) {
   for (let i = 0; i < tries; i++) {
     try {
-      const res = await fetch(url, { headers: { 'User-Agent': 'StatSniper/1.0' } });
+      const res = await fetch(url, { headers: { 'User-Agent': 'IQVerdict/1.0' } });
       if (res.status === 404) return null;
       if (!res.ok) throw new Error('HTTP ' + res.status);
       return await res.json();

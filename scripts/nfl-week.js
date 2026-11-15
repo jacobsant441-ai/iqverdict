@@ -19,7 +19,7 @@ const read = (f) => { try { return JSON.parse(fs.readFileSync(path.join(DATA, f)
 const write = (f, d) => fs.writeFileSync(path.join(DATA, f), JSON.stringify(d));
 async function getJson(url) {
   for (let i = 0; i < 4; i++) {
-    try { const r = await fetch(url, { headers: { 'User-Agent': 'StatSniper/1.0' } }); if (r.ok) return await r.json(); } catch (e) { /* retry */ }
+    try { const r = await fetch(url, { headers: { 'User-Agent': 'IQVerdict/1.0' } }); if (r.ok) return await r.json(); } catch (e) { /* retry */ }
     await new Promise((res) => setTimeout(res, 500 * (i + 1)));
   }
   throw new Error('failed: ' + url);
