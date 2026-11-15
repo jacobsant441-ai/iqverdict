@@ -1,0 +1,10 @@
+# Cloudflare Pages settings for IQVerdict (read by "wrangler pages deploy" in the GitHub workflow).
+# DB is the accounts database (Cloudflare D1). Its id is filled in by the "Set up accounts" workflow run.
+name = "iqverdict"
+pages_build_output_dir = "dist/web"
+compatibility_date = "2026-11-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "iqverdict"
+database_id = "00000000-0000-0000-0000-000000000000"

@@ -2168,3 +2168,20 @@ html body #nflgame #nflback,html body #fbgame #fbback,html body #nflgame .backbt
 .pfsheet{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.7);display:flex;align-items:flex-end;justify-content:center}
 .pfcard{position:relative;width:min(100%,560px);max-height:88vh;overflow:auto;background:#111317;border:1px solid var(--sb-line);border-radius:18px 18px 0 0;padding:18px 16px 28px;display:flex;flex-direction:column;gap:12px}
 .pfcard h3{margin:0 36px 0 0;font-size:1.15rem}.pfx{position:absolute;top:10px;right:12px;width:34px;height:34px;border-radius:50%;border:0;background:#2a2e36;color:#fff;font-size:1rem;cursor:pointer}
+
+/* Accounts: header chip and sign-in sheet */
+.accchip{display:flex;align-items:center;gap:8px;max-width:48vw;font:inherit;font-weight:700;font-size:.9rem;color:#fff;background:var(--sb-raised);border:1px solid var(--sb-line);border-radius:999px;padding:7px 14px;cursor:pointer}
+.accchip.on{padding:4px 12px 4px 4px}.accchip b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.accav{width:28px;height:28px;border-radius:50%;background:#1fd56b;color:#000;display:grid;place-items:center;font-weight:800;flex:none}
+.accsheet{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.72);display:flex;align-items:flex-end;justify-content:center}
+.acccard{position:relative;width:min(100%,460px);max-height:92vh;overflow:auto;background:#111317;border:1px solid var(--sb-line);border-radius:18px 18px 0 0;padding:20px 16px calc(28px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:12px}
+.acccard h3{margin:0 40px 0 0;font-size:1.2rem}
+.acctabs{display:flex;gap:6px;background:#0b0c0f;border-radius:12px;padding:4px}
+.acctabs button{flex:1;font:inherit;font-weight:700;padding:9px;border-radius:9px;border:0;background:none;color:var(--sb-muted);cursor:pointer}
+.acctabs button.on{background:#2a2e36;color:#fff}
+.accform{display:flex;flex-direction:column;gap:12px}
+.accf{display:flex;flex-direction:column;gap:5px;font-size:.78rem;font-weight:700;color:var(--sb-muted);letter-spacing:.04em;text-transform:uppercase}
+.accf input{font:inherit;font-size:1rem;text-transform:none;letter-spacing:0;font-weight:500;color:#fff;background:#0b0c0f;border:1px solid var(--sb-line);border-radius:12px;padding:12px}
+.accf input:focus{outline:2px solid #fff;outline-offset:1px}
+.accnote{margin:0;font-size:.8rem}.accerr{margin:0;min-height:1.2em;color:#ff5a5f;font-size:.88rem}
+.accgo{font:inherit;font-weight:800;font-size:1rem;color:#000;background:#fff;border:0;border-radius:12px;padding:13px;cursor:pointer}.accgo:disabled{opacity:.55}

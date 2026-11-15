@@ -11,3 +11,4 @@ public/data/propbook.json
 public/data/altlines.json
 public/data/valuelog.json
 public/data/news.json
+.wrangler/

@@ -4,7 +4,7 @@
 <div class="nt">
 <nav class="bnav" id="bnav" aria-label="Sections"><button type="button" data-sec="start" class="on"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg>Home</button><button type="button" data-sec="home"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16M8.5 3v4M15.5 3v4"/></svg>Games</button><button type="button" data-sec="stand"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Standings</button><button type="button" data-sec="bets"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10M10 20V4M15 20v-7M20 20v-4"/></svg>Bets</button><button type="button" data-sec="review"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m8.2 12.2 2.6 2.6 5-5.2"/></svg>Review</button></nav>
 <span class="livetick" data-draw="livetick" data-source="livegames" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"></span>
-<div class="appbar" id="appbar" data-draw="appbar" data-source="games fixtures nflgames history schedule ufcfights bets pubbets"></div>
+<div class="appbar" id="appbar" data-draw="appbar" data-source="games fixtures nflgames history schedule ufcfights"></div>
 <div class="ssearch" role="search"><label class="ssbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="ssq" type="search" placeholder="Search teams, players, fighters" aria-label="Search teams, players and fighters" autocomplete="off" spellcheck="false"></label><div class="ssres" id="ssres" role="listbox" aria-label="Search results" data-draw="ssearch" data-source="pidx nfltable table"></div></div>
 <div class="view" id="view-start">
 <div class="hsnone-all" id="hsempty" hidden><b>No games today.</b><span>Picks has the next games for every sport.</span><button type="button" class="hsgo2" id="hsemptygo">Go to Picks ›</button></div>
@@ -66,9 +66,8 @@
 </div>
 </div>
 <div class="view" id="view-bets" hidden>
-<section class="card hcard" id="hpod"><h2>Pick of the day</h2><div data-draw="hpod" data-source="games pred fixtures nflgames odds props propfind propbook altlines troster history hs_nba hs_nfl hs_nfl2 pubprops pubalts"></div></section>
-<section class="card sec mbwrap" id="mybets"><button type="button" class="mbhead" aria-expanded="false"><h2>Jacob's picks</h2><span class="mbsum" data-draw="mybetsum" data-source="bets pubbets"></span><i class="mbchev" aria-hidden="true"></i></button><div class="mbbody"><div data-draw="mybets" data-source="bets pubbets"></div></div></section>
-<section class="card bb bbpage"><h2>Best bets</h2><div data-draw="bestall" data-source="games pred fixtures nflgames odds history props propfind propbook altlines valuelog troster hs_nba hs_nfl hs_nfl2 news pubprops pubalts"></div></section>
+<section class="card hcard" id="hpod"><h2>Stat of the day</h2><div data-draw="hpod" data-source="games pred fixtures nflgames odds props propfind propbook altlines troster history hs_nba hs_nfl hs_nfl2 pubprops pubalts"></div></section>
+<section class="card bb bbpage"><h2>Best stats</h2><div data-draw="bestall" data-source="games pred fixtures nflgames odds history props propfind propbook altlines valuelog troster hs_nba hs_nfl hs_nfl2 news pubprops pubalts"></div></section>
 </div>
 <div class="view" id="view-player" hidden>
 <div class="topbar"><button type="button" class="backbtn" id="plback">‹ Back</button></div>
@@ -154,7 +153,6 @@
 <div class="rvboard" id="rvboard" data-draw="rvboard" data-source="history"></div>
 </header>
 <div class="lgbar" id="rvsp" role="group" aria-label="Sport"><button type="button" data-rs="all" class="on" aria-pressed="true">All sports</button><button type="button" data-rs="nba" style="--lg:#1d6fe0" aria-pressed="false"><i></i>NBA</button><button type="button" data-rs="fb" style="--lg:#8b3fd9" aria-pressed="false"><i></i>Football</button><button type="button" data-rs="nfl" style="--lg:#2c7be5" aria-pressed="false"><i></i>NFL</button><button type="button" data-rs="ufc" style="--lg:#d20a0a" aria-pressed="false"><i></i>UFC</button></div>
-<section class="card sec mbwrap" id="mybetsrv"><button type="button" class="mbhead" aria-expanded="false"><h2>My bet results</h2><span class="mbsum" data-draw="mybetsrvsum" data-source="bets"></span><i class="mbchev" aria-hidden="true"></i></button><div class="mbbody"><div data-draw="mybetsrv" data-source="bets"></div></div></section>
 <section class="card sec mbwrap" id="trackrec"><button type="button" class="mbhead" aria-expanded="false"><h2>Our track record</h2><span class="mbsum" data-draw="trackrecsum" data-source="valuelog"></span><i class="mbchev" aria-hidden="true"></i></button><div class="mbbody"><div data-draw="trackrec" data-source="valuelog"></div></div></section>
 <section class="sec" id="rvlist"><h2>Every pick, graded</h2><p class="muted">✓ right, ✗ wrong. Tap a pick for the full game.</p><div data-draw="rvlist" data-source="history pidx hs_ufc archive"></div></section>
 
@@ -842,8 +840,8 @@ dash.draw('detail', (box) => {
   }
   const keyed = out.map((c, i) => [rank(c), i, c]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
   out.length = 0; keyed.forEach((x) => out.push(x[2]));
-  const NT = [['res', 'Result'], ['pick', 'Game'], ['lines', 'Lines'], ['teams', 'Teams'], ['inj', 'Injuries & lineups'], ['bets', 'Best bets']]; // Props tab removed at the owner's request
-  const NM = { 'Best bets': 'bets', 'Final result': 'res', 'Why it went this way': 'res', 'Box score': 'res', 'Most likely outcome': 'pick', 'How this prediction works': 'pick', 'Lines': 'lines', 'Totals ladder: both teams\' games': 'lines', 'Game logs and common opponents': 'teams', 'Defence by court zone': 'teams', 'Injuries, lineups, props': 'inj', 'Starting lineups': 'inj', 'Same-game slips': 'props', 'Every tracked player, this season': 'props', 'Highest-confidence props': 'props' };
+  const NT = [['res', 'Result'], ['pick', 'Game'], ['lines', 'Lines'], ['teams', 'Teams'], ['inj', 'Injuries & lineups'], ['bets', 'Best stats']]; // Props tab removed at the owner's request
+  const NM = { 'Best stats': 'bets', 'Final result': 'res', 'Why it went this way': 'res', 'Box score': 'res', 'Most likely outcome': 'pick', 'How this prediction works': 'pick', 'Lines': 'lines', 'Totals ladder: both teams\' games': 'lines', 'Game logs and common opponents': 'teams', 'Defence by court zone': 'teams', 'Injuries, lineups, props': 'inj', 'Starting lineups': 'inj', 'Same-game slips': 'props', 'Every tracked player, this season': 'props', 'Highest-confidence props': 'props' };
   const npan = {};
   out.forEach((c) => { const h = c.querySelector && c.querySelector('h2'); const t = h ? h.textContent : ''; const k = c.classList && c.classList.contains('grid') ? 'teams' : (NM[t] || (/^Player props/.test(t) ? 'props' : 'pick')); (npan[k] = npan[k] || el('div', null, 'nbapanel')).append(c); });
   if (rvInTabs()) { const rb = el('div', null, 'rvres'); rb.append(...rvBanner(), el('p', 'The other tabs show the full pre-game breakdown exactly as it was when we made the pick.', 'muted rvrnote')); if (npan.res) npan.res.prepend(rb); else npan.res = rb; }
@@ -966,7 +964,7 @@ function nflMore(x) {
   const T = rows('nfltable'), A = T.find((t) => t.team === x.away) || {}, H = T.find((t) => t.team === x.home) || {};
   const tbl = (head, data) => { const t = document.createElement('table'); const hr = document.createElement('tr'); head.forEach((c, i) => hr.append(el('th', c, i ? 'n' : ''))); t.append(hr);
     data.forEach((r) => { const tr = document.createElement('tr'); r.forEach((c, i) => { const td = document.createElement('td'); if (i) td.className = 'n'; if (c instanceof Node) td.append(c); else td.textContent = String(c); tr.append(td); }); t.append(tr); }); return t; };
-  const TABS = [...(rvInTabs() ? [['rv', 'Result']] : []), ['pick', 'Game'], ['rate', 'Ratings'], ['ha', 'Home & away'], ['style', 'Style'], ['def', 'Defence'], ['tot', 'Totals'], ['inj', 'Injuries'], ['lu', 'Lineups'], ['bets', 'Best bets']];
+  const TABS = [...(rvInTabs() ? [['rv', 'Result']] : []), ['pick', 'Game'], ['rate', 'Ratings'], ['ha', 'Home & away'], ['style', 'Style'], ['def', 'Defence'], ['tot', 'Totals'], ['inj', 'Injuries'], ['lu', 'Lineups'], ['bets', 'Best stats']];
   const MAP = { 'Projection': 'pick', 'Recent games': 'pick', 'Offence and defence ratings': 'rate', 'Season stats': 'rate', 'Home and away': 'ha', 'How they play and how it affects this matchup': 'style', 'Defence: what they allow and how they pressure': 'def', 'Totals and scoring': 'tot', 'Over and under': 'tot', 'Injuries': 'inj', 'Lineups': 'lu' };
   const panels = {};
   const sec = (h, ...n) => { const k = MAP[h] || 'pick'; const p = panels[k] || (panels[k] = el('div', null, 'nflpanel')); p.append(el('h4', h), ...n); };
@@ -2711,7 +2709,7 @@ document.addEventListener('click', (e) => {
   if (Date.now() - navHold < 800) return; // the tap a swipe can leave behind
   // Back buttons go back to the page you came from (Home, Review, Bets, another game...), not a fixed page:
   // the button's own handler closes the page first, then the remembered page and scroll position come back.
-  if (e.target.closest && e.target.closest('.backbtn')) { const p = NAV.pop(); if (p) { navHold = Date.now(); setTimeout(() => { try { stopHold(); } catch (err) {} navTo(p); }, 0); } return; }
+  if (e.target.closest && e.target.closest('.backbtn')) { const p = NAV.pop(); if (p) { navHold = Date.now() - 740; setTimeout(() => { try { stopHold(); } catch (err) {} navTo(p); }, 0); } return; }
   let before; try { before = pageSnap(); } catch (err) { return; }
   setTimeout(() => { try { if (Date.now() - navHold < 800) return; const after = pageSnap(); if (pageKey(after) !== pageKey(before)) { NAV.push(before); if (NAV.length > 40) NAV.shift(); } } catch (err) { /* ignore */ } }, 0);
 }, true);

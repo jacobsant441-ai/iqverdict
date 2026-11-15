@@ -45,7 +45,7 @@ const pubalts = read('altlines.json').filter((r) => r.our >= MIN && r.price >= P
   .filter((r) => { const k = r.sp + '|' + r.game + '|' + r.day + '|' + r.market + '|' + r.pick.replace(/ [-+]?[\d.]+$/, ''); if (seenA.has(k)) return false; seenA.add(k); return true; })
   .map((r) => ({ sp: r.sp, game: r.game, day: r.day, match: r.match, kick: r.kick, market: r.market, pick: r.pick, point: r.point, our: r.our }));
 
-const files = { 'pubbets.json': pubbets, 'pubprops.json': pubprops, 'pubalts.json': pubalts };
+const files = { 'pubprops.json': pubprops, 'pubalts.json': pubalts }; // pubbets.json (Jacob's picks) was removed on 15 Nov 2026
 // Guard: nothing money-related may leave this Mac.
 const BANNED = /"(stake|price|book|implied|edge|over_book|under_book|bonus|profit|pays)"\s*:/;
 for (const [f, v] of Object.entries(files)) if (BANNED.test(JSON.stringify(v))) { console.error('Refusing: ' + f + ' would contain a private number.'); process.exit(1); }

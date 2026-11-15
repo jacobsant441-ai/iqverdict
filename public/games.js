@@ -1,4 +1,4 @@
-// IQVerdict: main play for NBA and NFL games, Best bets on Home, My bets in Review.
+// IQVerdict: Best stats on Home, My bets in Review.
 // Loaded after the main page script; uses its helpers through window.SSX (each script file runs in its own scope).
 //
 // Main play: of the bets we can put a chance on (winner, spread, total), the one with the highest
@@ -194,7 +194,7 @@
       // props with real AU prices show. To bring them back: const props = propPlays(today.filter((i) => i.sp === 'nba'));
       const props = [];
       const bprops = bookPlays(key, aheadIds), alts = altPlays(key);
-      if (plays.length || props.length || bprops.length || alts.length) { groups.push({ key, plays: plays.sort((a, b) => b.m.chance - a.m.chance), props, bprops, alts }); break; }
+      if (plays.length || props.length || bprops.length || alts.length) { groups.push({ key, plays: [], props, bprops, alts: [] }); break; }
     }
     return groups;
   }
@@ -276,36 +276,37 @@
     else { const src = window.TAB_ICONS && window.TAB_ICONS[i.sp]; if (src) { const im = document.createElement('img'); im.src = src; im.alt = ''; ic.append(im); } }
     return ic;
   };
+  // Season hit rate of a player prop as a whole percent (hit string like "6/6"), or null.
+  const hitPct = (i) => { const f = i.m.finder; const s = String((f && f.hit) || i.m.hit || ''); const m = s.match(/(\d+)\s*\/\s*(\d+)/); return m && +m[2] ? Math.round(100 * +m[1] / +m[2]) : null; };
   const bbRow = (i) => {
     const b = el('button', null, 'bbr'); b.type = 'button';
     const f = i.m.finder, ic = bbIcon(i);
     const sub = f ? `Hit ${f.hit} this season · avg ${f.avg}, last ${f.sp === 'nfl' ? 3 : 5} ${f.l5}${f.why && f.why.length ? ' · ' + f.why[0] : ''} · ${i.match}` : (i.m.hit ? 'Hit ' + i.m.hit + ' this season · ' : '') + i.match + (i.time ? ' · ' + i.time : '');
     const l = el('div', null, 'l'); l.append(el('b', i.m.pick), el('span', sub));
-    const r = el('div', null, 'r'); r.append(el('b', i.m.chance + '%', 'c ' + conf(i.m.chance)), el('span', PUB || !i.m.price ? '' : (i.m.est ? '≈$' : '$') + i.m.price.toFixed(2) + (i.m.book && !i.m.est ? ' ' + i.m.book.replace(' (AU)', '') : '')));
+    const r = el('div', null, 'r'); const hp = hitPct(i); r.append(el('b', (hp == null ? i.m.chance : hp) + '%', 'c ' + conf(hp == null ? i.m.chance : hp)), el('span', PUB || !i.m.price ? '' : (i.m.est ? '≈$' : '$') + i.m.price.toFixed(2) + (i.m.book && !i.m.est ? ' ' + i.m.book.replace(' (AU)', '') : '')));
     const v = !i.m.est && vlMap().get(i.sp + '|' + i.id + '|' + i.day + '|' + i.m.pick);
     if (v && Math.abs(num(v.price0) - i.m.price) >= 0.02) { const up = i.m.price > num(v.price0); r.append(el('small', (up ? '▲' : '▼') + ' from $' + num(v.price0).toFixed(2), 'bbmv ' + (up ? 'up' : 'dn'))); }
     const nw = f && f.side ? newsOf(f.pid) : [];
     if (nw.length) { const tg = el('em', 'In the news · ' + ago(nw[0].published), 'bbnews'); tg.title = nw[0].headline; l.append(tg); }
     const inj = f && f.side ? injOf(i.sp, f) : '';
-    if (inj) { l.append(el('em', /out/i.test(inj) ? 'Now listed OUT: skip this one' : 'Injury news: ' + inj + ' (check before betting)', 'bbinj')); b.classList.add(/out/i.test(inj) ? 'bbout' : 'bbq'); }
+    if (inj) { l.append(el('em', /out/i.test(inj) ? 'Now listed OUT' : 'Injury news: ' + inj, 'bbinj')); b.classList.add(/out/i.test(inj) ? 'bbout' : 'bbq'); }
     b.append(ic, l, r); b.addEventListener('click', () => (f && f.side && window.SSPP ? window.SSPP.focus(i.sp, f.stat, f.line, f.player, f.pid) : X.openGame(i.sp, i.id, i.day)));
     return b;
   };
   // ---- Best bets for one game (its own tab on the game page): the game markets we rate, alt lines and player props
   // with the same rules as the Bets page (our chance 75%+ paying $1.30+ for alt lines and props).
   function gameBets(sp, id, day) {
-    const card = el('div', null, 'card gbcard'); card.append(el('h2', 'Best bets'));
+    const card = el('div', null, 'card gbcard'); card.append(el('h2', 'Best stats'));
     if (!bbReady()) { card.append(skel(3)); return card; }
     const ahead = new Set([sp + '|' + id + '|' + day]);
     const hs = rows('history').find((h) => (h.sport || 'nba') === sp && h.id === id && nday(h.date) === nday(day)), lv = liveOf(sp, id, day);
-    if ((hs && (hs.status === 'Final' || hs.status === 'Live')) || (lv && lv.state !== 'pre')) card.append(el('p', 'This game has started, so betting has closed. These were the best bets before kick-off.', 'gbclosed'));
+    if ((hs && (hs.status === 'Final' || hs.status === 'Live')) || (lv && lv.state !== 'pre')) card.append(el('p', 'This game has started, These were the top stats before kick-off.', 'gbclosed'));
     const gr = sp === 'nba' ? rows('games').find((x) => x.id === id && x.date === day) : rows('nflgames').find((x) => x.id === id);
     const match = gr ? (sp === 'nba' ? gr.matchup : gr.away_name + ' @ ' + gr.home_name) : '';
     // game markets: only the side we favour (50%+) with a real price
-    const plays = candidates(sp, id, day).filter((c) => c.price >= MIN_PRICE && c.chance >= 50).sort((a, b) => b.chance - a.chance).map((m) => ({ sp, id, day, match, time: '', m }));
-    const alts = altPlays(day).filter((i) => i.sp === sp && i.id === id);
+    const plays = [], alts = [];
     const props = bookPlays(day, ahead).filter((i) => i.sp === sp && i.id === id);
-    if (!plays.length && !alts.length && !props.length) { card.append(el('p', 'No priced bets for this game yet. Prices are fetched at 8:15 am and 8:15 pm Sydney time.', 'muted')); return card; }
+    if (!plays.length && !alts.length && !props.length) { card.append(el('p', 'No player stats for this game yet. Lines are fetched at 8:15 am and 8:15 pm Sydney time.', 'muted')); return card; }
     const sec = (title, list, n) => {
       if (!list.length) return;
       card.append(el('div', title + ' · ' + list.length, 'bbday bbsub'));
@@ -314,7 +315,7 @@
     };
     sec('Game markets', plays, 6);
     sec('Alt lines · our chance 75%+ at $1.30+', alts, 6);
-    sec('Player props · our chance 75%+ at $1.30+', props, 10);
+    props.sort((a, b) => (hitPct(b) || 0) - (hitPct(a) || 0)); sec('Player props · season hit rate', props, 10);
     return card;
   }
 
@@ -499,12 +500,12 @@
     if (g.bprops && g.bprops.length) out.push(el('div', 'Player props · our chance 75%+ at $1.30+', 'bbday bbsub'), ...g.bprops.slice(0, 3).map(bbRow));
     if (g.props.length) out.push(el('div', 'Player props · our chance 75%+', 'bbday bbsub'), ...g.props.slice(0, 3).map(bbRow));
     const n = groups.reduce((t, x) => t + x.plays.length + x.props.length + (x.bprops ? x.bprops.length : 0) + (x.alts ? x.alts.length : 0), 0);
-    const more = el('button', 'See all ' + n + ' best bets ›', 'bbmore'); more.type = 'button';
+    const more = el('button', 'See all ' + n + ' best stats ›', 'bbmore'); more.type = 'button';
     more.addEventListener('click', () => X.openBets()); out.push(more);
     box.replaceChildren(...out);
   });
   const BBF = (() => { try { return { sp: 'all', kind: 'all', hi: false, ...JSON.parse(localStorage.getItem('ss_bbf') || '{}') }; } catch (e) { return { sp: 'all', kind: 'all', hi: false }; } })();
-  // Best bets page: every play at $1.40 or more, by day, best chance first.
+  // Best stats page: player stats by season hit rate.
   dash.draw('bestall', (box) => {
     if (!bbReady()) { box.replaceChildren(skel()); return; }
     const groups0 = bestBets();
@@ -512,14 +513,13 @@
     // Filter chips: sport, kind of bet, 80%+ only (remembered in this browser).
     const sps = [...new Set(groups0.flatMap((g) => [...g.plays, ...(g.alts || []), ...(g.bprops || [])].map((i) => i.sp)))];
     if (BBF.sp !== 'all' && !sps.includes(BBF.sp)) BBF.sp = 'all';
-    const keep = (i) => (BBF.sp === 'all' || i.sp === BBF.sp) && (!BBF.hi || i.m.chance >= 80);
+    const keep = (i) => (BBF.sp === 'all' || i.sp === BBF.sp) && (!BBF.hi || (hitPct(i) == null ? i.m.chance : hitPct(i)) >= 80);
     const groups = groups0.map((g) => ({ ...g, plays: BBF.kind === 'player' ? [] : g.plays.filter(keep), alts: BBF.kind === 'player' ? [] : (g.alts || []).filter(keep), bprops: BBF.kind === 'game' ? [] : (g.bprops || []).filter(keep) }));
     const chips = el('div', null, 'bbchips');
     const chip = (lab, on, fn) => { const c = el('button', lab, 'bbchip' + (on ? ' on' : '')); c.type = 'button'; c.addEventListener('click', () => { fn(); try { localStorage.setItem('ss_bbf', JSON.stringify(BBF)); } catch (e) { /* not kept */ } dash.draw('bestall'); }); return c; };
     const SPN = { nba: 'NBA', nfl: 'NFL', fb: 'Football' };
     if (sps.length > 1) { chips.append(chip('All sports', BBF.sp === 'all', () => { BBF.sp = 'all'; })); sps.forEach((x) => chips.append(chip(SPN[x] || x.toUpperCase(), BBF.sp === x, () => { BBF.sp = x; }))); chips.append(el('i', null, 'bbsep')); }
-    [['all', 'All bets'], ['game', 'Game props'], ['player', 'Player props']].forEach(([k, lab]) => chips.append(chip(lab, BBF.kind === k, () => { BBF.kind = k; })));
-    chips.append(el('i', null, 'bbsep'), chip('80%+ only', BBF.hi, () => { BBF.hi = !BBF.hi; }));
+    chips.append(chip('80%+ hit rate', BBF.hi, () => { BBF.hi = !BBF.hi; }));
     const out = [chips];
     if (!groups.some((g) => g.plays.length || g.alts.length || g.bprops.length)) out.push(el('p', 'Nothing matches these filters.', 'plnone'));
     groups.forEach((g) => {
@@ -593,22 +593,60 @@
     const won = settled.filter((b) => b.status === 'won').length;
     return { n: all.length, won, lost: settled.length - won, profit: settled.reduce((s, b) => s + profitOf(b), 0), running: all.filter((b) => isOpen(b) && !isBonus(b)).reduce((s, b) => s + num(b.stake), 0) };
   };
+
+  // ---- Accounts: sign in / create account (Cloudflare Pages Functions at /api, see functions/api). The header shows a
+  // Sign in button, or the member's name once signed in. Only the live site has the API; elsewhere nothing shows.
+  const ACC = { user: null, ready: false, setup: false };
+  const accJson = (url, body) => fetch(url, { method: body ? 'POST' : 'GET', credentials: 'same-origin', headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined }).then((r) => r.json().then((j) => ({ ok: r.ok, j }))).catch(() => ({ ok: false, j: { error: 'No connection. Try again.' } }));
+  const accLoad = () => fetch('/api/me', { credentials: 'same-origin' }).then((r) => (r.ok ? r.json() : null)).then((j) => { ACC.ready = true; ACC.setup = !!(j && j.setup); ACC.user = (j && j.user) || null; try { dash.draw('appbar'); } catch (e) { /* not drawn yet */ } }).catch(() => { ACC.ready = true; });
+  const accClose = () => { const s = document.querySelector('.accsheet'); if (s) s.remove(); };
+  function accOpen(mode) {
+    accClose();
+    let tab = mode || 'in';
+    const sh = el('div', null, 'accsheet'), card = el('div', null, 'acccard');
+    sh.addEventListener('click', (e) => { if (e.target === sh) accClose(); });
+    const x = el('button', '✕', 'pfx'); x.type = 'button'; x.setAttribute('aria-label', 'Close'); x.addEventListener('click', accClose);
+    const form = el('form', null, 'accform'); form.noValidate = true;
+    const draw = () => {
+      form.replaceChildren();
+      const tabs = el('div', null, 'acctabs');
+      [['in', 'Sign in'], ['up', 'Create account']].forEach(([k, l]) => { const b = el('button', l, tab === k ? 'on' : ''); b.type = 'button'; b.addEventListener('click', () => { tab = k; draw(); }); tabs.append(b); });
+      form.append(tabs);
+      const field = (id, label, type, ph, ac) => { const w = el('label', null, 'accf'); w.setAttribute('for', id); const i = el('input'); i.id = id; i.name = id; i.type = type; i.placeholder = ph || ''; i.autocomplete = ac; i.setAttribute('autocapitalize', 'none'); i.setAttribute('autocorrect', 'off'); w.append(el('span', label), i); return w; };
+      if (tab === 'up') form.append(field('acc-name', 'Your name', 'text', 'Shown at the top of the app', 'name'));
+      form.append(field('acc-email', 'Email', 'email', 'you@example.com', 'email'));
+      form.append(field('acc-pass', 'Password', 'password', tab === 'up' ? 'At least 10 characters' : '', tab === 'up' ? 'new-password' : 'current-password'));
+      if (tab === 'up') { form.append(field('acc-invite', 'Invite code', 'text', 'From the person who invited you', 'off')); form.append(el('p', 'By creating an account you confirm you are 18 or over.', 'muted accnote')); }
+      const err = el('p', '', 'accerr'); err.setAttribute('role', 'alert'); form.append(err);
+      const go = el('button', tab === 'up' ? 'Create account' : 'Sign in', 'accgo'); go.type = 'submit'; form.append(go);
+      form.onsubmit = async (e) => {
+        e.preventDefault(); err.textContent = ''; go.disabled = true;
+        const v = (id) => (form.querySelector('#' + id) || {}).value || '';
+        const res = tab === 'up' ? await accJson('/api/signup', { email: v('acc-email'), name: v('acc-name'), password: v('acc-pass'), invite: v('acc-invite') }) : await accJson('/api/login', { email: v('acc-email'), password: v('acc-pass') });
+        go.disabled = false;
+        if (!res.ok) { err.textContent = (res.j && res.j.error) || 'Something went wrong. Try again.'; return; }
+        ACC.user = res.j.user; accClose(); try { dash.draw('appbar'); } catch (e2) { /* ignore */ }
+      };
+    };
+    draw(); card.append(x, el('h3', 'IQVerdict'), form); sh.append(card); document.body.append(sh);
+    const first = form.querySelector('input'); if (first) first.focus();
+  }
+  function accMenu() {
+    accClose();
+    const sh = el('div', null, 'accsheet'), card = el('div', null, 'acccard small');
+    sh.addEventListener('click', (e) => { if (e.target === sh) accClose(); });
+    const x = el('button', '✕', 'pfx'); x.type = 'button'; x.setAttribute('aria-label', 'Close'); x.addEventListener('click', accClose);
+    const out = el('button', 'Sign out', 'accgo'); out.type = 'button';
+    out.addEventListener('click', async () => { out.disabled = true; await accJson('/api/logout', {}); ACC.user = null; accClose(); try { dash.draw('appbar'); } catch (e) { /* ignore */ } });
+    card.append(x, el('h3', ACC.user.name), el('p', 'You are signed in.', 'muted'), out); sh.append(card); document.body.append(sh);
+  }
+  // The header chip: nothing until we know the site has accounts.
   const betPill = () => {
-    const st = betStats();
-    if (!st.n) { // public site: only the cleaned copy is there, so the record and open bets, never money
-      const pb = rows('pubbets'), rec = pb.find((r) => r.kind === 'record') || { won: 0, lost: 0 };
-      const open = pb.filter((r) => r.kind === 'bet').length;
-      const b = el('button', null, 'betpill ' + (rec.won > rec.lost ? 'up' : rec.won < rec.lost ? 'dn' : '')); b.type = 'button'; b.title = "Jacob's picks";
-      b.append(el('span', "Jacob's picks", 'bpr'), el('b', rec.won + '-' + rec.lost, 'bpp'), el('span', open ? open + ' open' : 'all settled', 'bprun'));
-      b.addEventListener('click', () => { const t = document.querySelector('#bnav [data-sec=bets]'); if (t) t.click(); }); return b;
-    }
-    // Main figure: cash back minus cash in, counting stakes on open bets as spent until they win.
-    const net = st.profit - st.running;
-    const b = el('button', null, 'betpill ' + (net > 0 ? 'up' : net < 0 ? 'dn' : '')); b.type = 'button'; b.title = 'My bet results';
-    b.append(el('span', st.n + (st.n === 1 ? ' bet' : ' bets') + ' · ' + st.won + '-' + st.lost, 'bpr'), el('b', money(net), 'bpp'), el('span', st.running ? 'incl. $' + st.running.toFixed(2) + ' on open bets' : 'all settled', 'bprun'));
-    b.addEventListener('click', () => X.openBetResults());
-    return b;
+    if (!ACC.ready || !ACC.setup) return null;
+    if (ACC.user) { const b = el('button', null, 'accchip on'); b.type = 'button'; b.append(el('span', ACC.user.name.trim().charAt(0).toUpperCase(), 'accav'), el('b', ACC.user.name)); b.addEventListener('click', accMenu); return b; }
+    const b = el('button', 'Sign in', 'accchip'); b.type = 'button'; b.addEventListener('click', () => accOpen('in')); return b;
   };
+  accLoad();
   const legIcon = (s) => el('span', s === 'won' ? '✓' : s === 'lost' ? '✕' : s === 'void' ? '–' : '•', 'mbi ' + (s || 'open'));
   const betCard = (b) => {
     const legs = legsOf(b);
@@ -1188,6 +1226,7 @@
   }
   function slipChips(h) {
     const out = [];
+    return out;
     betRows().forEach((b) => {
       const legs = legsOf(b) || [b];
       legs.forEach((l) => {
@@ -1234,20 +1273,20 @@
     box.replaceChildren(c);
     box._t = setInterval(() => { const left = t - Date.now(); if (left <= 0) { clearInterval(box._t); dash.draw('hslive'); return; } cd.textContent = 'in ' + fmtLeft(left); }, 30000);
   });
-  // Pick of the day: our strongest priced pick (game or player prop), leaving out anything with injury news or a
+  // Stat of the day: the player stat with the best season hit rate, leaving out anything with injury news or a
   // big gap to the bookie (those can mean the bookie knows something).
   dash.draw('hpod', (box) => {
     const sec = box.closest('section');
     if (!bbReady()) { if (sec) sec.classList.toggle('isempty', false); box.replaceChildren(skel(1)); return; }
     const g = homeGroup();
-    const ok = (g ? [...g.plays, ...(g.bprops || [])] : []).filter((i) => PUB || (i.m.price >= 1.3 && !i.m.est)).filter((i) => { const f = i.m.finder; return !(f && f.why && f.why.some((w) => /big gap/.test(w))) && !(f && f.side && injOf(i.sp, f)); });
-    const best = ok.sort((a, b) => b.m.chance - a.m.chance || b.m.price - a.m.price)[0];
+    const ok = (g ? [...(g.bprops || [])] : []).filter((i) => PUB || (i.m.price >= 1.3 && !i.m.est)).filter((i) => { const f = i.m.finder; return !(f && f.why && f.why.some((w) => /big gap/.test(w))) && !(f && f.side && injOf(i.sp, f)); });
+    const best = ok.sort((a, b) => (hitPct(b) || 0) - (hitPct(a) || 0) || b.m.chance - a.m.chance)[0];
     if (sec) sec.classList.toggle('isempty', !best); if (!best) { box.replaceChildren(); return; }
     const f = best.m.finder, c = el('button', null, 'hpodc'); c.type = 'button';
     const ic = bbIcon(best); ic.classList.add('big');
     const mid = el('div', null, 'hpm'); mid.append(el('span', g.key + (best.time ? ' · ' + best.time : ''), 'hpd'), el('b', best.m.pick, 'hpp'),
       el('span', f && f.side ? 'Over this line in ' + f.hit + ' games this season · avg ' + f.avg + ', last ' + (f.sp === 'nfl' ? 3 : 5) + ' ' + f.l5 : best.match, 'hpr'));
-    const r = el('div', null, 'hpv'); r.append(el('b', best.m.chance + '%', 'c ' + conf(best.m.chance)), el('span', PUB || !best.m.price ? '' : '$' + best.m.price.toFixed(2) + (best.m.book ? ' ' + best.m.book.replace(' (AU)', '') : '')));
+    const r = el('div', null, 'hpv'); const bh = hitPct(best); r.append(el('b', (bh == null ? best.m.chance : bh) + '%', 'c ' + conf(bh == null ? best.m.chance : bh)), el('span', PUB || !best.m.price ? '' : '$' + best.m.price.toFixed(2) + (best.m.book ? ' ' + best.m.book.replace(' (AU)', '') : '')));
     c.append(ic, mid, r); c.addEventListener('click', () => openPick(best));
     box.replaceChildren(c);
   });
