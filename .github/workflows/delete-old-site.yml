@@ -1,0 +1,19 @@
+# One-off: delete the old StatSniper Cloudflare Pages project (the site now lives at iqverdict.pages.dev).
+# Run once by hand, then this file is removed.
+name: Delete old site
+on: workflow_dispatch
+jobs:
+  delete:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Delete the old Pages project
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          export CLOUDFLARE_API_TOKEN="$(printf '%s' "$CF_TOKEN" | tr -d '[:space:]')"
+          export CLOUDFLARE_ACCOUNT_ID="$(printf '%s' "$CF_ACCOUNT" | tr -d '[:space:]')"
+          npx --yes wrangler@3.114.0 pages project delete statsniper --yes
