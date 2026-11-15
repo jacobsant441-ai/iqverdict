@@ -90,6 +90,7 @@ jobs:
           retry() { for i in 1 2 3; do "$@" && return 0; echo "attempt $i of $* failed"; sleep 20; done; return 1; }
           retry node scripts/grade.js
           node scripts/archive.js
+          node scripts/fetch-ufc-detail.js || echo "::warning::UFC fight detail failed"
           # NBA slate dates: a Sydney day D is the US evening of D-1. Do the older day first.
           retry node scripts/fetch-boxes.js "$(TZ=Australia/Sydney date -d '2 days ago' +%Y%m%d)"
           retry node scripts/fetch-boxes.js "$(TZ=Australia/Sydney date -d yesterday +%Y%m%d)"

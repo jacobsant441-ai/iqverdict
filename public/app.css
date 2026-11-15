@@ -1035,8 +1035,8 @@
 .tmnews p{margin:0;line-height:1.45}
 .tmnews small{color:var(--sb-muted)}
 
-/* StatSniper logo (owner design, traced: scratchpad logo_header.svg) */
-.appbar .logo{border-radius:11px;background:#000 url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48ZyBmaWxsPSIjZmZmIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyNTYgMjU2KSBzY2FsZSgwLjQ4OTEpIHRyYW5zbGF0ZSgtNjA0IC00MzcuNSkiPjxjaXJjbGUgY3g9IjYxMyIgY3k9IjQzNyIgcj0iMTYxIi8+PHBhdGggZD0iTTQwNyA0MTUgQTIwNiAyMDYgMCAwIDEgNTk1IDExMyBMODkwIDExMyBMNzg1IDIzNSBMNjEzIDIzNSBBMjAyIDIwMiAwIDAgMCA0MDcgNDE1IFoiLz48cGF0aCBkPSJNODA1IDQ2MCBBMjAyIDIwMiAwIDAgMSA2MTMgNjM5IEw0MjUgNjQwIEwzMTggNzYyIEw2MjggNzYyIEEyMDYgMjA2IDAgMCAwIDgwNSA0NjAgWiIvPjwvZz48L3N2Zz4=") center/100% no-repeat;color:transparent;font-size:0;border:1px solid rgba(255,255,255,.18);box-shadow:0 0 0 2px rgba(0,0,0,.4)}
+/* IQVerdict logo (IQ with a green V) */
+.appbar .logo{border-radius:11px;background:#000 url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB4PSIxNDEiIHk9IjExNiIgd2lkdGg9IjQwIiBoZWlnaHQ9IjE3NiIgcng9IjIiIGZpbGw9IiNmZmYiLz48ZWxsaXBzZSBjeD0iMjgzIiBjeT0iMjA0IiByeD0iNjQiIHJ5PSI2OCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjQwIi8+PHBhdGggZD0iTTMyNCAyNDYgMzY0IDI5MiIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjM0Ii8+PHBhdGggZD0iTTE1NiAzNDYgMjU2IDQxOCAzNTYgMzQ2IiBmaWxsPSJub25lIiBzdHJva2U9IiMxZmQ1NmIiIHN0cm9rZS13aWR0aD0iMjIiIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiIHN0cm9rZS1saW5lY2FwPSJidXR0Ii8+PC9zdmc+") center/100% no-repeat;color:transparent;font-size:0;border:1px solid rgba(255,255,255,.18);box-shadow:0 0 0 2px rgba(0,0,0,.4)}
 /* review: graded picks as Picks-style cards */
 .rvg{margin:0 0 12px;border-radius:20px}
 .rvg>summary{list-style:none;cursor:pointer;display:block}
@@ -2158,3 +2158,13 @@ html body .appbar .sports button.sp .c em{background:#2a2e36;color:#fff}
 .fgf .fgph{width:100%;max-width:220px;aspect-ratio:3/4;flex:none}
 .fgf .nm{min-height:2.3em;display:flex;align-items:center;justify-content:center}
 .fgf .mt{min-height:2.6em;display:flex;align-items:flex-start;justify-content:center}
+/* Back buttons show only the arrow (no "Back to games" text behind it) */
+html body .backbtn{font-size:0!important;color:transparent!important;overflow:visible}
+html body #nflgame #nflback,html body #fbgame #fbback,html body #nflgame .backbtn,html body #fbgame .backbtn,html body .topbar .backbtn,html body #backbtn{font-size:0!important;line-height:0!important;color:transparent!important;white-space:nowrap}
+.l5go{cursor:pointer}.l5go:hover{background:rgba(255,255,255,.05)}.l5go small::after{content:" ›";color:var(--sb-muted)}
+.ufres{display:flex;flex-direction:column;gap:12px}.ufwin{font-size:1.25rem;font-weight:800;color:#fff}
+.ufpick.hit{color:#1fd56b}.ufpick.miss{color:#ff5a5f}.ufchips{margin:0 0 6px;color:var(--sb-muted);font-size:.85rem}.ufround{margin-bottom:10px}.ufnote{margin-top:6px}
+.ufev b:last-child{visibility:hidden}.ufev b:first-child{text-align:left}.ufev span{text-align:right;font-size:.8rem}.ufev{grid-template-columns:4rem minmax(0,1fr) 0}
+.pfsheet{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.7);display:flex;align-items:flex-end;justify-content:center}
+.pfcard{position:relative;width:min(100%,560px);max-height:88vh;overflow:auto;background:#111317;border:1px solid var(--sb-line);border-radius:18px 18px 0 0;padding:18px 16px 28px;display:flex;flex-direction:column;gap:12px}
+.pfcard h3{margin:0 36px 0 0;font-size:1.15rem}.pfx{position:absolute;top:10px;right:12px;width:34px;height:34px;border-radius:50%;border:0;background:#2a2e36;color:#fff;font-size:1rem;cursor:pointer}

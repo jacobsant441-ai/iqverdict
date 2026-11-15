@@ -1,6 +1,6 @@
 <meta name="dash-one-writer">
 <link rel="stylesheet" href="app.css">
-<div id="ssload" aria-live="polite" aria-label="Loading StatSniper"><img src="icons/icon-512.png" alt="" width="96" height="96"><b>StatSniper</b><span class="ldbar"><i></i></span><small id="ssloadmsg">Loading today's games…</small></div>
+<div id="ssload" aria-live="polite" aria-label="Loading IQVerdict"><img src="icons/icon-512.png" alt="" width="96" height="96"><b>IQVerdict</b><span class="ldbar"><i></i></span><small id="ssloadmsg">Loading today's games…</small></div>
 <div class="nt">
 <nav class="bnav" id="bnav" aria-label="Sections"><button type="button" data-sec="start" class="on"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg>Home</button><button type="button" data-sec="home"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16M8.5 3v4M15.5 3v4"/></svg>Games</button><button type="button" data-sec="stand"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Standings</button><button type="button" data-sec="bets"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10M10 20V4M15 20v-7M20 20v-4"/></svg>Bets</button><button type="button" data-sec="review"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m8.2 12.2 2.6 2.6 5-5.2"/></svg>Review</button></nav>
 <span class="livetick" data-draw="livetick" data-source="livegames" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"></span>
@@ -114,7 +114,7 @@
 <div class="topbar"><button type="button" class="backbtn" id="fgback">‹ Back</button></div>
 <div class="rvres" data-draw="rvres" data-source="history archive"></div>
 <header class="fghero" id="fghero" data-draw="fghero" data-source="ufcfights ufcp pidx hs_ufc hs_ufc_hd livegames livebox"></header>
-<section class="card sec fgsec"><div data-draw="fgtape" data-source="ufcfights ufcp pidx"></div></section>
+<section class="card sec fgsec"><div data-draw="fgtape" data-source="ufcfights ufcp pidx ufcdetail livegames livebox"></div></section>
 </div>
 <div class="view" id="view-ufc" hidden>
 <header class="hero ufchero">
@@ -160,7 +160,7 @@
 
 <section class="card sec" id="rvrec"><h2>Our record</h2><p class="muted">Winner picks right, then side bets (totals, both teams to score, spreads). Pushes and coin tosses are not counted.</p><div class="scroll" data-draw="rvrec" data-source="history"></div></section>
 </div>
-<p class="disc">StatSniper is for information and entertainment only. Picks and chances are estimates, not betting advice, and nothing here is guaranteed. Never bet more than you can afford to lose. Need help? Gambling Help Online (Australia): 1800 858 858, 24/7.</p>
+<p class="disc">IQVerdict is for information and entertainment only. Picks and chances are estimates, not betting advice, and nothing here is guaranteed. Never bet more than you can afford to lose. Need help? Gambling Help Online (Australia): 1800 858 858, 24/7.</p>
 </div>
 <script src="logos.js"></script><script src="logos_nba.js"></script><script src="logos_epl.js"></script><script src="logos_laliga.js"></script><script src="logos_nfl.js"></script><script src="logos_ucl.js"></script>
 <script>
@@ -414,7 +414,7 @@ function applyView() {
 }
 dash.draw('appbar', (box) => {
   const first = dayAt(wkOff * 7), top = el('div', null, 'top');
-  const bx = el('div', null, 'brandx'); const lg = el('div', null, 'logo'); lg.setAttribute('role', 'img'); lg.setAttribute('aria-label', 'StatSniper'); const tx = el('div'); tx.append(el('div', 'Sharp picks, broken down', 'hi'), el('div', 'StatSniper', 'nm')); bx.append(lg, tx); top.append(bx);
+  const bx = el('div', null, 'brandx'); const lg = el('div', null, 'logo'); lg.setAttribute('role', 'img'); lg.setAttribute('aria-label', 'IQVerdict'); const tx = el('div'); tx.append(el('div', 'Sharp picks, broken down', 'hi'), el('div', 'IQVerdict', 'nm')); bx.append(lg, tx); top.append(bx);
   if (sec === 'start' && window.SSG && SSG.betPill) { const bp = SSG.betPill(); if (bp) top.append(bp); }
   const cal = el('div', null, 'cal'); const calh = el('div', null, 'calh'); const arr = el('div', null, 'arr');
   const ab = (t, d) => { const b = el('button', t); b.type = 'button'; b.addEventListener('click', () => { wkOff = Math.max(-12, wkOff + d); redrawAll(); }); return b; };
@@ -1421,11 +1421,9 @@ dash.draw('nfldetail', (box) => {
   const side = (code) => { const d = el('div', null, 'tm'); d.append(bdX(code), el('b', NFLN(code)), el('span', rec(code), 'muted')); return d; };
   const mid = el('div', null, 'mid'); mid.append(el('span', x.title || x.day, 'muted'), el('strong', (tp[1] || '')), el('span', tp[0], 'muted'), el('span', NFLS(x.pick) + ' · ' + x.pick_pct + '%', 'muted'));
   hd.append(side(x.home), mid, side(x.away));
-  const bar = el('div', null, 'pbar');
-  [[x.home_pct, '#1d428a', NFLN(x.home)], [x.away_pct, '#c8102e', NFLN(x.away)]].forEach(([v, c, n]) => { const s = el('span', NFLS(n === NFLN(x.home) ? x.home : x.away) + ' ' + v + '%'); s.style.width = v + '%'; s.style.background = c; bar.append(s); });
   const more = nflMore(x); more.open = true;
   const p75 = propsCard(x.id, 'nfl');
-  box.replaceChildren(...[hd, bar, more, p75].filter(Boolean));
+  box.replaceChildren(...[hd, more, p75].filter(Boolean));
 });
 const rvDay = () => selDay;
 const rvDayOld = () => { try { const p = new Intl.DateTimeFormat('en-US', { timeZone: 'Australia/Sydney', weekday: 'short', day: 'numeric', month: 'short' }).formatToParts(new Date()); const g = (t) => p.find((x) => x.type === t).value; return g('weekday') + ' ' + g('day') + ' ' + g('month'); } catch (e) { return NBA_DAY; } };
@@ -1521,7 +1519,7 @@ function ufcLast5Box(r) {
     c.append(el('b', nm.replace(/\s*\(c\)/, '') + (ov ? ' · ' + ov + ' overall' : '') + (uf ? ' · ' + uf + ' UFC' : '')));
     const fs = ufcLast(nm, 999);
     if (!fs) c.append(el('p', rows('ufcp').length ? 'No fight history on file.' : 'Loading fight history…', 'muted'));
-    else fs.forEach((f) => { const row = el('div', null, 'l5r'); row.append(el('i', f.res === 'NC' ? '–' : f.res, f.res)); const t = el('div'); t.append(el('span', 'vs ' + f.opp), el('small', [(f.detail || f.method || ''), f.round ? 'R' + f.round + ' ' + f.clock : '', plDate(f.date), f.ufc ? 'UFC' : ''].filter(Boolean).join(' · '))); row.append(t); c.append(row); });
+    else fs.forEach((f) => { const row = el('div', null, 'l5r'); row.append(el('i', f.res === 'NC' ? '–' : f.res, f.res)); const t = el('div'); t.append(el('span', 'vs ' + f.opp), el('small', [(f.detail || f.method || ''), f.round ? 'R' + f.round + ' ' + f.clock : '', plDate(f.date), f.ufc ? 'UFC' : ''].filter(Boolean).join(' · '))); row.append(t); row.classList.add('l5go'); row.addEventListener('click', (e) => { e.stopPropagation(); if (window.SSG) SSG.pastFight(nm, f); }); c.append(row); });
     panes.push(c); w.append(c);
   });
   return w;

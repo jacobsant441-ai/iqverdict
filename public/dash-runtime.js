@@ -260,6 +260,6 @@
 
   boot().catch((e) => {
     console.error(e);
-    root.textContent = 'StatSniper failed to start: ' + e.message + '. Serve this folder over HTTP (npm start), not file://.';
+    root.textContent = 'IQVerdict failed to start: ' + e.message + '. Serve this folder over HTTP (npm start), not file://.';
   });
 })();

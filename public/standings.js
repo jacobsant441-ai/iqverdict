@@ -1,8 +1,8 @@
-// StatSniper: the Standings tab. Pick a sport from the dropdown:
+// IQVerdict: the Standings tab. Pick a sport from the dropdown:
 //   NBA       East / West conference tables from the team profiles (tprof: ESPN records), games behind the leader.
 //   Soccer    a second dropdown for the league (Premier League, La Liga, Champions League), from table.json.
 //   NFL       the eight divisions from nfltable.json (record, points for / against per game, last 3).
-//   UFC       StatSniper power rankings: our own Elo-style rating from every fight in the fighter histories (ufcp):
+//   UFC       IQVerdict power rankings: our own Elo-style rating from every fight in the fighter histories (ufcp):
 //             everyone starts at 1500, a win moves you up more against a highly rated opponent; UFC fights count in
 //             full, other promotions at half weight. Ranked within each weight class, active fighters only (fought in
 //             the last 2 years). A second dropdown filters the weight class. ESPN's official rankings feed is years
@@ -115,7 +115,7 @@
     if (!list.length) return [el('p', 'No active fighters on file for ' + ST.wc + '.', 'muted')];
     const lastTxt = (r) => { const f = E.last.get(String(r.id)); if (!f) return ''; const me = f.a === String(r.id); const res = me ? f.res : f.res === 'W' ? 'L' : f.res === 'L' ? 'W' : 'D'; const o = E.byId.get(me ? f.b : f.a); return res + ' vs ' + (o ? String(o.name).split(' ').slice(-1)[0] : '?'); };
     return [head(ST.wc + ' · power rankings'), table(['#', 'Fighter', 'Record', 'Rating'], list.map((x, i) => tr(x.champ ? 'C' : ch ? i : i + 1, X.avatar ? X.avatar('ufc', x.r.id, x.r.name, 'stav') : null, x.r.name + (x.champ ? ' (champion)' : ''), [x.r.rec, Math.round(x.rt)], X.openFighter ? () => X.openFighter(x.r.id) : null, x.champ ? 'champ' : '', 'Last fight: ' + lastTxt(x.r)))),
-      el('p', 'StatSniper power rankings, our own and not the official UFC list: an Elo-style rating from every pro fight on file (UFC fights count in full, other promotions at half weight). Beating a highly rated fighter moves you up more. Active fighters only (a fight in the last 2 years). C is the champion: the winner of the most recent UFC title fight in the division.', 'muted')];
+      el('p', 'IQVerdict power rankings, our own and not the official UFC list: an Elo-style rating from every pro fight on file (UFC fights count in full, other promotions at half weight). Beating a highly rated fighter moves you up more. Active fighters only (a fight in the last 2 years). C is the champion: the winner of the most recent UFC title fight in the division.', 'muted')];
   }
 
   dash.draw('standings', (box) => {

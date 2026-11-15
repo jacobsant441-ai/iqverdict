@@ -10,7 +10,7 @@
   // opened from the iPhone home screen: mark the page so the top can sit below iOS's faded edge (app.css html.pwa)
   try { if (navigator.standalone || matchMedia('(display-mode: standalone)').matches) document.documentElement.classList.add('pwa'); } catch (e) { /* old browser */ }
   const X = window.SSX; if (!X) return;
-  // ---- Pull to refresh (phones): at the top of a page, pull down; the StatSniper logo drops in, and past the line
+  // ---- Pull to refresh (phones): at the top of a page, pull down; the IQVerdict logo drops in, and past the line
   // ("Release to refresh") letting go reloads the app with fresh data (and the loading screen). Short pulls just go back.
   (() => {
     if (!('ontouchstart' in window)) return;
@@ -352,20 +352,137 @@
   // UFC fight page: the breakdown split into tabs (Tape / Striking & grappling / Odds / Fight record); the tab picked is
   // kept per fight while the page redraws, and a fight opened fresh starts on Tape.
   const UFT = window.UFT = {};
+
+  // ---- UFC finished fights: Result, All stats, Round by round (ufcdetail.json from fetch-ufc-detail.js; falls back to the live feed)
+  const UFN = (n) => String(n || '').replace(/\s*\(c\)/, '');
+  const ufcDetail = (r) => rows('ufcdetail').find((x) => x.id === r.id) || null;
+  const ufcFinal = (r) => (r.status === 'Final' && !!r.result) || ((ufcLive(r) || {}).state === 'post');
+  const ufcWinner = (r, d) => { const lr = ufcLive(r); let w = r.result || (d && d.winner) || ''; if (!w && lr && lr.state === 'post') { try { w = (JSON.parse(lr.extra || '{}') || {}).winner || ''; } catch (e) { w = ''; } } return w; };
+  const mmss = (v) => { v = Math.round(Number(v) || 0); return Math.floor(v / 60) + ':' + String(v % 60).padStart(2, '0'); };
+  // Stats for one fighter: from the stored detail, else from the live feed rows.
+  const ufcSideStats = (r, d, nm) => {
+    if (d) { const s = nm === r.a ? d.a : d.b; if (s && s.stats && Object.keys(s.stats).length) return s.stats; }
+    const lr = ufcLive(r); if (!lr) return null;
+    const b = liveRows('livebox').find((q) => q.sport === 'ufc' && String(q.espn_id) === String(lr.espn_id) && nsim(q.player, nm)); if (!b) return null;
+    try { return JSON.parse(b.stats || '{}'); } catch (e) { return null; }
+  };
+  const statRows = (A, B) => {
+    const g = (S, k) => Number(S[k] || 0);
+    const tgt = (S, x, suf) => g(S, 'sigDistance' + x + 'Strikes' + suf) + g(S, 'sigClinch' + x + 'Strikes' + suf) + g(S, 'sigGround' + x + 'Strikes' + suf);
+    const la = (L, T) => (S) => g(S, L) + ' of ' + g(S, T), pc = (L, T) => (S) => (g(S, T) ? Math.round(100 * g(S, L) / g(S, T)) + '%' : '–');
+    const defs = [
+      ['Knockdowns', (S) => String(g(S, 'knockDowns')), (S) => g(S, 'knockDowns')],
+      ['Significant strikes', la('sigStrikesLanded', 'sigStrikesAttempted'), (S) => g(S, 'sigStrikesLanded')],
+      ['Significant strike accuracy', pc('sigStrikesLanded', 'sigStrikesAttempted'), (S) => (g(S, 'sigStrikesAttempted') ? g(S, 'sigStrikesLanded') / g(S, 'sigStrikesAttempted') : 0)],
+      ['Total strikes', la('totalStrikesLanded', 'totalStrikesAttempted'), (S) => g(S, 'totalStrikesLanded')],
+      ['Head', (S) => tgt(S, 'Head', 'Landed') + ' of ' + tgt(S, 'Head', 'Attempted'), (S) => tgt(S, 'Head', 'Landed')],
+      ['Body', (S) => tgt(S, 'Body', 'Landed') + ' of ' + tgt(S, 'Body', 'Attempted'), (S) => tgt(S, 'Body', 'Landed')],
+      ['Leg', (S) => tgt(S, 'Leg', 'Landed') + ' of ' + tgt(S, 'Leg', 'Attempted'), (S) => tgt(S, 'Leg', 'Landed')],
+      ['Distance', (S) => ['Head', 'Body', 'Leg'].reduce((t, x) => t + g(S, 'sigDistance' + x + 'StrikesLanded'), 0) + ' of ' + ['Head', 'Body', 'Leg'].reduce((t, x) => t + g(S, 'sigDistance' + x + 'StrikesAttempted'), 0), (S) => ['Head', 'Body', 'Leg'].reduce((t, x) => t + g(S, 'sigDistance' + x + 'StrikesLanded'), 0)],
+      ['Clinch', (S) => ['Head', 'Body', 'Leg'].reduce((t, x) => t + g(S, 'sigClinch' + x + 'StrikesLanded'), 0) + ' of ' + ['Head', 'Body', 'Leg'].reduce((t, x) => t + g(S, 'sigClinch' + x + 'StrikesAttempted'), 0), (S) => ['Head', 'Body', 'Leg'].reduce((t, x) => t + g(S, 'sigClinch' + x + 'StrikesLanded'), 0)],
+      ['Ground', (S) => ['Head', 'Body', 'Leg'].reduce((t, x) => t + g(S, 'sigGround' + x + 'StrikesLanded'), 0) + ' of ' + ['Head', 'Body', 'Leg'].reduce((t, x) => t + g(S, 'sigGround' + x + 'StrikesAttempted'), 0), (S) => ['Head', 'Body', 'Leg'].reduce((t, x) => t + g(S, 'sigGround' + x + 'StrikesLanded'), 0)],
+      ['Takedowns', la('takedownsLanded', 'takedownsAttempted'), (S) => g(S, 'takedownsLanded')],
+      ['Submission attempts', (S) => String(g(S, 'submissions')), (S) => g(S, 'submissions')],
+      ['Reversals', (S) => String(g(S, 'reversals')), (S) => g(S, 'reversals')],
+      ['Control time', (S) => mmss(g(S, 'timeInControl')), (S) => g(S, 'timeInControl')],
+    ];
+    return defs.map(([lab, f, v]) => ({ lab, a: f(A), b: f(B), wa: v(A) > v(B), wb: v(B) > v(A) }));
+  };
+  const statCard = (nameA, nameB, rowsList) => {
+    const card = el('div', null, 'fglive');
+    const head = el('div', null, 'fglr fglnames'); head.append(el('b', UFN(nameA)), el('span', ''), el('b', UFN(nameB))); card.append(head);
+    rowsList.forEach((x) => { const row = el('div', null, 'fglr'); row.append(el('b', x.a, x.wa ? 'win' : ''), el('span', x.lab), el('b', x.b, x.wb ? 'win' : '')); card.append(row); });
+    return card;
+  };
+  function ufcResultPanes(r) {
+    if (!ufcFinal(r)) return null;
+    const d = ufcDetail(r), win = ufcWinner(r, d), lr = ufcLive(r);
+    // Result
+    const res = el('div', null, 'ufres');
+    const hit = r.pick && win ? nsim(win, r.pick) : null;
+    const draw = !win || /draw|no contest/i.test(win);
+    res.append(el('div', draw ? 'Draw or no contest' : UFN(win) + ' won', 'ufwin'));
+    const method = (d && d.method) || r.method || '';
+    const rd = (d && d.round) || (lr && lr.period) || r.round, clk = (d && d.clock) || (lr && lr.clock) || r.clock;
+    const facts = el('div', null, 'ftfacts');
+    const tile = (v, l) => { const t = el('div'); t.append(el('b', v), el('span', l)); return t; };
+    facts.append(tile(method || '–', 'How it ended'), tile(rd ? 'Round ' + rd + (d && d.scheduled_rounds ? ' of ' + d.scheduled_rounds : r.rounds ? ' of ' + r.rounds : '') : '–', 'Round'), tile(clk && clk !== '-' ? clk : '–', 'Time'), tile(r.weight || '–', 'Weight class'));
+    res.append(facts);
+    if (d && d.a && d.b && d.a.judges && d.a.judges.length === 3 && d.b.judges && d.b.judges.length === 3) {
+      const cards = d.a.judges.map((x, i) => x + '-' + d.b.judges[i]).join(', ');
+      res.append(el('p', 'Judges’ scorecards (' + UFN(r.a) + ' first): ' + cards, 'muted'));
+    }
+    if (r.pick) res.append(el('p', (hit === true ? '✓ ' : hit === false ? '✗ ' : '') + 'Our pick: ' + UFN(r.pick) + (r.pick_pct ? ' (' + Math.round(r.pick_pct) + '%, ' + (r.conf || '') + ')' : ''), 'ufpick ' + (hit === true ? 'hit' : hit === false ? 'miss' : '')));
+    if (!d) res.append(el('p', 'Full stats and round details are added a few minutes after the fight ends.', 'muted'));
+    // All stats
+    const A = ufcSideStats(r, d, r.a), B = ufcSideStats(r, d, r.b);
+    const all = el('div', null, 'ufall');
+    if (A && B) all.append(statCard(r.a, r.b, statRows(A, B))); else all.append(el('p', 'Fight stats are added a few minutes after the fight ends.', 'muted'));
+    // Round by round
+    const rnd = el('div', null, 'ufrnd');
+    const N = (d && d.round) || (lr && lr.period) || r.round || 0, rr = (d && d.rounds) || {};
+    const LAB = { 'Knockdown': 'Knockdown', 'Takedown': 'Takedown', 'Takedown Attempt': 'Takedown attempt', 'Reversal': 'Reversal', 'Submission Attempt': 'Submission attempt' };
+    if (!N) rnd.append(el('p', 'Round details are added a few minutes after the fight ends.', 'muted'));
+    for (let k = 1; k <= N; k++) {
+      const evs = (rr[k] || []).filter((q) => q.t !== 'Round End');
+      const card = el('div', null, 'fglive ufround'); card.append(el('div', 'Round ' + k, 'fglh done'));
+      const cnt = (t) => evs.filter((q) => q.t === t).length;
+      const chips = [['Knockdown', 'knockdown'], ['Takedown', 'takedown'], ['Reversal', 'reversal']].map(([t, w]) => (cnt(t) ? cnt(t) + ' ' + w + (cnt(t) > 1 ? 's' : '') : '')).filter(Boolean);
+      if (chips.length) card.append(el('p', chips.join(' · '), 'ufchips'));
+      if (!evs.length) card.append(el('p', 'No knockdowns, takedowns or reversals logged.', 'muted'));
+      evs.forEach((q) => { const row = el('div', null, 'fglr ufev'); row.append(el('b', q.clock || ''), el('span', LAB[q.t] || q.t), el('b', '')); card.append(row); });
+      if (k === N && clk && clk !== '-') card.append(el('p', 'Fight ended at ' + clk + (method ? ' · ' + method : ''), 'muted'));
+      rnd.append(card);
+    }
+    if (N) rnd.append(el('p', 'ESPN does not publish strikes per round. The fight totals are in All stats.', 'muted ufnote'));
+    return { res, all, rnd };
+  }
+
+  // Past fight from a fighter's record: result and stats for both fighters, in a sheet over the page.
+  function pastFight(nm, f) {
+    const old = document.querySelector('.pfsheet'); if (old) old.remove();
+    const sh = el('div', null, 'pfsheet'), card = el('div', null, 'pfcard');
+    const x = el('button', '✕', 'pfx'); x.type = 'button'; x.setAttribute('aria-label', 'Close'); x.addEventListener('click', () => sh.remove());
+    sh.addEventListener('click', (e) => { if (e.target === sh) sh.remove(); });
+    const res = f.res === 'W' ? 'won' : f.res === 'L' ? 'lost' : f.res === 'D' ? 'drew' : 'no contest';
+    card.append(x, el('h3', UFN(nm) + ' ' + (f.res === 'W' ? 'beat ' : f.res === 'L' ? 'lost to ' : 'vs ') + f.opp));
+    let when = f.date; try { when = new Date(f.date).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { /* keep raw */ }
+    card.append(el('p', [f.event, when].filter(Boolean).join(' · '), 'muted'));
+    const facts = el('div', null, 'ftfacts'); const tile = (v, l) => { const t = el('div'); t.append(el('b', v), el('span', l)); return t; };
+    facts.append(tile(f.detail || f.method || '–', 'How it ended'), tile(f.round ? 'Round ' + f.round : '–', 'Round'), tile(f.clock || '–', 'Time'), tile(res, UFN(nm)));
+    card.append(facts);
+    const has = (f.sigA || 0) > 0 || (f.totA || 0) > 0 || (f.tdA || 0) > 0;
+    if (has && f.ufc) {
+      const hasO = f.oSigA != null;
+      const rowsL = [];
+      const w = (a, b) => [a > b, b > a];
+      const add = (lab, a, b, va, vb) => { const [wa, wb] = w(va, vb); rowsL.push({ lab, a, b, wa, wb }); };
+      add('Knockdowns', String(f.kd || 0), hasO ? String(f.oKd || 0) : '–', f.kd || 0, f.oKd || 0);
+      add('Significant strikes', (f.sigL || 0) + ' of ' + (f.sigA || 0), hasO ? (f.oSigL || 0) + ' of ' + (f.oSigA || 0) : '–', f.sigL || 0, f.oSigL || 0);
+      add('Total strikes', (f.totL || 0) + ' of ' + (f.totA || 0), '–', 0, 0);
+      add('Takedowns', (f.tdL || 0) + ' of ' + (f.tdA || 0), hasO ? (f.oTdL || 0) + ' of ' + (f.oTdA || 0) : '–', f.tdL || 0, f.oTdL || 0);
+      add('Submission attempts', String(f.sub || 0), '–', 0, 0);
+      card.append(statCard(nm, f.opp, rowsL));
+    } else card.append(el('p', f.ufc ? 'No stats recorded for this fight.' : 'Fights outside the UFC have the result, method and time only.', 'muted'));
+    sh.append(card); document.body.append(sh);
+  }
+
   function ufcTabs(r, G, recBox) {
-    const T = [['tape', 'Tape', 'Side by side: the stronger number in each row is highlighted.'], ['fight', 'Stats', 'Career UFC rates. The stronger number in each row is highlighted.'], ['odds', 'Odds', ''], ['rec', 'Record', '']];
+    const fp = ufcResultPanes(r);
+    const T = [...(fp ? [['res', 'Result', ''], ['all', 'All stats', ''], ['rnd', 'Round by round', '']] : []), ['tape', 'Tape', 'Side by side: the stronger number in each row is highlighted.'], ['fight', fp ? 'Career stats' : 'Stats', 'Career UFC rates. The stronger number in each row is highlighted.'], ['odds', 'Odds', ''], ['rec', 'Record', '']];
     const panes = {}, wrap = el('div', null, 'uftabs');
     T.forEach(([k, , note]) => {
       const p = el('div', null, 'ufpane'); if (note) p.append(el('p', note, 'muted'));
       if (k === 'odds') { const hm = ufcMethods(r); if (hm) p.append(hm); }
       if (G[k]) { const w = el('div', null, 'scr'); w.style.overflowX = 'auto'; w.append(G[k]); p.append(w); }
       if (k === 'rec' && recBox) p.append(recBox);
+      if (fp && fp[k]) p.append(fp[k]);
       if (p.childNodes.length) panes[k] = p;
     });
     const bar = el('div', null, 'nfltabs uftabbar');
     const show = (k) => { UFT[r.id] = k; Object.entries(panes).forEach(([q, p]) => { p.hidden = q !== k; }); bar.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.k === k)); };
     T.forEach(([k, l]) => { if (!panes[k]) return; const b = el('button', l); b.type = 'button'; b.dataset.k = k; b.addEventListener('click', (e) => { e.stopPropagation(); show(k); const top = wrap.getBoundingClientRect().top + scrollY - 70; if (scrollY > top) window.scrollTo(0, top); }); bar.append(b); });
-    wrap.append(bar, ...Object.values(panes)); show(UFT[r.id] && panes[UFT[r.id]] ? UFT[r.id] : 'tape');
+    wrap.append(bar, ...Object.values(panes)); show(UFT[r.id] && panes[UFT[r.id]] ? UFT[r.id] : fp ? 'res' : 'tape');
     return wrap;
   }
 
@@ -479,7 +596,7 @@
   const betPill = () => {
     const st = betStats();
     if (!st.n) { // public site: only the cleaned copy is there, so the record and open bets, never money
-      const pb = rows('pubbets'), rec = pb.find((r) => r.kind === 'record'); if (!rec) return null;
+      const pb = rows('pubbets'), rec = pb.find((r) => r.kind === 'record') || { won: 0, lost: 0 };
       const open = pb.filter((r) => r.kind === 'bet').length;
       const b = el('button', null, 'betpill ' + (rec.won > rec.lost ? 'up' : rec.won < rec.lost ? 'dn' : '')); b.type = 'button'; b.title = "Jacob's picks";
       b.append(el('span', "Jacob's picks", 'bpr'), el('b', rec.won + '-' + rec.lost, 'bpp'), el('span', open ? open + ' open' : 'all settled', 'bprun'));
@@ -1212,5 +1329,5 @@
     p.dataset.ct = '1'; const card = p.closest('.hg, .gcard'); if (card && /\b(won|lost|rgres|lvdone)\b/.test(card.className)) return;
     const m = p.textContent.match(/(\d+(?:\.\d+)?)%/); if (!m) return; const v = +m[1]; p.classList.add(v >= 70 ? 'cHi' : v >= 60 ? 'cMd' : 'cLo'); });
   new MutationObserver(() => { clearTimeout(tintAll.t); tintAll.t = setTimeout(tintAll, 60); }).observe(document.body, { childList: true, subtree: true });
-  window.SSG = { boxTable, newsOf, newsItem, teamTabs, defCourt, b2bCard, b2bInfo, gameBets, ufcMethods, ufcTabs, liveHome, betPill, candidates, mainCard, pickMain, liveCard, liveDecor, liveUfc, liveUfcHome, ufcLiveCard, ufcLive, merge, slipChips, provisional };
+  window.SSG = { boxTable, newsOf, newsItem, teamTabs, defCourt, b2bCard, b2bInfo, gameBets, ufcMethods, ufcTabs, liveHome, betPill, candidates, mainCard, pickMain, liveCard, liveDecor, liveUfc, liveUfcHome, ufcLiveCard, pastFight, ufcLive, merge, slipChips, provisional };
 })();
