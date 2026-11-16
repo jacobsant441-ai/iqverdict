@@ -2267,3 +2267,6 @@ html.wl-on body{overflow:hidden}
 .wlnm{display:inline-flex;align-items:center;gap:8px}.wlnm .wlpc{width:30px;height:30px;font-size:.62rem}.wlmini td:first-child{white-space:nowrap}
 .wlfc .wlpc.wlface{width:64px;height:64px}
 .wlpanel::before,.wlpanel::after,.wlgame::before,.wlgame::after{content:none!important;display:none!important}
+/* No lift on hover: a card that moves up under the cursor flickers when the pointer rests on its bottom edge */
+html body .hg:hover,html body .hg:focus-visible,html body .pick:hover,html body .tmp:hover,html body .gcard:hover,html body .rvg:hover,html body .bbr:hover{transform:none!important}
+html body .hg,html body .pick,html body .tmp,html body .gcard{transition:border-color .15s ease,background-color .15s ease!important}
