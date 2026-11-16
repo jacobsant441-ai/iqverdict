@@ -125,7 +125,9 @@
         const r = await fetch(`${LIVE.url}?t=${Math.floor(Date.now() / 15000)}`);
         if (!r.ok) throw new Error('HTTP ' + r.status);
         const j = await r.json(), games = j.games || [], box = j.box || [];
-        const sig = JSON.stringify([games, box]);
+        // Compare without the per-minute refresh stamps, so the page only redraws when a score or stat really changed.
+        const bare = (rows) => rows.map((r) => { const { updated_at, ...x } = r; return x; });
+        const sig = JSON.stringify([bare(games), bare(box)]);
         if (sig === liveSig && store.has('livegames')) return;
         liveSig = sig; liveDirty = true;
         store.set('livegames', { status: 'ok', data: games, columns: columnsOf(games), meta: [] });
