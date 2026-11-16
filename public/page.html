@@ -434,7 +434,7 @@ dash.draw('appbar', (box) => {
     b.append(c, el('span', SPN[k]));
     b.addEventListener('click', () => { sport = k; sec = 'home'; applyView(); }); sp.append(b);
   });
-  box.replaceChildren(top, cal, sp); syncChrome();
+  box.replaceChildren(top, cal, sp); { const on = sp.querySelector('.sp.on'); if (on) sp.scrollLeft = on.offsetLeft - (sp.clientWidth - on.offsetWidth) / 2; } syncChrome();
 });
 (() => { const hook = () => document.querySelectorAll('#bnav button').forEach((b) => { if (!b.dataset.h) { b.dataset.h = 1; b.addEventListener('click', () => { sec = b.dataset.sec; applyView(); }); } }); hook(); document.addEventListener('DOMContentLoaded', hook); })();
 const pick = (id) => { current = id; dash.setLink(id); dash.draw('chips'); dash.draw('pgrid'); dash.draw('detail'); dash.draw('dtitle'); dash.draw('nbahd'); markSel(); };

@@ -2282,3 +2282,7 @@ html body .appbar .sports button.sp .c em{white-space:nowrap}
 /* league logos on the NRL / AFL cards */
 .offic{width:68px;height:68px;border:0;background:none}.offic img{width:68px;height:68px;object-fit:contain}
 html body .appbar .sports button.sp .c.ico img{object-fit:contain}
+/* Sport tabs: six tabs no longer fit a phone, so the bar scrolls sideways from the first tab (centred tabs were cut off on the left) */
+html body .appbar .sports{position:relative;justify-content:flex-start!important;overflow-x:auto!important;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-x:contain}
+html body .appbar .sports::-webkit-scrollbar{display:none}
+html body .appbar .sports button.sp{flex:none}
