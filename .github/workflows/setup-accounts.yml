@@ -1,0 +1,33 @@
+# One-off (safe to run again): create the accounts database (Cloudflare D1), add its tables, and store the invite code.
+# The invite code comes from the INVITE_CODE secret and is only ever stored as a SHA-256 hash.
+name: Set up accounts
+on: workflow_dispatch
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    env:
+      CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      INVITE_CODE: ${{ secrets.INVITE_CODE }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Create the database and tables
+        run: |
+          export CLOUDFLARE_API_TOKEN="$(printf '%s' "$CF_TOKEN" | tr -d '[:space:]')"
+          export CLOUDFLARE_ACCOUNT_ID="$(printf '%s' "$CF_ACCOUNT" | tr -d '[:space:]')"
+          W="npx --yes wrangler@3.114.0"
+          $W d1 create iqverdict || echo "database may already exist"
+          ID=$($W d1 list --json | jq -r '.[] | select(.name=="iqverdict") | .uuid')
+          [ -n "$ID" ] || { echo "::error::could not find the database id"; exit 1; }
+          echo "DATABASE_ID=$ID"
+          sed "s/00000000-0000-0000-0000-000000000000/$ID/" wrangler.toml.template > wrangler.setup.toml
+          $W d1 execute iqverdict --remote --config wrangler.setup.toml --file db/schema.sql
+          H=$(printf '%s' "$INVITE_CODE" | tr '[:lower:]' '[:upper:]' | sha256sum | cut -d' ' -f1)
+          echo "::add-mask::$H"
+          printf "INSERT OR REPLACE INTO settings (k, v) VALUES ('invite_hash', '%s');\n" "$H" > invite.sql
+          $W d1 execute iqverdict --remote --config wrangler.setup.toml --file invite.sql > /dev/null
+          rm -f invite.sql
+          echo "Accounts database is ready."
