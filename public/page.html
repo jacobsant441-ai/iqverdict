@@ -968,8 +968,6 @@ function nflMore(x) {
   const MAP = { 'Projection': 'pick', 'Recent games': 'pick', 'Offence and defence ratings': 'rate', 'Season stats': 'rate', 'Home and away': 'ha', 'How they play and how it affects this matchup': 'style', 'Defence: what they allow and how they pressure': 'def', 'Totals and scoring': 'tot', 'Over and under': 'tot', 'Injuries': 'inj', 'Lineups': 'lu' };
   const panels = {};
   const sec = (h, ...n) => { const k = MAP[h] || 'pick'; const p = panels[k] || (panels[k] = el('div', null, 'nflpanel')); p.append(el('h4', h), ...n); };
-  sec('Projection', el('p', 'Model score ' + NFLS(x.home) + ' ' + x.model_home + ', ' + NFLS(x.away) + ' ' + x.model_away + ' (total ' + x.model_total + '). Blended with the market: ' + NFLS(x.home) + ' ' + x.proj_home + ', ' + NFLS(x.away) + ' ' + x.proj_away + ' (total ' + x.proj_total + ').'),
-    el('p', 'Spread view: ' + NFLS(x.ats_pick) + ' on the spread, edge ' + x.ats_edge + ' points' + (x.ats_edge < 2 ? ' (too small to call).' : '.') + ' Total view: ' + x.total_lean + ' (model ' + (x.total_gap > 0 ? '+' : '') + x.total_gap + ' vs ' + x.total + ').'));
   sec('Season stats', tbl(['', NFLS(x.away) + ' (away)', NFLS(x.home) + ' (home)'], [
     ['Record', A.record, H.record],
     ['Record at venue type', (A.away_rec || '-') + ' away', (H.home_rec || '-') + ' at home'],

@@ -598,7 +598,7 @@
   // Sign in button, or the member's name once signed in. Only the live site has the API; elsewhere nothing shows.
   const ACC = { user: null, ready: false, setup: false };
   const accJson = (url, body) => fetch(url, { method: body ? 'POST' : 'GET', credentials: 'same-origin', headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined }).then((r) => r.json().then((j) => ({ ok: r.ok, j }))).catch(() => ({ ok: false, j: { error: 'No connection. Try again.' } }));
-  const accLoad = () => fetch('/api/me', { credentials: 'same-origin' }).then((r) => (r.ok ? r.json() : null)).then((j) => { ACC.ready = true; ACC.setup = !!(j && j.setup); ACC.user = (j && j.user) || null; try { dash.draw('appbar'); } catch (e) { /* not drawn yet */ } }).catch(() => { ACC.ready = true; });
+  const accLoad = () => fetch('/api/me', { credentials: 'same-origin' }).then((r) => (r.ok ? r.json() : null)).then((j) => { ACC.ready = true; ACC.setup = !!(j && j.setup); ACC.user = (j && j.user) || null; welcomeSync(); try { dash.draw('appbar'); } catch (e) { /* not drawn yet */ } }).catch(() => { ACC.ready = true; });
   const accClose = () => { const s = document.querySelector('.accsheet'); if (s) s.remove(); };
   function accOpen(mode) {
     accClose();
@@ -625,7 +625,7 @@
         const res = tab === 'up' ? await accJson('/api/signup', { email: v('acc-email'), name: v('acc-name'), password: v('acc-pass'), invite: v('acc-invite') }) : await accJson('/api/login', { email: v('acc-email'), password: v('acc-pass') });
         go.disabled = false;
         if (!res.ok) { err.textContent = (res.j && res.j.error) || 'Something went wrong. Try again.'; return; }
-        ACC.user = res.j.user; accClose(); try { dash.draw('appbar'); } catch (e2) { /* ignore */ }
+        ACC.user = res.j.user; accClose(); welcomeSync(); try { dash.draw('appbar'); } catch (e2) { /* ignore */ }
       };
     };
     draw(); card.append(x, el('h3', 'IQVerdict'), form); sh.append(card); document.body.append(sh);
@@ -637,8 +637,86 @@
     sh.addEventListener('click', (e) => { if (e.target === sh) accClose(); });
     const x = el('button', '✕', 'pfx'); x.type = 'button'; x.setAttribute('aria-label', 'Close'); x.addEventListener('click', accClose);
     const out = el('button', 'Sign out', 'accgo'); out.type = 'button';
-    out.addEventListener('click', async () => { out.disabled = true; await accJson('/api/logout', {}); ACC.user = null; accClose(); try { dash.draw('appbar'); } catch (e) { /* ignore */ } });
+    out.addEventListener('click', async () => { out.disabled = true; await accJson('/api/logout', {}); ACC.user = null; accClose(); welcomeSync(); try { dash.draw('appbar'); } catch (e) { /* ignore */ } });
     card.append(x, el('h3', ACC.user.name), el('p', 'You are signed in.', 'muted'), out); sh.append(card); document.body.append(sh);
+  }
+
+  // ---- Welcome page: what signed-out visitors see first when this site has accounts (a scrolling landing page).
+  // Everything on it is our own artwork with example numbers (marked "Example"), so nothing stale or licensed shows here.
+  const MARK = '<svg viewBox="0 0 512 512" aria-hidden="true"><rect x="141" y="116" width="40" height="176" rx="2" fill="#fff"/><ellipse cx="283" cy="204" rx="64" ry="68" fill="none" stroke="#fff" stroke-width="40"/><path d="M324 246 364 292" stroke="#fff" stroke-width="34"/><path d="M156 346 256 418 356 346" fill="none" stroke="#1fd56b" stroke-width="22" stroke-linejoin="miter" stroke-linecap="butt"/></svg>';
+  function welcomeSync() {
+    const on = ACC.ready && ACC.setup && !ACC.user, cur = document.querySelector('.welcome');
+    document.documentElement.classList.toggle('wl-on', on);
+    if (!on) { if (cur) cur.remove(); return; }
+    if (cur) return;
+    const W = el('div', null, 'welcome'), go = (m) => () => accOpen(m);
+    const btn = (t, cls, fn) => { const b = el('button', t, cls); b.type = 'button'; b.addEventListener('click', fn); return b; };
+    const chart = (vals, line) => { const mx = Math.max(...vals, line) * 1.12, w = el('div', null, 'wlchart'); vals.forEach((v) => { const c = el('div', null, 'wlcol'), b = el('i', null, v > line ? 'hit' : 'miss'); b.style.height = Math.round(v / mx * 100) + '%'; c.append(b, el('span', String(v))); w.append(c); }); const ln = el('div', null, 'wlline'); ln.style.bottom = 'calc(' + Math.round(line / mx * 100) + '% * .78 + 22px)'; ln.append(el('b', String(line))); w.append(ln); return w; };
+    const circ = (t, on2) => el('span', t, 'wlpc' + (on2 ? ' on' : ''));
+    const tb = (t) => el('span', t, 'wltb');
+    const feature = (flip, kicker, title, text, mock) => { const s = el('section', null, 'wlfeat' + (flip ? ' flip' : '')), tx = el('div', null, 'wlft'); tx.append(el('span', kicker, 'wlkick'), el('h2', title), el('p', text)); const pan = el('div', null, 'wlpanel'); pan.append(mock, el('small', 'Example data', 'wlex')); s.append(tx, pan); return s; };
+
+    // top bar
+    const bar = el('header', null, 'wlbar'), brand = el('div', null, 'wlbrand'), lg = el('div', null, 'wllogo'); lg.innerHTML = MARK; brand.append(lg, el('b', 'IQVerdict'));
+    const acts = el('div', null, 'wlbtns'); acts.append(btn('Log in', 'wlalt sm', go('in')), btn('Create account', 'wlgo sm', go('up'))); bar.append(brand, acts);
+
+    // hero
+    const hero = el('section', null, 'wlhero'), ht = el('div', null, 'wlht');
+    const live = el('span', null, 'wlpill'); live.append(el('i'), document.createTextNode('NBA · NFL · Football · UFC'));
+    ht.append(live, el('h1', 'Know the numbers behind every game.'), el('p', 'Live box scores, player hit rates, defence and matchup stats in one place. No picks. No tips. You make your own calls.', 'wlsub'));
+    const ca = el('div', null, 'wlact'); ca.append(btn('Create account', 'wlgo', go('up')), btn('Log in', 'wlalt', go('in'))); ht.append(ca, el('p', 'Invite only while we are in beta. Free to join.', 'wlnote'));
+    const hv = el('div', null, 'wlpanel wlhp');
+    const gm = el('div', null, 'wlgame'); gm.append(el('div', null, 'wlteam'), el('div', null, 'wlteam'));
+    const g1 = el('div', null, 'wlteam'); g1.append(tb('OKC'), el('b', 'Thunder'), el('b', '88', 'wlsc')); const g2 = el('div', null, 'wlteam'); g2.append(tb('SAC'), el('b', 'Kings'), el('b', '73', 'wlsc'));
+    const gst = el('div', null, 'wlstate'); gst.append(el('span', null, 'wllive'), document.createTextNode('LIVE · 2:34 · 3RD'));
+    gm.replaceChildren(g1, gst, g2);
+    const tbl = el('table', null, 'wlmini'); [['Player', 'MIN', 'PTS', 'REB', 'AST'], ['S. Gilgeous-Alexander', '27', '34', '1', '2', 1], ['A. Mitchell', '22', '11', '3', '3'], ['K. Williams', '19', '10', '1', '2']].forEach((r, i) => { const tr = el('tr'); r.slice(0, 5).forEach((c, j) => { const t = el(i ? 'td' : 'th'); if (i && !j && r[5]) t.append(el('i', null, 'ocdot')); t.append(document.createTextNode(c)); tr.append(t); }); tbl.append(tr); });
+    hv.append(gm, tbl, el('small', 'Example data', 'wlex')); hero.append(ht, hv);
+
+    // feature showcases
+    const f1 = feature(false, 'Hit rates', 'See how often it actually happens', 'Every player stat shows the season hit rate next to the last ten games, so you can judge any line for yourself.', (() => { const d = el('div'); const top = el('div', null, 'wlrow'); top.append(circ('SG'), (() => { const x = el('div'); x.append(el('b', 'Points'), el('span', 'Line 24.5 · last 10 games', 'wlmuted')); return x; })(), el('b', '7/10 · 70%', 'wlhit')); d.append(top, chart([28, 19, 31, 26, 22, 35, 27, 18, 30, 29], 24.5)); return d; })());
+    const f2 = feature(true, 'Live games', 'Follow it as it happens', 'Scores, quarter by quarter, full box scores and a red dot beside every player who is on the court right now.', (() => { const t2 = el('table', null, 'wlmini'); [['Player', 'MIN', 'PTS', 'REB', 'FG'], ['J. Brown', '31', '22', '6', '8-15', 1], ['D. White', '29', '14', '3', '5-10', 1], ['P. Pritchard', '12', '6', '2', '2-5'], ['A. Horford', '18', '4', '7', '2-4']].forEach((r, i) => { const tr = el('tr'); r.slice(0, 5).forEach((c, j) => { const t = el(i ? 'td' : 'th'); if (i && !j && r[5]) t.append(el('i', null, 'ocdot')); t.append(document.createTextNode(c)); tr.append(t); }); t2.append(tr); }); return t2; })());
+    const f3 = feature(false, 'Matchups and defence', 'Where the pressure comes from', 'Sacks, QB hits, tackles for loss and passes defended for every NFL team, plus points allowed by area of the court in the NBA.', (() => { const t3 = el('table', null, 'wlmini'); [['Defence', 'TKL', 'SACK', 'TFL', 'QB HIT', 'PD'], ['P. Queen', '14', '1', '1', '2', '0'], ['P. Wilson', '17', '0', '0', '0', '1'], ['J. Brisker', '10', '0', '0', '1', '0'], ['Team', '73', '3', '4', '6', '5']].forEach((r, i, a) => { const tr = el('tr', null, i === a.length - 1 ? 'tot' : ''); r.forEach((c) => tr.append(el(i ? 'td' : 'th', c))); t3.append(tr); }); return t3; })());
+    const f4 = feature(true, 'Fighters', 'Fight research without the guesswork', 'Side by side tale of the tape, career strike and takedown rates, the full record with a stat sheet for every past fight, and round by round events once it is over.', (() => { const d = el('div', null, 'wlfight'); const h = el('div', null, 'wlfh'); const a = el('div', null, 'wlfc'); a.append(circ('CG', 1), el('b', 'Gane'), el('span', 'FRA', 'wlflag')); const m = el('b', 'VS', 'wlvs'); const b = el('div', null, 'wlfc'); b.append(circ('JH'), el('b', 'Hokit'), el('span', 'USA', 'wlflag')); h.append(a, m, b); d.append(h); [['11-2', 'UFC record', '4-0'], ['81"', 'Reach', '73.5"'], ['5.4', 'Strikes landed / min', '6.1'], ['62%', 'Striking accuracy', '58%']].forEach(([x, l, y]) => { const r = el('div', null, 'wltape'); r.append(el('b', x, 'l'), el('span', l), el('b', y)); d.append(r); }); return d; })());
+
+    // sports
+    const SPORTS = [['NBA', ['Live scores and full box scores', 'Hit rates for points, rebounds, assists and threes', 'Team pages, rosters and injuries', 'Points allowed by court zone']], ['NFL', ['Live passing, rushing and receiving', 'Defence: sacks, QB hits, tackles for loss', 'Player prop hit rates', 'Team ratings and recent form']], ['Football', ['Premier League, La Liga and Champions League', 'Fixtures, form and head to head', 'Live scores with goals and cards', 'Team stats and league tables']], ['UFC', ['Every card with live fight status', 'Tale of the tape and career rates', 'Full fight history with stat sheets', 'Results, scorecards and round events']]];
+    const lg2 = el('section', null, 'wlleagues'); lg2.append(el('span', 'Every league', 'wlkick'), el('h2', 'One toolkit for four sports'));
+    const tabs = el('div', null, 'wltabs'), body = el('ul', null, 'wlbul');
+    const showL = (i) => { [...tabs.children].forEach((b, j) => b.classList.toggle('on', i === j)); body.replaceChildren(...SPORTS[i][1].map((t) => { const li = el('li', t); return li; })); };
+    SPORTS.forEach(([n], i) => tabs.append(btn(n, 'wltab', () => showL(i)))); showL(0); lg2.append(tabs, body);
+
+    // how it works
+    const how = el('section', null, 'wlhow'); how.append(el('span', 'How it works', 'wlkick'), el('h2', 'From the scoreboard to your own call'));
+    const steps = el('div', null, 'wlsteps');
+    [['Find the game or player', 'Start from today\'s games, search any team, player or fighter.'], ['Read the numbers', 'Hit rates, recent form, matchups and live stats, all on one page.'], ['Make your own call', 'We show the data. We never tell you what to bet.']].forEach(([t, d], i) => { const s = el('div', null, 'wlstep'); s.append(el('b', String(i + 1), 'wln'), el('h3', t), el('p', d)); steps.append(s); });
+    how.append(steps);
+
+    // pricing: Free and Pro (the Pro price is a placeholder until the owner sets it; Pro is not on sale yet)
+    const PRICE = { month: 19, year: 190 };
+    const mem = el('section', null, 'wlmem'); mem.append(el('span', 'Pricing', 'wlkick'), el('h2', 'Start free. Upgrade when it is ready.'));
+    const seg = el('div', null, 'wlseg'), cards = el('div', null, 'wlprices');
+    let yearly = true;
+    const draw = () => {
+      seg.replaceChildren(); [['Monthly', false], ['Yearly', true]].forEach(([l, y]) => { const b = btn(l, 'wlsegb' + (yearly === y ? ' on' : ''), () => { yearly = y; draw(); }); if (y) b.append(el('em', 'Save $' + (PRICE.month * 12 - PRICE.year))); seg.append(b); });
+      cards.replaceChildren();
+      const free = el('div', null, 'wlcard'), pro = el('div', null, 'wlcard pro');
+      free.append(el('h3', 'Free'), el('div', null, 'wlprice'), el('p', 'Free while we are in beta. No credit card.', 'wlnote'));
+      free.querySelector('.wlprice').append(el('b', '$0'));
+      const fl = el('ul', null, 'wlbul tick'); ['Live scores and full box scores', 'Hit rates for a few players per league', 'Team, fixture and fighter pages', 'Your name on your own account'].forEach((t) => fl.append(el('li', t)));
+      free.append(btn('Create account', 'wlgo', go('up')), el('p', 'Invite code needed during the beta.', 'wlnote'), fl);
+      pro.append(el('h3', 'Pro'));
+      const pr = el('div', null, 'wlprice'); pr.append(el('b', '$' + (yearly ? Math.round(PRICE.year / 12 * 100) / 100 : PRICE.month)), el('span', '/ month')); pro.append(pr, el('p', yearly ? '$' + PRICE.year + ' billed yearly' : 'Billed monthly', 'wlnote'));
+      const pl = el('ul', null, 'wlbul tick'); ['Everything in Free', 'Every player, every league', 'Full defence and matchup data', 'Stat sheets for every past fight', 'Cancel anytime'].forEach((t) => pl.append(el('li', t)));
+      const soon = btn('Opens after the beta', 'wlalt', () => {}); soon.disabled = true;
+      pro.append(soon, el('p', 'Pro is not on sale yet. Early members will hear first.', 'wlnote'), pl);
+      cards.append(pro, free);
+    };
+    draw(); mem.append(seg, cards);
+
+    const foot = el('footer', null, 'wlfoot');
+    foot.append(el('p', 'IQVerdict is for information and entertainment only. It is not betting advice and nothing here is guaranteed. You must be 18 or over. Need help with gambling? Gambling Help Online (Australia): 1800 858 858, 24/7.'));
+    W.append(bar, hero, f1, f2, f3, f4, lg2, how, mem, foot); document.body.append(W);
   }
   // The header chip: nothing until we know the site has accounts.
   const betPill = () => {
@@ -937,15 +1015,32 @@
           const isSt = (p) => String(p.starter) === 'true';
           const ordered = pl.filter((p) => !p.s.dnp).map((p, i) => [p, i]).sort((a, b) => (isSt(b[0]) ? 1 : 0) - (isSt(a[0]) ? 1 : 0) || a[1] - b[1]).map((x) => x[0]);
           t = boxTable(ordered.map(bxLive));
-        } else { // NFL: the leading passer, rushers and receivers
-          const lead = (k, n) => pl.filter((p) => p.s[k] != null).sort((a, b) => Number(b.s[k]) - Number(a.s[k])).slice(0, n);
-          const hr = el('tr'); ['Player', 'Line'].forEach((x, i) => hr.append(el('th', x, i ? 'n' : ''))); t.append(hr);
-          const add = (p, txt) => { const tr = el('tr'); tr.append(el('td', p.player), el('td', txt, 'n')); t.append(tr); };
-          lead('passing.passingYards', 1).forEach((p) => add(p, (p.s['passing.completions/passingAttempts'] || '') + ' · ' + p.s['passing.passingYards'] + ' yds · ' + (p.s['passing.passingTouchdowns'] || 0) + ' TD'));
-          lead('rushing.rushingYards', 2).forEach((p) => add(p, p.s['rushing.rushingAttempts'] + ' car · ' + p.s['rushing.rushingYards'] + ' yds' + (Number(p.s['rushing.rushingTouchdowns']) ? ' · ' + p.s['rushing.rushingTouchdowns'] + ' TD' : '')));
-          lead('receiving.receivingYards', 3).forEach((p) => add(p, p.s['receiving.receptions'] + ' rec · ' + p.s['receiving.receivingYards'] + ' yds' + (Number(p.s['receiving.receivingTouchdowns']) ? ' · ' + p.s['receiving.receivingTouchdowns'] + ' TD' : '')));
+        } else { // NFL: passing, rushing, receiving and defence (sacks, QB hits, tackles for loss, passes defended, tackles)
+          t = el('div', null, 'nflbox');
+          const n0 = (v) => (v == null || v === '' ? '–' : String(v));
+          const nm = (p) => String(p.player || '').replace(/^(\S)\S*\s+(?=\S)/, '$1. ');
+          const top = (k, n) => pl.filter((p) => p.s[k] != null && p.s[k] !== '' && Number(p.s[k]) >= 0).sort((a, b) => Number(b.s[k]) - Number(a.s[k])).slice(0, n);
+          const sect = (title, heads, plist, cells, total) => {
+            if (!plist.length) return;
+            const tb = el('table', null, 'lvbox fullbox nflt'), hr = el('tr'); hr.append(el('th', title)); heads.forEach((h) => hr.append(el('th', h, 'n'))); tb.append(hr);
+            plist.forEach((p) => { const tr = el('tr'), td = el('td'), b = el('b', nm(p)); b.title = p.player; td.append(b); tr.append(td); cells(p.s).forEach((c) => tr.append(el('td', n0(c), 'n'))); tb.append(tr); });
+            if (total) { const tr = el('tr', null, 'lvtot'); tr.append(el('td', 'Team')); total.forEach((c) => tr.append(el('td', n0(c), 'n'))); tb.append(tr); }
+            const sc2 = el('div', null, 'scroll'); sc2.append(tb); t.append(sc2);
+          };
+          const sk = (v) => String(v || '').split('-')[0];
+          sect('Passing', ['C/ATT', 'YDS', 'TD', 'INT', 'SACKED'], top('passing.passingYards', 2), (s) => [s['passing.completions/passingAttempts'], s['passing.passingYards'], s['passing.passingTouchdowns'] || 0, s['passing.interceptions'] || 0, sk(s['passing.sacks-sackYardsLost']) || 0]);
+          sect('Rushing', ['CAR', 'YDS', 'AVG', 'TD', 'LNG'], top('rushing.rushingYards', 4), (s) => [s['rushing.rushingAttempts'], s['rushing.rushingYards'], s['rushing.yardsPerRushAttempt'], s['rushing.rushingTouchdowns'] || 0, s['rushing.longRushing']]);
+          sect('Receiving', ['REC', 'TGT', 'YDS', 'TD', 'LNG'], top('receiving.receivingYards', 6), (s) => [s['receiving.receptions'], s['receiving.receivingTargets'], s['receiving.receivingYards'], s['receiving.receivingTouchdowns'] || 0, s['receiving.longReception']]);
+          const dnum = (s, k) => Number(s['defensive.' + k] || 0) + (k === 'interceptions' ? Number(s['interceptions.interceptions'] || 0) : 0);
+          const score = (p) => dnum(p.s, 'sacks') * 6 + dnum(p.s, 'interceptions') * 6 + dnum(p.s, 'QBHits') * 3 + dnum(p.s, 'tacklesForLoss') * 3 + dnum(p.s, 'passesDefended') * 3 + dnum(p.s, 'totalTackles');
+          const def = pl.filter((p) => p.s['defensive.totalTackles'] != null).sort((a, b) => score(b) - score(a)).slice(0, 8);
+          const tot = (k) => pl.reduce((a, p) => a + dnum(p.s, k), 0);
+          sect('Defence', ['TKL', 'SOLO', 'SACK', 'TFL', 'QB HIT', 'PD', 'INT'], def, (s) => [dnum(s, 'totalTackles'), dnum(s, 'soloTackles'), dnum(s, 'sacks'), dnum(s, 'tacklesForLoss'), dnum(s, 'QBHits'), dnum(s, 'passesDefended'), dnum(s, 'interceptions')],
+            ['totalTackles', 'soloTackles', 'sacks', 'tacklesForLoss', 'QBHits', 'passesDefended', 'interceptions'].map(tot));
+          if (def.length) t.append(el('p', 'Sacks, QB hits and tackles for loss show the pressure on the quarterback. ESPN does not publish pressures or hurries.', 'muted lvnote'));
+          if (!t.children.length) t.append(el('p', 'Stats appear once the game is under way.', 'muted'));
         }
-        const w = el('div', null, 'scroll'); w.append(t); pane.append(w);
+        if (t.classList.contains('nflbox')) pane.append(t); else { const w = el('div', null, 'scroll'); w.append(t); pane.append(w); }
       });
     }
     card.append(el('p', 'Updated ' + new Date(r.updated_at).toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit', second: '2-digit', timeZone: 'Australia/Sydney' }), 'lvupd'));
