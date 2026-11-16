@@ -93,6 +93,7 @@ function boxRows(L, g, s) {
         if (a.didNotPlay) row.stats.dnp = a.reason || 'DNP';
         (a.stats || []).forEach((v, i) => { const k = keys[i]; if (k) row.stats[L.sp === 'nfl' ? grp.name + '.' + k : k] = v; });
         if (a.starter) row.starter = true;
+        if (a.active && g.state === 'in') row.stats.oc = 1; // on the court right now (ESPN's active flag while a game is on)
         byAth.set(id, row);
       }
     }

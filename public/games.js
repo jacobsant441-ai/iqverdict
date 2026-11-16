@@ -1129,7 +1129,7 @@
   const bxPair = (t) => { const m = String(t || '').match(/^(\d+)-(\d+)$/); return m ? [Number(m[1]), Number(m[2])] : [null, null]; };
   const bxLive = (p) => {
     const s = p.s || {}, [fgm, fga] = bxPair(s['fieldGoalsMade-fieldGoalsAttempted']), [tpm, tpa] = bxPair(s['threePointFieldGoalsMade-threePointFieldGoalsAttempted']), [ftm, fta] = bxPair(s['freeThrowsMade-freeThrowsAttempted']);
-    return { name: p.player, starter: String(p.starter) === 'true', min: bxN(s.minutes), pts: bxN(s.points), reb: bxN(s.rebounds), ast: bxN(s.assists), stl: bxN(s.steals), blk: bxN(s.blocks), tov: bxN(s.turnovers), pf: bxN(s.fouls), fgm, fga, tpm, tpa, ftm, fta, orb: bxN(s.offensiveRebounds), drb: bxN(s.defensiveRebounds), pm: bxN(s.plusMinus) };
+    return { name: p.player, starter: String(p.starter) === 'true', min: bxN(s.minutes), pts: bxN(s.points), reb: bxN(s.rebounds), ast: bxN(s.assists), stl: bxN(s.steals), blk: bxN(s.blocks), tov: bxN(s.turnovers), pf: bxN(s.fouls), oc: String(s.oc) === '1', fgm, fga, tpm, tpa, ftm, fta, orb: bxN(s.offensiveRebounds), drb: bxN(s.defensiveRebounds), pm: bxN(s.plusMinus) };
   };
   function boxTable(list) {
     const has = (k) => list.some((p) => p[k] != null);
@@ -1149,7 +1149,7 @@
     const grouped = list.some((p) => p.starter != null); let last = null;
     list.forEach((p) => {
       if (grouped && !!p.starter !== last) { last = !!p.starter; const sr = el('tr', null, 'lvgrp'), td = el('td'); td.colSpan = COLS.length + 1; td.append(el('span', last ? 'Starters' : 'Bench', 'lvgl')); sr.append(td); t.append(sr); }
-      const tr = el('tr'), nm = el('td'), nb = el('b', String(p.name || '').replace(/^(\S)\S*\s+(?=\S)/, '$1. ')); nb.title = p.name || ''; nm.append(nb); tr.append(nm);
+      const tr = el('tr'), nm = el('td'), nb = el('b', String(p.name || '').replace(/^(\S)\S*\s+(?=\S)/, '$1. ')); nb.title = p.name || ''; if (p.oc) { const dt = el('i', null, 'ocdot'); dt.title = 'On the court now'; nm.append(dt); } nm.append(nb); tr.append(nm);
       COLS.forEach(([, f]) => tr.append(el('td', f(p), 'n'))); t.append(tr);
     });
     const tt = el('tr', null, 'lvtot'); tt.append(el('td', 'Team')); COLS.forEach(([, , f]) => tt.append(el('td', String(f()), 'n'))); t.append(tt);

@@ -2185,3 +2185,10 @@ html body #nflgame #nflback,html body #fbgame #fbback,html body #nflgame .backbt
 .accf input:focus{outline:2px solid #fff;outline-offset:1px}
 .accnote{margin:0;font-size:.8rem}.accerr{margin:0;min-height:1.2em;color:#ff5a5f;font-size:.88rem}
 .accgo{font:inherit;font-weight:800;font-size:1rem;color:#000;background:#fff;border:0;border-radius:12px;padding:13px;cursor:pointer}.accgo:disabled{opacity:.55}
+/* Live dot: the pulsing ring was clipped by the card text box (overflow hidden), so leave room around the dot */
+.hg.lvon .tm{padding:6px 3px 6px 8px;margin:-6px 0 -6px -8px}
+.gcard .mid .pre.lvon,.fgmid .pre.lvon{overflow:visible;padding-left:2px}
+
+/* Live box score: a red flashing dot beside the players on the court right now */
+.fullbox .ocdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff4d4d;margin:0 6px 1px 3px;vertical-align:middle;animation:sspulse 1.6s infinite;flex:none}
+@media (prefers-reduced-motion:reduce){.fullbox .ocdot{animation:none}}
