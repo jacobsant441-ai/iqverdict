@@ -665,7 +665,7 @@
 
     // hero
     const hero = el('section', null, 'wlhero'), ht = el('div', null, 'wlht');
-    const live = el('span', null, 'wlpill'); live.append(el('i'), document.createTextNode('NBA · NFL · Football · UFC'));
+    const live = el('span', null, 'wlpill'); live.append(el('i'), document.createTextNode('Multiple sports'));
     ht.append(live, el('h1', 'Know the numbers behind every game.'), el('p', 'Live box scores, player hit rates, defence and matchup stats in one place. No picks. No tips. You make your own calls.', 'wlsub'));
     const ca = el('div', null, 'wlact'); ca.append(btn('Create account', 'wlgo', go('up')), btn('Log in', 'wlalt', go('in'))); ht.append(ca, el('p', 'Invite only while we are in beta. Free to join.', 'wlnote'));
     const hv = el('div', null, 'wlpanel hero');
@@ -677,14 +677,38 @@
     hv.append(gm, tbl, el('small', 'Example data', 'wlex')); hero.append(ht, hv);
 
     // feature showcases
-    const f1 = feature(false, 'Hit rates', 'See how often it actually happens', 'Every player stat shows the season hit rate next to the last ten games, so you can judge any line for yourself.', (() => { const d = el('div'); const top = el('div', null, 'wlrow'); top.append(face('nba', '3945274', 'LD'), (() => { const x = el('div'); x.append(el('b', 'Luka Doncic · Points'), el('span', 'Line 30.5 · last 10 games', 'wlmuted')); return x; })(), el('b', '7/10 · 70%', 'wlhit')); d.append(top, chart([34, 29, 41, 27, 36, 33, 25, 38, 31, 35], 30.5)); return d; })());
+    const DEMO = { Points: { vals: [34, 29, 41, 27, 36, 33, 25, 38, 31, 35], line: 30.5, step: 1 }, Rebounds: { vals: [8, 11, 6, 9, 10, 7, 12, 8, 9, 10], line: 8.5, step: 0.5 }, Assists: { vals: [9, 11, 7, 10, 13, 8, 9, 12, 10, 11], line: 9.5, step: 0.5 } };
+    const f1 = feature(false, 'Hit rates', 'See how often it actually happens', 'Every player stat shows the season hit rate next to the last ten games, so you can judge any line for yourself. Try it on Luka: pick a stat, then drag the line.', (() => {
+      let cur = 'Points', line = DEMO.Points.line; const d = el('div', null, 'wldemo');
+      const top = el('div', null, 'wlrow'), who = el('div'), hit = el('b', '', 'wlhit'); who.append(el('b', 'Luka Doncic'), el('span', 'Last 10 games', 'wlmuted'));
+      top.append(face('nba', '3945274', 'LD'), who, hit);
+      const tabsD = el('div', null, 'wltabs wlsmall'), ctl = el('div', null, 'wlctl'), plot = el('div', null, 'wlplot');
+      const lineLab = el('b', '', 'wlbig'), minus = btn('−', 'wlstep', () => setLine(line - DEMO[cur].step)), plus = btn('+', 'wlstep', () => setLine(line + DEMO[cur].step));
+      minus.setAttribute('aria-label', 'Lower the line'); plus.setAttribute('aria-label', 'Raise the line');
+      const lc = el('div', null, 'wllc'); lc.append(el('span', 'Line', 'wlmuted'), minus, lineLab, plus); ctl.append(lc, el('span', 'Drag on the chart or use − and +', 'wlmuted wlhint'));
+      const range = () => { const v = DEMO[cur].vals, lo = Math.min(...v) - 2, hi = Math.max(...v) + 2; return { lo: Math.max(0, lo), hi }; };
+      const setLine = (x) => { const r = range(), s = DEMO[cur].step; line = Math.min(r.hi - 0.5, Math.max(r.lo + 0.5, Math.round(x / 0.5) * 0.5)); if (s === 1 && line % 1 === 0) line += 0.5; draw(); };
+      const draw = () => {
+        const v = DEMO[cur].vals, r = range(), n = v.length, hits = v.filter((x) => x > line).length;
+        hit.textContent = hits + '/' + n + ' · ' + Math.round(hits / n * 100) + '%'; hit.className = 'wlhit ' + (hits / n >= 0.7 ? 'up' : hits / n <= 0.3 ? 'dn' : '');
+        lineLab.textContent = String(line);
+        plot.replaceChildren();
+        v.forEach((x) => { const c = el('div', null, 'wlcol'), b = el('i', null, x > line ? 'hit' : x < line ? 'miss' : 'push'); b.style.height = Math.max(6, (x - r.lo) / (r.hi - r.lo) * 100) + '%'; c.append(b, el('span', String(x))); plot.append(c); });
+        const ln = el('div', null, 'wlline'); ln.style.bottom = 'calc(22px + (100% - 22px) * ' + ((line - r.lo) / (r.hi - r.lo)).toFixed(4) + ')'; ln.append(el('b', String(line))); plot.append(ln);
+      };
+      Object.keys(DEMO).forEach((k) => { const b = btn(k, 'wltab' + (k === cur ? ' on' : ''), () => { cur = k; line = DEMO[k].line; [...tabsD.children].forEach((x) => x.classList.toggle('on', x.textContent === k)); draw(); }); tabsD.append(b); });
+      const fromPointer = (e) => { const rc = plot.getBoundingClientRect(), r = range(), f = 1 - Math.min(1, Math.max(0, (e.clientY - rc.top - 6) / Math.max(1, rc.height - 28))); setLine(r.lo + f * (r.hi - r.lo)); };
+      let drag = false; plot.addEventListener('pointerdown', (e) => { drag = true; try { plot.setPointerCapture(e.pointerId); } catch (x) { /* ignore */ } fromPointer(e); e.preventDefault(); });
+      plot.addEventListener('pointermove', (e) => { if (drag) fromPointer(e); }); ['pointerup', 'pointercancel'].forEach((t) => plot.addEventListener(t, () => { drag = false; }));
+      d.append(top, tabsD, plot, ctl); draw(); return d;
+    })());
     const f2 = feature(true, 'Live games', 'Follow it as it happens', 'Scores, quarter by quarter, full box scores and a red dot beside every player who is on the court right now.', (() => { const t2 = el('table', null, 'wlmini'); [['Player', 'MIN', 'PTS', 'REB', 'FG'], ['L. Doncic', '36', '38', '9', '13-25', '3945274', 'LD', 1], ['A. Reaves', '33', '24', '4', '8-16', '4066457', 'AR', 1], ['V. Wembanyama', '35', '31', '14', '11-19', '5104157', 'VW', 1], ['D. Fox', '32', '19', '3', '7-14', '4066259', 'DF']].forEach((r, i) => { const tr = el('tr'); r.slice(0, 5).forEach((c, j) => { const t = el(i ? 'td' : 'th'); if (i && !j) t.append(nameCell(c, r[5], r[6], r[7])); else t.append(document.createTextNode(c)); tr.append(t); }); t2.append(tr); }); return t2; })());
     const f3 = feature(false, 'Matchups and defence', 'Where the pressure comes from', 'Sacks, QB hits, tackles for loss and passes defended for every NFL team, plus points allowed by area of the court in the NBA.', (() => { const t3 = el('table', null, 'wlmini'); [['Defence', 'TKL', 'SACK', 'TFL', 'QB HIT', 'PD'], ['P. Queen', '14', '1', '1', '2', '0'], ['P. Wilson', '17', '0', '0', '0', '1'], ['J. Brisker', '10', '0', '0', '1', '0'], ['Team', '73', '3', '4', '6', '5']].forEach((r, i, a) => { const tr = el('tr', null, i === a.length - 1 ? 'tot' : ''); r.forEach((c) => tr.append(el(i ? 'td' : 'th', c))); t3.append(tr); }); return t3; })());
     const f4 = feature(true, 'Fighters', 'Fight research without the guesswork', 'Side by side tale of the tape, career strike and takedown rates, the full record with a stat sheet for every past fight, and round by round events once it is over.', (() => { const d = el('div', null, 'wlfight'); const h = el('div', null, 'wlfh'); const a = el('div', null, 'wlfc'); a.append(face('mma', '4426000', 'CG', 1), el('b', 'Gane'), el('span', 'FRA', 'wlflag')); const m = el('b', 'VS', 'wlvs'); const b = el('div', null, 'wlfc'); b.append(face('mma', '4049391', 'JH'), el('b', 'Hokit'), el('span', 'USA', 'wlflag')); h.append(a, m, b); d.append(h); [['11-2', 'UFC record', '4-0'], ['81"', 'Reach', '73.5"'], ['5.4', 'Strikes landed / min', '6.1'], ['62%', 'Striking accuracy', '58%']].forEach(([x, l, y]) => { const r = el('div', null, 'wltape'); r.append(el('b', x, 'l'), el('span', l), el('b', y)); d.append(r); }); return d; })());
 
     // sports
-    const SPORTS = [['NBA', ['Live scores and full box scores', 'Hit rates for points, rebounds, assists and threes', 'Team pages, rosters and injuries', 'Points allowed by court zone']], ['NFL', ['Live passing, rushing and receiving', 'Defence: sacks, QB hits, tackles for loss', 'Player prop hit rates', 'Team ratings and recent form']], ['Football', ['Premier League, La Liga and Champions League', 'Fixtures, form and head to head', 'Live scores with goals and cards', 'Team stats and league tables']], ['UFC', ['Every card with live fight status', 'Tale of the tape and career rates', 'Full fight history with stat sheets', 'Results, scorecards and round events']]];
-    const lg2 = el('section', null, 'wlleagues'); lg2.append(el('span', 'Every league', 'wlkick'), el('h2', 'One toolkit for four sports'));
+    const SPORTS = [['NBA', ['Live scores and full box scores', 'Hit rates for points, rebounds, assists and threes', 'Team pages, rosters and injuries', 'Points allowed by court zone']], ['NFL', ['Live passing, rushing and receiving', 'Defence: sacks, QB hits, tackles for loss', 'Player prop hit rates', 'Team ratings and recent form']], ['Football', ['Premier League, La Liga and Champions League', 'Fixtures, form and head to head', 'Live scores with goals and cards', 'Team stats and league tables']], ['UFC', ['Every card with live fight status', 'Tale of the tape and career rates', 'Full fight history with stat sheets', 'Results, scorecards and round events']], ['NRL', ['Off-season: the 2027 season starts in March', 'Live scores and full match stats from round 1', 'Try-scorer and player stat hit rates', 'Ladder, team form and head to head']], ['AFL', ['Off-season: the 2027 season starts in March', 'Live scores and full match stats from round 1', 'Goal-kicker, disposal and mark hit rates', 'Ladder, team form and head to head']]];
+    const lg2 = el('section', null, 'wlleagues'); lg2.append(el('span', 'Every league', 'wlkick'), el('h2', 'One toolkit, every sport'));
     const tabs = el('div', null, 'wltabs'), body = el('ul', null, 'wlbul');
     const showL = (i) => { [...tabs.children].forEach((b, j) => b.classList.toggle('on', i === j)); body.replaceChildren(...SPORTS[i][1].map((t) => { const li = el('li', t); return li; })); };
     SPORTS.forEach(([n], i) => tabs.append(btn(n, 'wltab', () => showL(i)))); showL(0); lg2.append(tabs, body);

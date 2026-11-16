@@ -2320,3 +2320,15 @@ html body .appbar .sports button.sp{flex:none}
 html.pl-on #appbar .sports{display:none!important}
 html.pl-on .ssearch{display:none!important}
 .plxf select{padding:9px 10px}.plxq{padding:10px 14px}
+
+/* landing: top bar clear of the phone's status bar and notch, and the interactive hit-rate demo */
+.wlbar{padding-top:calc(env(safe-area-inset-top,0px) + 22px)!important;padding-bottom:12px}
+html.pwa .wlbar{padding-top:calc(env(safe-area-inset-top,0px) + 40px)!important}
+.wlsmall{gap:6px}.welcome .wlsmall button.wltab{padding:7px 14px;font-size:.88rem}
+.wlplot{position:relative;display:flex;align-items:stretch;gap:6px;height:210px;touch-action:none;cursor:ns-resize;user-select:none;-webkit-user-select:none}
+.wlplot .wlcol{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;height:100%;font-size:.66rem;color:var(--sb-muted)}.wlplot .wlcol i{display:block;width:100%;border-radius:4px 4px 0 0;transition:height .25s ease,background-color .15s}.wlplot .wlcol i.hit{background:#1fd56b}.wlplot .wlcol i.miss{background:#ff5a5f}.wlplot .wlcol i.push{background:#8f949d}.wlplot .wlcol span{height:16px;line-height:16px}
+.wlplot .wlline{position:absolute;left:0;right:0;border-top:2px dashed #fff;pointer-events:none}.wlplot .wlline b{position:absolute;right:0;top:-22px;font-size:.74rem;background:#fff;color:#000;border-radius:6px;padding:1px 7px}
+.wlctl{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.wllc{display:flex;align-items:center;gap:10px}.wlbig{font-size:1.4rem;min-width:3.4rem;text-align:center;font-variant-numeric:tabular-nums}
+.welcome button.wlstep{width:38px;height:38px;font:inherit;font-size:1.3rem;font-weight:800;color:#fff;background:#22262d;border:1px solid #3a3f48;border-radius:50%;cursor:pointer;padding:0}
+.wlhint{font-size:.74rem}
+.wldemo{display:flex;flex-direction:column;gap:14px}
