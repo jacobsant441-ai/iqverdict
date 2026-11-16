@@ -1,4 +1,4 @@
-// Latest sports news from ESPN's free news feeds (no key): NBA, NFL, Premier League, La Liga, Champions League, UFC.
+// Latest sports news from ESPN's free news feeds (no key): NBA, NFL, Premier League, La Liga, Champions League, UFC, NRL, AFL.
 // Writes public/data/news.json: headline, short summary, photo link, article link, when it was published, and
 // the players / teams it is tagged with (ESPN ids, the same ids as our player data). Only headlines and links are
 // kept, never full articles. Run by the local server every 30 minutes (scripts/local-server.py); safe to run by hand.
@@ -14,6 +14,8 @@ const FEEDS = [
   { sp: 'fb', league: 'La Liga', path: 'soccer/esp.1' },
   { sp: 'fb', league: 'Champions League', path: 'soccer/uefa.champions' },
   { sp: 'ufc', league: 'UFC', path: 'mma/ufc' },
+  { sp: 'nrl', league: 'NRL', path: 'rugby-league/3' },
+  { sp: 'afl', league: 'AFL', path: 'australian-football/afl' },
 ];
 const KEEP_H = 72; // hours of news to keep
 

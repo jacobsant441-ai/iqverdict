@@ -1498,14 +1498,14 @@
   const newsItem = (x) => {
     const a = el('a', null, 'nwi'); a.href = x.link; a.target = '_blank'; a.rel = 'noopener noreferrer';
     const th = el('span', null, 'nwth' + (x.video ? ' vid' : '')); if (x.img) { const im = document.createElement('img'); im.src = x.img; im.alt = ''; im.loading = 'lazy'; th.append(im); }
-    const t = el('span', null, 'nwt'); t.append(el('b', x.headline), el('small', x.league + ' · ' + ago(x.published) + (x.video ? ' · video' : '')));
+    const t = el('span', null, 'nwt'); t.append(el('b', x.headline), el('small', x.league + (x.published ? ' · ' + ago(x.published) : '') + (x.video ? ' · video' : '')));
     a.append(th, t); return a;
   };
   const NWF = { sp: 'all', more: false };
   dash.draw('hnews', (box) => {
     const sec = box.closest('section'), all = newsRows();
     if (sec) sec.classList.toggle('isempty', !all.length); if (!all.length) { box.replaceChildren(); return; }
-    const SPN = { nba: 'NBA', nfl: 'NFL', fb: 'Football', ufc: 'UFC' }, sps = Object.keys(SPN).filter((k) => all.some((x) => x.sp === k));
+    const SPN = { nba: 'NBA', nfl: 'NFL', fb: 'Football', ufc: 'UFC', nrl: 'NRL', afl: 'AFL' }, sps = Object.keys(SPN).filter((k) => all.some((x) => x.sp === k));
     const chips = el('div', null, 'bbchips');
     const chip = (lab, k) => { const c = el('button', lab, 'bbchip' + (NWF.sp === k ? ' on' : '')); c.type = 'button'; c.addEventListener('click', () => { NWF.sp = k; NWF.more = false; dash.draw('hnews'); }); return c; };
     chips.append(chip('All', 'all'), ...sps.map((k) => chip(SPN[k], k)));
