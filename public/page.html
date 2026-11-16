@@ -115,6 +115,7 @@
 <header class="fghero" id="fghero" data-draw="fghero" data-source="ufcfights ufcp pidx hs_ufc hs_ufc_hd livegames livebox"></header>
 <section class="card sec fgsec"><div data-draw="fgtape" data-source="ufcfights ufcp pidx ufcdetail livegames livebox"></div></section>
 </div>
+<div class="view" id="view-off" hidden><section class="sec" data-draw="offview"></section></div>
 <div class="view" id="view-ufc" hidden>
 <header class="hero ufchero">
 <div class="brand"><span class="eyebrow">UFC tracker · upcoming cards · AEDT</span></div>
@@ -248,7 +249,7 @@ const nbaDay = (r) => normDay(r.date || NBA_DAY);
 const fbDay = (x) => normDay(String(x.time).split(',')[0]);
 const nflDay = (x) => normDay(String(x.kick).split(',')[0]);
 const gamesFor = (sp, day) => sp === 'nba' ? rows('games').filter((r) => nbaDay(r) === day) : sp === 'ufc' ? rows('ufcfights').filter((x) => normDay(x.date) === day) : sp === 'fb' ? rows('fixtures').filter((x) => fbDay(x) === day) : rows('nflgames').filter((x) => nflDay(x) === day);
-const SPN = { nba: 'NBA', fb: 'Football', nfl: 'NFL', ufc: 'UFC' };
+const SPN = { nba: 'NBA', fb: 'Football', nfl: 'NFL', ufc: 'UFC', nrl: 'NRL', afl: 'AFL' };
 const schedFor = (sp, day) => rows('schedule').filter((h) => (h.sport || 'nba') === sp && normDay(h.date) === day && !gamesFor(sp, day).some((g) => g.id === h.id || (sp === 'fb' && norm(g.home).slice(0, 5) === norm(h.home_name).slice(0, 5))));
 const histFor = (sp, day) => rows('history').filter((h) => h.sport === sp && normDay(h.date) === day);
 const fl = (f) => (Array.isArray(f) ? f : typeof f === 'string' && f ? f.split(/\n|\s*\|\s*|(?<=\.)\s+(?=[A-Z])/).filter(Boolean) : []);
@@ -381,7 +382,7 @@ function emptyBox(sp) {
   if (nxt) { const b = el('button', 'Jump to ' + nxt.k); b.type = 'button'; b.addEventListener('click', () => { selDay = nxt.k; wkOff = Math.floor(nxt.i / 7); redrawAll(); }); d.append(b); }
   return d;
 }
-function redrawAll() { ['bestall', 'hslive', 'hpod', 'hgotn', 'hinj', 'hnews', 'hsicon', 'hscount', 'hstrip', 'rvboard', 'rvlist', 'rvrec', 'rvins', 'rvsum', 'rveye', 'rvhead', 'pgrid', 'fbgrid', 'nflgrid', 'ufcgrid', 'ufcstats', 'appbar', 'rvall', 'rvstats', 'rvsum', 'rveye', 'rvhead', 'rvlive'].forEach((n) => dash.draw(n)); }
+function redrawAll() { ['bestall', 'hslive', 'hpod', 'hgotn', 'hinj', 'hnews', 'hsicon', 'hscount', 'hstrip', 'rvboard', 'rvlist', 'rvrec', 'rvins', 'rvsum', 'rveye', 'rvhead', 'pgrid', 'fbgrid', 'nflgrid', 'ufcgrid', 'ufcstats', 'offview', 'appbar', 'rvall', 'rvstats', 'rvsum', 'rveye', 'rvhead', 'rvlive'].forEach((n) => dash.draw(n)); }
 function syncChrome() {
   const ab = document.getElementById('appbar'); if (!ab) return;
   const sh = (id) => { const e = document.getElementById(id); return e && !e.hidden; };
@@ -396,6 +397,7 @@ function applyView() {
   document.getElementById('view-fb').hidden = !(sec === 'home' && sport === 'fb');
   document.getElementById('view-nfl').hidden = !(sec === 'home' && sport === 'nfl');
   document.getElementById('view-ufc').hidden = !(sec === 'home' && sport === 'ufc');
+  { const vo = document.getElementById('view-off'); if (vo) { vo.hidden = !(sec === 'home' && (sport === 'nrl' || sport === 'afl')); vo.dataset.sp = sport; } }
   document.getElementById('view-rv').hidden = sec !== 'review';
   document.querySelectorAll('#view-start').forEach((v) => { v.hidden = sec !== 'start'; });
   document.querySelectorAll('#view-player').forEach((v) => { v.hidden = sec !== 'player'; });
@@ -426,9 +428,9 @@ dash.draw('appbar', (box) => {
   }
   cal.append(calh, days);
   const sp = el('div', null, 'sports');
-  [['nba', '🏀'], ['fb', '⚽'], ['nfl', '🏈'], ['ufc', '🥊']].forEach(([k, ic]) => {
+  [['nba', '🏀'], ['fb', '⚽'], ['nfl', '🏈'], ['ufc', '🥊'], ['nrl', 'NRL'], ['afl', 'AFL']].forEach(([k, ic]) => {
     const b = el('button', null, 'sp' + (k === sport ? ' on' : '')); b.type = 'button';
-    const c = el('span', null, 'c'); const ti = window.TAB_ICONS && window.TAB_ICONS[k]; if (ti) { const im = document.createElement('img'); im.src = ti; im.alt = SPN[k]; c.append(im); c.classList.add('ico'); } else c.textContent = ic; const n = new Set([...gamesFor(k, selDay), ...histFor(k, selDay), ...schedFor(k, selDay)].map((g) => g.id)).size; if (n) c.append(el('em', String(n))); // each game once (it can be in more than one list)
+    const c = el('span', null, 'c'); const ti = window.TAB_ICONS && window.TAB_ICONS[k]; if (ti) { const im = document.createElement('img'); im.src = ti; im.alt = SPN[k]; c.append(im); c.classList.add('ico'); } else c.textContent = ic; const off = k === 'nrl' || k === 'afl', n = off ? 0 : new Set([...gamesFor(k, selDay), ...histFor(k, selDay), ...schedFor(k, selDay)].map((g) => g.id)).size; if (off) c.append(el('em', 'Off')); else if (n) c.append(el('em', String(n))); // each game once (it can be in more than one list)
     b.append(c, el('span', SPN[k]));
     b.addEventListener('click', () => { sport = k; sec = 'home'; applyView(); }); sp.append(b);
   });

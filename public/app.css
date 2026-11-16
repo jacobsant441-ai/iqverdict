@@ -2270,3 +2270,15 @@ html.wl-on body{overflow:hidden}
 /* No lift on hover: a card that moves up under the cursor flickers when the pointer rests on its bottom edge */
 html body .hg:hover,html body .hg:focus-visible,html body .pick:hover,html body .tmp:hover,html body .gcard:hover,html body .rvg:hover,html body .bbr:hover{transform:none!important}
 html body .hg,html body .pick,html body .tmp,html body .gcard{transition:border-color .15s ease,background-color .15s ease!important}
+
+/* NRL and AFL: off-season cards */
+.offcard{display:flex;flex-direction:column;gap:14px;padding:18px}
+.offtop{display:flex;align-items:center;gap:14px}.offtop h2{margin:0;font-size:1.6rem}.offic{width:54px;height:54px;border-radius:50%;border:2px solid #3a3f48;display:grid;place-items:center;flex:none}.offic img{width:30px;height:30px}
+.offpill{margin-left:auto;font-size:.74rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--sb-muted);border:1px solid var(--sb-line);border-radius:999px;padding:6px 12px;background:#0b0c0f}
+.offtxt{margin:0;color:#c9ccd2;line-height:1.55}
+.offlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}.offlist li{background:#16181d;border:1px solid var(--sb-line);border-radius:12px;padding:12px 14px;display:flex;gap:10px;align-items:center}.offlist li::before{content:"";width:8px;height:8px;border-radius:50%;background:#3a3f48;flex:none}
+html body .appbar .sports button.sp .c em{white-space:nowrap}
+
+/* league logos on the NRL / AFL cards */
+.offic{width:68px;height:68px;border:0;background:none}.offic img{width:68px;height:68px;object-fit:contain}
+html body .appbar .sports button.sp .c.ico img{object-fit:contain}
