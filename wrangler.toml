@@ -7,4 +7,4 @@ compatibility_date = "2026-11-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "iqverdict"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "a84961f0-fed2-4045-9dad-8e471680c6e9"
