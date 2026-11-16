@@ -2260,3 +2260,10 @@ html.wl-on body{overflow:hidden}
 @media(min-width:780px){.wlprices{grid-template-columns:1fr 1fr;align-items:start}}
 .welcome,.welcome *{box-sizing:border-box}.welcome{overflow-x:hidden}
 .wlcard button.wlgo,.wlcard button.wlalt{flex:none;width:100%}
+
+/* landing: real faces and team logos */
+.wlface{overflow:hidden;background:#22262d;position:relative}.wlface img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.wllg{width:54px;height:54px;flex:none}.wllg img{width:100%;height:100%;object-fit:contain}
+.wlnm{display:inline-flex;align-items:center;gap:8px}.wlnm .wlpc{width:30px;height:30px;font-size:.62rem}.wlmini td:first-child{white-space:nowrap}
+.wlfc .wlpc.wlface{width:64px;height:64px}
+.wlpanel::before,.wlpanel::after,.wlgame::before,.wlgame::after{content:none!important;display:none!important}
