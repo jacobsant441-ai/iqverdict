@@ -2332,3 +2332,9 @@ html.pwa .wlbar{padding-top:calc(env(safe-area-inset-top,0px) + 40px)!important}
 .welcome button.wlstep{width:38px;height:38px;font:inherit;font-size:1.3rem;font-weight:800;color:#fff;background:#22262d;border:1px solid #3a3f48;border-radius:50%;cursor:pointer;padding:0}
 .wlhint{font-size:.74rem}
 .wldemo{display:flex;flex-direction:column;gap:14px}
+
+/* Players graph: ten fixed, skinny slots so every row lines up */
+.plxgraph{gap:3px;width:87px;height:38px}
+.plxgraph i.h,.plxgraph i.m,.plxgraph i.p,.plxgraph i.e{flex:none;width:6px;min-width:6px;border-radius:1px 1px 0 0}
+.plxgraph i.e{height:3px;background:#2a2e36}
+.plxgraph i.out{opacity:.35}

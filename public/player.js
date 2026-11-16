@@ -613,8 +613,11 @@ dash.draw('plexp', (box) => {
       const tx = el('span'); const [away, home] = String(r.game).split('-'), mine = id.team, opp = mine === home ? away : home;
       tx.append(el('b', r.player), el('small', (mine || '') + (opp ? (mine === home ? ' vs ' : ' @ ') + opp : '') + ' · ' + plxTime(r.kick))); who.append(tx);
       const gr = el('span', null, 'plxgraph');
-      const mx = Math.max(st.line, ...st.use.map((u) => u.v)) * 1.1 || 1;
-      st.use.slice().reverse().forEach((u) => { const b = el('i', null, u.v > st.line ? 'h' : u.v < st.line ? 'm' : 'p'); b.style.height = Math.max(8, Math.round((u.v / mx) * 100)) + '%'; b.title = u.g.date + ': ' + u.v; gr.append(b); });
+      // always ten slots of the same size: the last ten games, oldest to newest (empty slots on the left when he has played fewer);
+      // games outside the chosen window are dimmed
+      const ten = x.gs.slice(0, 10), mx = Math.max(st.line, ...ten.map((u) => u.v)) * 1.1 || 1, wn = PLX.win || 10;
+      for (let i = 0; i < 10 - ten.length; i++) gr.append(el('i', null, 'e'));
+      ten.slice().reverse().forEach((u, k) => { const age = ten.length - 1 - k, b = el('i', null, (u.v > st.line ? 'h' : u.v < st.line ? 'm' : 'p') + (age >= wn ? ' out' : '')); b.style.height = Math.max(8, Math.round((u.v / mx) * 100)) + '%'; b.title = u.g.date + ': ' + u.v; gr.append(b); });
       const ln = el('i', null, 'plxln'); ln.style.bottom = Math.round((st.line / mx) * 100) + '%'; gr.append(ln);
       const px = el('span', null, 'plxpx'); px.append(el('span', 'O ' + Number(r.over).toFixed(2)), el('span', 'U ' + Number(r.under).toFixed(2)));
       const pct = st.pct == null ? '–' : st.pct + '%';
