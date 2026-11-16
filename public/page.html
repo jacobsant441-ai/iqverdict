@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="app.css">
 <div id="ssload" aria-live="polite" aria-label="Loading IQVerdict"><img src="icons/icon-512.png" alt="" width="96" height="96"><b>IQVerdict</b><span class="ldbar"><i></i></span><small id="ssloadmsg">Loading today's games…</small></div>
 <div class="nt">
-<nav class="bnav" id="bnav" aria-label="Sections"><button type="button" data-sec="start" class="on"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg>Home</button><button type="button" data-sec="home"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16M8.5 3v4M15.5 3v4"/></svg>Games</button><button type="button" data-sec="stand"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Standings</button><button type="button" data-sec="bets"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10M10 20V4M15 20v-7M20 20v-4"/></svg>Bets</button><button type="button" data-sec="review"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m8.2 12.2 2.6 2.6 5-5.2"/></svg>Review</button></nav>
+<nav class="bnav" id="bnav" aria-label="Sections"><button type="button" data-sec="start" class="on"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg>Home</button><button type="button" data-sec="home"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16M8.5 3v4M15.5 3v4"/></svg>Games</button><button type="button" data-sec="players"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.7 3.1-6 7-6s7 2.3 7 6"/></svg>Players</button><button type="button" data-sec="stand"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Standings</button><button type="button" data-sec="review"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m8.2 12.2 2.6 2.6 5-5.2"/></svg>Review</button></nav>
 <span class="livetick" data-draw="livetick" data-source="livegames" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"></span>
 <div class="appbar" id="appbar" data-draw="appbar" data-source="games fixtures nflgames history schedule ufcfights"></div>
 <div class="ssearch" role="search"><label class="ssbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="ssq" type="search" placeholder="Search teams, players, fighters" aria-label="Search teams, players and fighters" autocomplete="off" spellcheck="false"></label><div class="ssres" id="ssres" role="listbox" aria-label="Search results" data-draw="ssearch" data-source="pidx nfltable table"></div></div>
@@ -66,6 +66,7 @@
 </div>
 </div>
 <div class="view" id="view-bets" hidden>
+<div class="topbar"><button type="button" class="backbtn" id="bbback" aria-label="Back">‹ Back</button></div>
 <section class="card hcard" id="hpod"><h2>Stat of the day</h2><div data-draw="hpod" data-source="games pred fixtures nflgames odds props propfind propbook altlines troster history hs_nba hs_nfl hs_nfl2 pubprops pubalts"></div></section>
 <section class="card bb bbpage"><h2>Best stats</h2><div data-draw="bestall" data-source="games pred fixtures nflgames odds history props propfind propbook altlines valuelog troster hs_nba hs_nfl hs_nfl2 news pubprops pubalts"></div></section>
 </div>
@@ -144,6 +145,7 @@
 </section>
 </div>
 </div>
+<div class="view" id="view-players" hidden><section class="sec plxsec" data-draw="plexp" data-source="props pgl nflp pidx troster games schedule history hs_nba hs_nfl hs_nfl2"></section></div>
 <div class="view" id="view-stand" hidden><section class="card sec"><h2>Standings</h2><div data-draw="standings" data-source="tprof table nfltable ufcp ufcfights"></div></section></div>
 <div class="view" id="view-rv" hidden>
 <div class="topbar rvtop"><button type="button" class="backbtn" id="rvhome">‹ Back to home</button></div>
@@ -382,11 +384,11 @@ function emptyBox(sp) {
   if (nxt) { const b = el('button', 'Jump to ' + nxt.k); b.type = 'button'; b.addEventListener('click', () => { selDay = nxt.k; wkOff = Math.floor(nxt.i / 7); redrawAll(); }); d.append(b); }
   return d;
 }
-function redrawAll() { ['bestall', 'hslive', 'hpod', 'hgotn', 'hinj', 'hnews', 'hsicon', 'hscount', 'hstrip', 'rvboard', 'rvlist', 'rvrec', 'rvins', 'rvsum', 'rveye', 'rvhead', 'pgrid', 'fbgrid', 'nflgrid', 'ufcgrid', 'ufcstats', 'offview', 'appbar', 'rvall', 'rvstats', 'rvsum', 'rveye', 'rvhead', 'rvlive'].forEach((n) => dash.draw(n)); }
+function redrawAll() { ['bestall', 'hslive', 'hpod', 'hgotn', 'hinj', 'hnews', 'hsicon', 'hscount', 'hstrip', 'rvboard', 'rvlist', 'rvrec', 'rvins', 'rvsum', 'rveye', 'rvhead', 'pgrid', 'fbgrid', 'nflgrid', 'ufcgrid', 'ufcstats', 'offview', 'plexp', 'appbar', 'rvall', 'rvstats', 'rvsum', 'rveye', 'rvhead', 'rvlive'].forEach((n) => dash.draw(n)); }
 function syncChrome() {
   const ab = document.getElementById('appbar'); if (!ab) return;
   const sh = (id) => { const e = document.getElementById(id); return e && !e.hidden; };
-  ab.classList.toggle('onstart', sec === 'start'); document.documentElement.classList.toggle('st-on', sec === 'stand'); document.documentElement.classList.toggle('rv-on', sec === 'review');
+  ab.classList.toggle('onstart', sec === 'start'); document.documentElement.classList.toggle('st-on', sec === 'stand'); document.documentElement.classList.toggle('pl-on', sec === 'players' || sec === 'bets'); document.documentElement.classList.toggle('rv-on', sec === 'review');
   ab.classList.toggle('nocal', !(sec === 'home' || sec === 'review'));
   ab.classList.toggle('compact', !!(sh('gamepage') || sh('fbgame') || sh('nflgame')));
   ab.classList.toggle('onreview', sec === 'review');
@@ -408,8 +410,9 @@ function applyView() {
   document.querySelectorAll('#view-fight').forEach((v) => { v.hidden = sec !== 'fight'; });
   document.querySelectorAll('#view-rvgame').forEach((v) => { v.hidden = sec !== 'rvgame'; });
   document.querySelectorAll('#view-stand').forEach((v) => { v.hidden = sec !== 'stand'; });
+  document.querySelectorAll('#view-players').forEach((v) => { v.hidden = sec !== 'players'; });
   [['mainpage', 'gamepage'], ['fbmain', 'fbgame'], ['nflmain', 'nflgame']].forEach(([m, g]) => { document.getElementById(m).hidden = false; document.getElementById(g).hidden = true; });
-  document.querySelectorAll('#bnav button').forEach((b) => b.classList.toggle('on', b.dataset.sec === sec));
+  document.querySelectorAll('#bnav button').forEach((b) => b.classList.toggle('on', b.dataset.sec === sec || (sec === 'bets' && b.dataset.sec === 'players')));
   syncChrome(); redrawAll(); goTop();
 }
 dash.draw('appbar', (box) => {

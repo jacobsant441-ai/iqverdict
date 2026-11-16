@@ -2286,3 +2286,37 @@ html body .appbar .sports button.sp .c.ico img{object-fit:contain}
 html body .appbar .sports{position:relative;justify-content:flex-start!important;overflow-x:auto!important;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-x:contain}
 html body .appbar .sports::-webkit-scrollbar{display:none}
 html body .appbar .sports button.sp{flex:none}
+
+/* Players tab */
+.plx{display:flex;flex-direction:column;gap:12px}
+.plxhead{display:flex;align-items:center;justify-content:space-between;gap:10px}.plxhead h2{margin:0}
+.plxbest{font:inherit;font-weight:800;font-size:.88rem;color:#000;background:#fff;border:0;border-radius:999px;padding:9px 16px;cursor:pointer}
+.plxsub{margin:0}
+.plxsp{display:flex;gap:8px}.plxpill{font:inherit;font-weight:800;color:#c9ccd2;background:#111317;border:1px solid var(--sb-line);border-radius:999px;padding:9px 20px;cursor:pointer}.plxpill.on{background:#fff;color:#000;border-color:#fff}
+.plxfilters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.plxq{grid-column:1/-1;font:inherit;font-size:1rem;color:#fff;background:#111317;border:1px solid var(--sb-line);border-radius:12px;padding:12px 14px}
+.plxf{display:flex;flex-direction:column;gap:4px;font-size:.68rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--sb-muted);min-width:0}
+.plxf select{font:inherit;font-size:.95rem;font-weight:600;text-transform:none;letter-spacing:0;color:#fff;background:#111317;border:1px solid var(--sb-line);border-radius:12px;padding:11px 10px;min-width:0;width:100%}
+.plxcount{margin:0;font-size:.82rem}
+.plxbody{display:flex;flex-direction:column;gap:8px}
+.plxrow{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"who hit" "line gr" "px px";gap:8px 12px;align-items:center;text-align:left;font:inherit;color:#fff;background:#111317;border:1px solid var(--sb-line);border-radius:14px;padding:12px;cursor:pointer;width:100%}
+.plxrow:hover{border-color:#fff}
+.plxth{display:none}
+.plxwho{grid-area:who;display:flex;align-items:center;gap:10px;min-width:0}.plxwho .av{width:42px;height:42px;flex:none}.plxwho span:last-child{display:flex;flex-direction:column;min-width:0}.plxwho b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.plxwho small{color:var(--sb-muted);font-size:.74rem}
+.plxline{grid-area:line;font-size:1.15rem}
+.plxpx{grid-area:px;display:flex;gap:14px;color:#c9ccd2;font-size:.86rem;font-variant-numeric:tabular-nums}
+.plxgraph{grid-area:gr;position:relative;display:flex;align-items:flex-end;gap:3px;height:38px;width:132px;justify-self:end}
+.plxgraph i.h,.plxgraph i.m,.plxgraph i.p{flex:1;border-radius:2px 2px 0 0;min-width:4px}.plxgraph i.h{background:#1fd56b}.plxgraph i.m{background:#ff5a5f}.plxgraph i.p{background:#8f949d}
+.plxgraph i.plxln{position:absolute;left:0;right:0;height:0;border-top:1.5px dashed #fff;opacity:.85}
+.plxhit{grid-area:hit;justify-self:end;font-size:1.25rem;font-variant-numeric:tabular-nums}.plxhit.up,.plxavg.up{color:#1fd56b}.plxhit.dn,.plxavg.dn{color:#ff5a5f}
+.plxavg{display:none}
+.plxnote{margin:6px 0 0;font-size:.78rem}
+@media(min-width:900px){
+  .plxfilters{grid-template-columns:2fr repeat(5,minmax(0,1fr))}.plxq{grid-column:auto}
+  .plxrow{grid-template-columns:minmax(220px,1.7fr) .6fr 1.1fr 1.3fr .6fr .6fr;grid-template-areas:none;padding:10px 14px}
+  .plxrow>*{grid-area:auto!important}.plxth{display:grid;cursor:default;background:none;border:0;padding:4px 14px;color:var(--sb-muted);font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase}.plxth:hover{border:0}
+  .plxavg{display:block;font-weight:700;font-variant-numeric:tabular-nums}.plxgraph{justify-self:start}.plxhit{justify-self:start;font-size:1.05rem}
+}
+html.pl-on #appbar .sports{display:none!important}
+html.pl-on .ssearch{display:none!important}
+.plxf select{padding:9px 10px}.plxq{padding:10px 14px}

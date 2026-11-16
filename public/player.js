@@ -509,3 +509,125 @@ dash.draw('nbahd', (box) => {
   const hd = el('div', null, 'hd'); hd.append(side(g.away, an), mid, side(g.home, hn));
   box.replaceChildren(hd);
 });
+
+// ---- Players tab: every player prop in one place. Pick a sport and a stat, filter by game, hit rate and window, and each row
+// shows the bookmaker line, the over / under prices, the last games against the line and the hit rate. Tap a row for the
+// player page. "Best stats" opens our top hit rates; its back button returns here.
+const PLX = { sp: 'nba', stat: { nba: 'PTS', nfl: 'RECYD' }, game: '', win: 10, min: 0, sort: 'hit', q: '', limit: 30 };
+const PLX_CACHE = { gen: -1, ids: null, pgl: null, nflp: null, vals: new Map() };
+const plxCaches = () => {
+  if (PLX_CACHE.gen === SSX.dataGen && PLX_CACHE.ids) return PLX_CACHE;
+  PLX_CACHE.gen = SSX.dataGen; PLX_CACHE.vals = new Map();
+  PLX_CACHE.ids = { nba: new Map(), nfl: new Map() };
+  rows('pidx').forEach((r) => { if (PLX_CACHE.ids[r.sp]) PLX_CACHE.ids[r.sp].set(norm(r.name), r); });
+  PLX_CACHE.pgl = new Map(rows('pgl').map((r) => [String(r.pid), r]));
+  PLX_CACHE.nflp = new Map(rows('nflp').map((r) => [String(r.pid), r]));
+  return PLX_CACHE;
+};
+const plxStatList = (sp) => {
+  const m = bkMap(sp), seen = new Map();
+  rows('props').forEach((r) => { if ((r.sp || 'nba') === sp && m[r.stat] && !BK_YES.has(r.stat) && r.over && r.under && !seen.has(r.stat)) seen.set(r.stat, 1); });
+  const label = (c) => (sp === 'nba' ? MK_NAME0[m[c]] || c : BK_SHORT[c] || c);
+  const order = sp === 'nba' ? ['PTS', 'REB', 'AST', '3PM', 'PA', 'PR', 'RA', 'PRA', 'STL', 'BLK', 'SB'] : [];
+  return [...seen.keys()].sort((a, b) => (order.indexOf(a) < 0 ? 99 : order.indexOf(a)) - (order.indexOf(b) < 0 ? 99 : order.indexOf(b))).map((c) => [c, label(c)]);
+};
+// the value of a stat in one past game
+const plxVal = (sp, g, code) => {
+  const k = bkMap(sp)[code]; if (!k) return undefined;
+  if (sp === 'nba') { switch (k) { case 'pa': return g.pts + g.ast; case 'pr': return g.pts + g.reb; case 'ra': return g.reb + g.ast; case 'pra': return g.pts + g.reb + g.ast; case 'sb': return g.stl + g.blk; default: return typeof g[k] === 'number' ? g[k] : undefined; } }
+  if (k.includes('+')) { const v = k.split('+').map((c) => g.v[c]); return v.some((x) => typeof x === 'number') ? v.reduce((a, b) => a + (Number(b) || 0), 0) : undefined; }
+  return typeof g.v[k] === 'number' ? g.v[k] : undefined;
+};
+// this season's games for a player, newest first (regular season)
+const plxGames = (sp, pid) => {
+  const c = plxCaches(), key = sp + pid; if (c.vals.has(key)) return c.vals.get(key);
+  let gs = [];
+  try {
+    if (sp === 'nba') { const r = c.pgl.get(String(pid)); gs = r ? plGames(r).filter((g) => g.season === plCur() && !Number(g.po)) : []; }
+    else { const r = c.nflp.get(String(pid)); const was = AT.sp; AT.sp = 'nfl'; try { gs = r ? atGames(r).filter((g) => g.season === AT_CUR.nfl) : []; } finally { AT.sp = was; } }
+  } catch (e) { gs = []; }
+  gs = gs.slice().sort((a, b) => (a.date < b.date ? 1 : -1));
+  c.vals.set(key, gs); return gs;
+};
+const plxRows = (sp, code) => {
+  const c = plxCaches(), now = Date.now(), best = new Map();
+  rows('props').forEach((r) => {
+    if ((r.sp || 'nba') !== sp || r.stat !== code || !r.over || !r.under) return;
+    if (r.kick && new Date(r.kick).getTime() < now - 3 * 3600000) return;
+    if (!r.main) return;
+    const k = norm(r.player), prev = best.get(k); if (!prev || (r.kick || '') < (prev.kick || '')) best.set(k, r);
+  });
+  const out = [];
+  best.forEach((r) => {
+    const id = c.ids[sp].get(norm(r.player)); if (!id) return;
+    const gs = plxGames(sp, id.id).map((g) => ({ g, v: plxVal(sp, g, code) })).filter((x) => typeof x.v === 'number');
+    out.push({ r, id, gs });
+  });
+  return out;
+};
+const plxStats = (row, win) => {
+  const line = Number(row.r.line), use = win === 0 ? row.gs : row.gs.slice(0, win), n = use.length;
+  const hits = use.filter((x) => x.v > line).length, avg = n ? use.reduce((t, x) => t + x.v, 0) / n : null;
+  const all = row.gs, sh = all.length ? Math.round((100 * all.filter((x) => x.v > line).length) / all.length) : null;
+  return { line, use, n, hits, pct: n ? Math.round((100 * hits) / n) : null, avg, season: sh, sn: all.length };
+};
+const plxGameName = (code) => { const m = String(code).split('-'); return m.length === 2 ? m[0] + ' @ ' + m[1] : code; };
+const plxTime = (iso) => { try { return new Date(iso).toLocaleString('en-AU', { weekday: 'short', hour: 'numeric', minute: '2-digit', timeZone: 'Australia/Sydney' }).replace(',', ''); } catch (e) { return ''; } };
+dash.draw('plexp', (box) => {
+  const ok = ['props', 'pidx', 'pgl', 'nflp'].every((d) => dash.data(d).status === 'ok');
+  if (!ok) { box.replaceChildren(el('p', 'Loading players…', 'muted')); return; }
+  const wrap = el('div', null, 'plx');
+  const head = el('div', null, 'plxhead'); head.append(el('h2', 'Players'));
+  const best = el('button', 'Best stats ›', 'plxbest'); best.type = 'button'; best.addEventListener('click', () => SSX.openBets()); head.append(best);
+  const sub = el('p', 'Every bookmaker line for today and tomorrow, with how often each player has gone over it. You make your own call.', 'muted plxsub');
+  const sportBar = el('div', null, 'plxsp');
+  ['nba', 'nfl'].forEach((s) => { const b = el('button', s.toUpperCase(), 'plxpill' + (PLX.sp === s ? ' on' : '')); b.type = 'button'; b.addEventListener('click', () => { PLX.sp = s; PLX.game = ''; PLX.limit = 30; dash.draw('plexp'); }); sportBar.append(b); });
+  const stats = plxStatList(PLX.sp);
+  if (stats.length && !stats.some(([c]) => c === PLX.stat[PLX.sp])) PLX.stat[PLX.sp] = stats[0][0];
+  const code = PLX.stat[PLX.sp];
+  const all = plxRows(PLX.sp, code);
+  const sel = (label, opts, cur, fn, cls) => { const w = el('label', null, 'plxf ' + (cls || '')); w.append(el('span', label)); const s = el('select'); opts.forEach(([v, t]) => { const o = el('option', t); o.value = String(v); if (String(v) === String(cur)) o.selected = true; s.append(o); }); s.addEventListener('change', () => fn(s.value)); w.append(s); return w; };
+  const games = [...new Map(all.map((x) => [x.r.game, x.r])).values()].sort((a, b) => String(a.kick).localeCompare(String(b.kick)));
+  const filters = el('div', null, 'plxfilters');
+  const q = el('input'); q.type = 'search'; q.placeholder = 'Search players or teams'; q.value = PLX.q; q.autocomplete = 'off'; q.className = 'plxq';
+  filters.append(q, sel('Stat', stats, code, (v) => { PLX.stat[PLX.sp] = v; PLX.limit = 30; dash.draw('plexp'); }),
+    sel('Game', [['', 'All games'], ...games.map((r) => [r.game, plxGameName(r.game) + ' · ' + plxTime(r.kick)])], PLX.game, (v) => { PLX.game = v; PLX.limit = 30; list(); }),
+    sel('Window', [[5, 'Last 5'], [10, 'Last 10'], [0, 'Season']], PLX.win, (v) => { PLX.win = Number(v); list(); }),
+    sel('Hit rate', [[0, 'Any'], [50, '50%+'], [60, '60%+'], [70, '70%+'], [80, '80%+'], [100, '100%']], PLX.min, (v) => { PLX.min = Number(v); PLX.limit = 30; list(); }),
+    sel('Sort', [['hit', 'Hit rate'], ['gap', 'Average vs line'], ['line', 'Line'], ['name', 'Name']], PLX.sort, (v) => { PLX.sort = v; list(); }));
+  const count = el('p', '', 'muted plxcount'), body = el('div', null, 'plxbody');
+  const list = () => {
+    const needle = norm(PLX.q);
+    let rs = all.map((x) => ({ ...x, st: plxStats(x, PLX.win) })).filter((x) => x.st.n >= 3);
+    if (PLX.game) rs = rs.filter((x) => x.r.game === PLX.game);
+    if (needle) rs = rs.filter((x) => norm(x.r.player).includes(needle) || norm(x.id.team || '').includes(needle));
+    if (PLX.min) rs = rs.filter((x) => (x.st.pct || 0) >= PLX.min);
+    const key = { hit: (x) => -(x.st.pct || 0) * 100 - (x.st.avg - x.st.line), gap: (x) => -(x.st.avg - x.st.line), line: (x) => -x.st.line, name: (x) => x.r.player }[PLX.sort];
+    rs.sort((a, b) => { const ka = key(a), kb = key(b); return typeof ka === 'string' ? ka.localeCompare(kb) : ka - kb; });
+    count.textContent = rs.length ? 'Showing ' + Math.min(PLX.limit, rs.length) + ' of ' + rs.length + ' props · ' + (PLX.win ? 'last ' + PLX.win + ' games' : 'this season') : '';
+    const head2 = el('div', null, 'plxrow plxth'); ['Player', 'Line', 'Over / Under', 'Last games', 'Hit', 'Avg'].forEach((h) => head2.append(el('span', h)));
+    const frag = [head2];
+    rs.slice(0, PLX.limit).forEach((x) => {
+      const { r, id, st } = x, row = el('button', null, 'plxrow'); row.type = 'button';
+      const who = el('span', null, 'plxwho'); who.append(avatar(PLX.sp === 'nba' ? 'nba' : 'nfl', id.id, r.player));
+      const tx = el('span'); const [away, home] = String(r.game).split('-'), mine = id.team, opp = mine === home ? away : home;
+      tx.append(el('b', r.player), el('small', (mine || '') + (opp ? (mine === home ? ' vs ' : ' @ ') + opp : '') + ' · ' + plxTime(r.kick))); who.append(tx);
+      const gr = el('span', null, 'plxgraph');
+      const mx = Math.max(st.line, ...st.use.map((u) => u.v)) * 1.1 || 1;
+      st.use.slice().reverse().forEach((u) => { const b = el('i', null, u.v > st.line ? 'h' : u.v < st.line ? 'm' : 'p'); b.style.height = Math.max(8, Math.round((u.v / mx) * 100)) + '%'; b.title = u.g.date + ': ' + u.v; gr.append(b); });
+      const ln = el('i', null, 'plxln'); ln.style.bottom = Math.round((st.line / mx) * 100) + '%'; gr.append(ln);
+      const px = el('span', null, 'plxpx'); px.append(el('span', 'O ' + Number(r.over).toFixed(2)), el('span', 'U ' + Number(r.under).toFixed(2)));
+      const pct = st.pct == null ? '–' : st.pct + '%';
+      row.append(who, el('b', String(st.line), 'plxline'), px, gr, el('b', pct, 'plxhit ' + (st.pct >= 70 ? 'up' : st.pct <= 30 ? 'dn' : '')), el('span', st.avg == null ? '–' : (Math.round(st.avg * 10) / 10).toFixed(1), 'plxavg ' + (st.avg > st.line ? 'up' : st.avg < st.line ? 'dn' : '')));
+      row.title = st.hits + ' of ' + st.n + ' games over ' + st.line + (st.sn ? ' · season ' + st.season + '% (' + st.sn + ' games)' : '');
+      row.addEventListener('click', () => { if (window.SSPP) window.SSPP.focus(PLX.sp, code, st.line, r.player, id.id); });
+      frag.push(row);
+    });
+    if (!rs.length) frag.push(el('p', all.length ? 'No props match these filters.' : 'No ' + PLX.sp.toUpperCase() + ' lines for this stat yet. Lines are fetched at 8:15 am and 8:15 pm Sydney time.', 'plnone'));
+    if (rs.length > PLX.limit) { const more = el('button', 'Show more', 'bbmore'); more.type = 'button'; more.addEventListener('click', () => { PLX.limit += 30; list(); }); frag.push(more); }
+    body.replaceChildren(...frag);
+  };
+  q.addEventListener('input', () => { PLX.q = q.value; PLX.limit = 30; list(); });
+  wrap.append(head, sub, sportBar, filters, count, body, el('p', 'Hit rate is how many of the last games the player finished over the line. Lines come from Australian bookmakers. For information only; this is not betting advice.', 'muted plxnote'));
+  box.replaceChildren(wrap); list();
+});
