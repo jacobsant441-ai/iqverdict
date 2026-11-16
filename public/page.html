@@ -431,9 +431,9 @@ dash.draw('appbar', (box) => {
   }
   cal.append(calh, days);
   const sp = el('div', null, 'sports');
-  [['nba', '🏀'], ['fb', '⚽'], ['nfl', '🏈'], ['ufc', '🥊'], ['nrl', 'NRL'], ['afl', 'AFL']].forEach(([k, ic]) => {
+  [['nba', '🏀'], ['fb', '⚽'], ['nfl', '🏈'], ['ufc', '🥊'], ['nrl', ''], ['afl', '']].forEach(([k, ic]) => {
     const b = el('button', null, 'sp' + (k === sport ? ' on' : '')); b.type = 'button';
-    const c = el('span', null, 'c'); const ti = window.TAB_ICONS && window.TAB_ICONS[k]; if (ti) { const im = document.createElement('img'); im.src = ti; im.alt = SPN[k]; c.append(im); c.classList.add('ico'); } else c.textContent = ic; const off = k === 'nrl' || k === 'afl', n = off ? 0 : new Set([...gamesFor(k, selDay), ...histFor(k, selDay), ...schedFor(k, selDay)].map((g) => g.id)).size; if (off) c.append(el('em', 'Off')); else if (n) c.append(el('em', String(n))); // each game once (it can be in more than one list)
+    const c = el('span', null, 'c'); const ti = (window.TAB_ICONS && window.TAB_ICONS[k]) || (window.OFF_ICONS && window.OFF_ICONS[k]); if (ti) { const im = document.createElement('img'); im.src = ti; im.alt = SPN[k]; c.append(im); c.classList.add('ico'); } else c.textContent = ic; const off = k === 'nrl' || k === 'afl', n = off ? 0 : new Set([...gamesFor(k, selDay), ...histFor(k, selDay), ...schedFor(k, selDay)].map((g) => g.id)).size; if (off) c.append(el('em', 'Off')); else if (n) c.append(el('em', String(n))); // each game once (it can be in more than one list)
     b.append(c, el('span', SPN[k]));
     b.addEventListener('click', () => { sport = k; sec = 'home'; applyView(); }); sp.append(b);
   });
