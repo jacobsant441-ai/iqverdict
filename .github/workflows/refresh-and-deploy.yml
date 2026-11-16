@@ -12,6 +12,11 @@ on:
     - cron: '27 * * * *'    # every hour: republish the site (fresh news, even when no results changed)
     - cron: '15 21 * * *'   # 21:15 UTC = 8:15 am Sydney (AEDT): bookmaker prices for today (The Odds API, paid plan)
     - cron: '15 9 * * *'    # 9:15 UTC = 8:15 pm Sydney (AEDT): early prices for tomorrow's NBA games
+    # GitHub sometimes drops a scheduled start, so the two price runs have back-up times; the job skips itself if prices are under 4 hours old
+    - cron: '50 9 * * *'
+    - cron: '35 10 * * *'
+    - cron: '50 21 * * *'
+    - cron: '35 22 * * *'
     - cron: '13 4 * * *'    # 4:13 UTC = 3:13 pm Sydney (AEDT; 2:13 pm in AEST): build tomorrow's picks and stats.
                             # GitHub usually starts scheduled runs 30-50 min late, so stats land around 4 pm.
   workflow_dispatch:
@@ -191,7 +196,7 @@ jobs:
     # Bookmaker prices from The Odds API (paid plan, key in the ODDS_API_KEY secret, never in a file):
     # 8:15 am Sydney for today's games, 8:15 pm for tomorrow's NBA games, or by hand with job = odds-am / odds-pm.
     # The files go to the odds-data branch (one commit, replaced each run), not main.
-    if: github.event.schedule == '15 21 * * *' || github.event.schedule == '15 9 * * *' || (github.event_name == 'workflow_dispatch' && startsWith(github.event.inputs.job, 'odds'))
+    if: contains(fromJSON('["15 21 * * *","50 21 * * *","35 22 * * *","15 9 * * *","50 9 * * *","35 10 * * *"]'), github.event.schedule) || (github.event_name == 'workflow_dispatch' && startsWith(github.event.inputs.job, 'odds'))
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -201,14 +206,28 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: bash scripts/odds-branch.sh pull
+      - name: Skip if prices were already fetched in the last 4 hours (a back-up start after the main one worked)
+        id: chk
+        run: |
+          skip=false
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            git fetch -q origin odds-data --depth 1 2>/dev/null || true
+            last=$(git log -1 --format=%ct FETCH_HEAD 2>/dev/null || echo 0)
+            [ $(( $(date +%s) - last )) -lt 14400 ] && skip=true
+          fi
+          echo "skip=$skip" >> "$GITHUB_OUTPUT"; echo "skip=$skip"
+      - if: steps.chk.outputs.skip != 'true'
+        run: bash scripts/odds-branch.sh pull
       - name: Fetch prices and rate every line
+        if: steps.chk.outputs.skip != 'true'
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
-          MODE: ${{ (github.event.schedule == '15 9 * * *' || github.event.inputs.job == 'odds-pm') && 'pm' || 'am' }}
+          MODE: ${{ (contains(fromJSON('["15 9 * * *","50 9 * * *","35 10 * * *"]'), github.event.schedule) || github.event.inputs.job == 'odds-pm') && 'pm' || 'am' }}
         run: bash scripts/odds-run.sh "$MODE"
-      - run: bash scripts/odds-branch.sh push
+      - if: steps.chk.outputs.skip != 'true'
+        run: bash scripts/odds-branch.sh push
       - name: Save the repriced UFC fight cards (main)
+        if: steps.chk.outputs.skip != 'true'
         run: |
           git config user.name "IQVerdict data bot"
           git config user.email "actions@users.noreply.github.com"
