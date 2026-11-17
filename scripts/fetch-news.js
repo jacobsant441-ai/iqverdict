@@ -46,6 +46,12 @@ async function getJson(url) {
       });
     }
   });
+  // ESPN's NRL feed omits dates; look each undated article up one by one so it sorts and expires properly.
+  await Promise.all(out.filter((x) => !x.published).map(async (x) => {
+    const j = await getJson(`https://content.core.api.espn.com/v1/sports/news/${x.id}`);
+    const h = j && j.headlines && j.headlines[0];
+    if (h) x.published = h.published || h.lastModified || '';
+  }));
   if (!ok) { console.error('No news feed answered (ESPN down?); news.json left as it was.'); process.exit(1); }
   const cut = Date.now() - KEEP_H * 3600000;
   const rows = out.filter((x) => !x.published || new Date(x.published).getTime() > cut).sort((a, b) => String(b.published).localeCompare(String(a.published)));
