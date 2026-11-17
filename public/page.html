@@ -2138,7 +2138,7 @@ dash.draw('livetick', {
     try {
       if (document.hidden) return;
       // every 3 minutes: pick up newly graded games and box scores (hosted site: only re-downloads what changed)
-      if (++n % 12 === 0 && dash.refreshMany) dash.refreshMany(['history', 'final', 'nflresults', 'ufcfights', 'boxes', 'pact', 'archive', 'results', 'bets']);
+      if (++n % 12 === 0 && dash.refreshMany) dash.refreshMany(['history', 'final', 'nflresults', 'ufcfights', 'boxes', 'pact', 'archive', 'results', 'bets', 'odds', 'props', 'props75', 'propbook', 'altlines', 'propfind', 'valuelog', 'lineups', 'notes', 'troster']);
       if (!liveWanted()) { if (n % 4 === 0) { dash.refresh('livegames'); dash.refresh('livebox'); } return; } // idle: look once a minute for a game starting
       dash.refresh('livegames'); dash.refresh('livebox');
     } catch (e) {}
@@ -2146,7 +2146,7 @@ dash.draw('livetick', {
   update: () => {},
   unmount: (el, t) => clearInterval(t),
 });
-document.addEventListener('visibilitychange', () => { if (!document.hidden) try { dash.refresh('livegames'); dash.refresh('livebox'); } catch (e) {} });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) try { dash.refresh('livegames'); dash.refresh('livebox'); if (dash.refreshMany) dash.refreshMany(['odds', 'props', 'props75', 'propbook', 'altlines', 'propfind', 'valuelog', 'lineups', 'notes', 'troster', 'history', 'final']); } catch (e) {} }); // coming back to the app: pick up fresh prices without a manual reload
 document.querySelectorAll('.hsgo').forEach((b) => b.addEventListener('click', () => hsOpen(b.dataset.goSp)));
 document.querySelectorAll('#hsemptygo').forEach((b) => b.addEventListener('click', () => { sec = 'home'; applyView(); }));
 // ---- photos
