@@ -2338,3 +2338,4 @@ html.pwa .wlbar{padding-top:calc(env(safe-area-inset-top,0px) + 40px)!important}
 .plxgraph i.h,.plxgraph i.m,.plxgraph i.p,.plxgraph i.e{flex:none;width:6px;min-width:6px;border-radius:1px 1px 0 0}
 .plxgraph i.e{height:3px;background:#2a2e36}
 .plxgraph i.out{opacity:.35}
+.gdetail .hd .mid strong.fscore{font-size:2.1rem;font-weight:900;font-variant-numeric:tabular-nums;white-space:nowrap}

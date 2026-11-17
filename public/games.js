@@ -997,7 +997,7 @@
   const LVTAB = {}; // live box score: which team's tab is open, per game
   function liveCard(sp, ref) {
     const r = liveOf(sp, ref); if (!r || r.state === 'pre') return null;
-    const card = el('div', null, 'card lvcard'); const h = el('h2', 'Live'); card.append(h);
+    const card = el('div', null, 'card lvcard'); const h = el('h2', 'Live'); card.append(h); if (r.state === 'post') card.dataset.post = '1';
     const top = el('div', null, 'lvtop');
     const fbn = sp === 'fb';
     const side = (name, s) => { const d = el('div', null, 'lvs'); d.append(el('span', name), el('b', String(sc(s)))); return d; };

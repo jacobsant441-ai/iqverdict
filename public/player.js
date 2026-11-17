@@ -504,8 +504,13 @@ dash.draw('nbahd', (box) => {
   const [an, hn] = String(g.matchup || '').split(' @ ');
   const side = (code, name) => { const d = el('div', null, 'tm'); d.append(badge(code), el('b', name || code), el('span', recOf(code), 'muted')); return d; };
   const mid = el('div', null, 'mid');
+  const fin = SSX.finalOf ? SSX.finalOf(id) : null;
+  if (fin && fin.status === 'Final' && fin.away_pts != null) {
+    mid.append(el('span', 'NBA · FINAL', 'muted'), el('strong', fin.away_pts + ' – ' + fin.home_pts, 'fscore'), el('span', g.date || '', 'muted'));
+  } else {
   mid.append(el('span', 'NBA', 'muted'), el('strong', String(g.time || '').toLowerCase().replace(' ', ' ')), el('span', g.date || '', 'muted'));
   if (p.ml_pick) mid.append(el('span', p.ml_pick + ' · ' + p.ml_final_prob + '%', 'muted'));
+  }
   const hd = el('div', null, 'hd'); hd.append(side(g.away, an), mid, side(g.home, hn));
   box.replaceChildren(hd);
 });
