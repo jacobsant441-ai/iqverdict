@@ -297,6 +297,7 @@
     const orc = f && f.side ? oppRec(i) : null, oppMode = BASIS.v === 'opp' && f && f.side;
     const sub = oppMode ? (orc && orc.n ? `Hit ${orc.hit}/${orc.n} against ${f.opp} · season avg ${f.avg}, last 5 ${f.l5} · ${i.match}` : `No past games against ${f.opp || 'this team'} · season avg ${f.avg} · ${i.match}`) : f ? `Hit ${f.hit} this season · avg ${f.avg}, last ${f.sp === 'nfl' ? 3 : 5} ${f.l5}${f.why && f.why.length ? ' · ' + f.why[0] : ''} · ${i.match}` : (i.m.hit ? 'Hit ' + i.m.hit + ' this season · ' : '') + i.match + (i.time ? ' · ' + i.time : '');
     const l = el('div', null, 'l'); l.append(el('b', i.m.pick), el('span', sub));
+    { const zf = i.sp === 'nba' && f && f.side ? zoneFit(f) : null; if (zf) l.append(el('em', 'Shot zones: ' + zf.text, 'bbzf')); }
     const r = el('div', null, 'r'); const hp = hitPct(i), shown = hp == null && !oppMode ? i.m.chance : hp; r.append(el('b', shown == null ? '–' : shown + '%', 'c ' + conf(shown == null ? 0 : shown)), el('span', PUB || !i.m.price ? '' : (i.m.est ? '≈$' : '$') + i.m.price.toFixed(2) + (i.m.book && !i.m.est ? ' ' + i.m.book.replace(' (AU)', '') : '')));
     const v = !i.m.est && vlMap().get(i.sp + '|' + i.id + '|' + i.day + '|' + i.m.pick);
     if (v && Math.abs(num(v.price0) - i.m.price) >= 0.02) { const up = i.m.price > num(v.price0); r.append(el('small', (up ? '▲' : '▼') + ' from $' + num(v.price0).toFixed(2), 'bbmv ' + (up ? 'up' : 'dn'))); }
@@ -334,6 +335,7 @@
       const paint = () => {
         const body = el('div'); props.sort((a, b) => rankKey(b) - rankKey(a));
         sec('Player props · ' + (BASIS.v === 'opp' ? 'hit rate against this opponent' : 'season hit rate'), props, 10, body);
+        if (sp === 'nba') { const zl = props.filter((i) => zoneFit(i.m.finder)); zl.sort((a, b) => rankKey(b) - rankKey(a)); if (zl.length) { body.append(el('p', 'Players who shoot well from spots on the court where the defence they face gives up more than most teams. Same hit rate as above, so the Based on box applies.', 'muted bbnote')); sec('Shot-zone edge', zl, 6, body); } }
         pc.replaceChildren(basisSel(paint), ...body.childNodes);
       };
       paint();
@@ -1238,6 +1240,34 @@
     if (sel.cur >= teams.length) sel.cur = 0;
     card.append(tog); show();
     return card;
+  }
+
+  // ---- Shot-zone fit for a player prop (NBA, over side). Where on the court does he shoot well, and does the defence he faces
+  // give up more than most teams from those same spots? Used as a green line on his best-bet card and for the "Shot-zone edge" section.
+  //   his zone FG% is pulled toward the league zone average (10-shot prior); a zone counts when he has 8+ shots there, it is 15%+ of his
+  //   shots, he shoots above the league average and the defence allows above it. Points props use every zone, threes only the 3-point
+  //   zones, 2-pointers only the 2-point zones. edge = sum of shot share x zone value x ((his FG% - league) + (allowed - league)).
+  const ZV = { ra: 2, paint: 2, mid: 2, lc: 3, rc: 3, atb: 3 };
+  const ZSTAT = { PTS: 'all', PA: 'all', PR: 'all', PRA: 'all', '3PM': 3, '2PM': 2 };
+  function zoneFit(f) {
+    if (!f || (f.sp && f.sp !== 'nba') || f.side !== 'over' || !ZSTAT[f.stat] || !f.opp) return null;
+    const ZD = zoneTable(); if (!ZD) return null;
+    const p = rows('pbp').find((r) => r.k === 'p' && r.z && String(r.pid) === String(f.pid)), D = ZD.T.find((t) => t.team === f.opp); if (!p || !D) return null;
+    const want = ZSTAT[f.stat], zs = ZONES.filter(([k]) => want === 'all' || ZV[k] === want);
+    const total = zs.reduce((s, [k]) => s + ((p.z[k] && p.z[k][0]) || 0), 0); if (total < 30) return null;
+    const pc = (v) => Math.round(v * 100) + '%', ord = (n) => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' }[n % 10] || 'th'));
+    let edge = 0; const hits = [];
+    zs.forEach(([k, zn]) => {
+      const z = p.z[k]; if (!z || !z[0]) return;
+      const share = z[0] / total, lg = ZD.lg[k], ap = ZD.pct(D.z[k]); if (lg == null || ap == null) return;
+      const mine = (z[1] + 10 * lg) / (z[0] + 10), sc = share * ZV[k] * ((mine - lg) + (ap - lg));
+      edge += sc;
+      if (z[0] >= 8 && share >= 0.15 && mine > lg + 0.02 && ap > lg + 0.02) hits.push({ zn, raw: z[1] / z[0], n: z[0], ap, lg, rk: ZD.rk[k][f.opp], sc });
+    });
+    if (!hits.length || edge <= 0) return null;
+    hits.sort((a, b) => b.sc - a.sc);
+    const text = hits.slice(0, 2).map((h) => h.zn.toLowerCase() + ' (he shoots ' + pc(h.raw) + ' on ' + h.n + ' shots, ' + f.opp + ' allow ' + pc(h.ap) + (h.rk ? ', ' + ord(h.rk) + ' of ' + ZD.n : '') + ', league ' + pc(h.lg) + ')').join(' · ');
+    return { edge: edge * 100, text };
   }
 
   // ---- Teams tab: one tab per team (instead of both teams' stats stacked), remembered per game.

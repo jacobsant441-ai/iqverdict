@@ -2362,3 +2362,4 @@ html body #view-player .topbar .backbtn,html body #view-athlete .topbar .backbtn
 html.pwa body #view-player .topbar .backbtn,html.pwa body #view-athlete .topbar .backbtn{transform:translateY(-9px)}
 #view-player .topbar .backbtn,#view-athlete .topbar .backbtn{margin-left:10px}
 .ppmk{padding-left:46px}
+.bbzf{display:block;font-style:normal;font-size:.72rem;color:#1fd56b;margin-top:2px;line-height:1.35}
