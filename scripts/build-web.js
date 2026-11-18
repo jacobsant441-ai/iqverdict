@@ -52,6 +52,11 @@ for (const id of Object.keys(manifest)) {
     const rowsB = JSON.parse(fs.readFileSync(dst, 'utf8')).filter((r) => !r.kick || Date.parse(r.kick) >= cut);
     fs.writeFileSync(dst, JSON.stringify(rowsB)); v = hash(fs.readFileSync(dst));
   }
+  if (id === 'valuelog') { // the track record grows ~2 MiB a day and would pass Cloudflare's 25 MiB file limit: settled bets ship only the fields the site reads (the full log stays on the odds-data branch)
+    const dst = path.join(OUT, file), KEEP = ['sp', 'day', 'game', 'pick', 'market', 'src', 'our', 'price', 'status', 'result', 'kick', 'match', 'point', 'book'];
+    const slim = JSON.parse(fs.readFileSync(dst, 'utf8')).map((r) => { if (r.status === 'open') { const { graded, our0, ...rest } = r; return rest; } const o = {}; KEEP.forEach((k) => { if (r[k] !== undefined) o[k] = r[k]; }); return o; });
+    fs.writeFileSync(dst, JSON.stringify(slim)); v = hash(fs.readFileSync(dst));
+  }
   const kb = fs.statSync(path.join(PUB, file)).size / 1024;
   const lazy = kb > LAZY_KB;
   if (lazy) lazyKB += kb; else eagerKB += kb;
