@@ -157,7 +157,7 @@ function ppBuild(box, r) {
   if (!k) { box.replaceChildren(el('p', 'No game stats on file for him yet.', 'plnone')); return; }
   const mkbar = el('div', null, 'ppmk');
   mks.forEach((key) => { const b = el('button', MK_NAME[key], key === k ? 'on' : ''); b.type = 'button'; const mode = PM; b.addEventListener('click', () => { PM = mode; if (mode === 'nba') PP.mk = key; else PP.amk[AT.sp] = key; ppRedraw(); }); mkbar.append(b); });
-  requestAnimationFrame(() => { const on = mkbar.querySelector('.on'); if (on) mkbar.scrollLeft = on.offsetLeft - 16; });
+  requestAnimationFrame(() => { const on = mkbar.querySelector('.on'); if (on) mkbar.scrollLeft = Math.max(0, on.offsetLeft - 46); });
   const tabs = el('div', null, 'pptabs');
   const TB = PM === 'nba' ? [['graph', '▥', 'Graph'], ['shoot', '◎', 'Shooting'], ['sim', '⚇', 'Similar'], ['types', '⋰', 'Types']] : [['graph', '▥', 'Graph'], ['sim', '⚇', 'Similar'], ['split', '⇆', 'Splits']];
   if (!TB.some(([t]) => t === PP.tab)) PP.tab = 'graph';
@@ -181,14 +181,30 @@ function ppBuild(box, r) {
   lr.append(el('b', ppBinary(k) ? 'Yes / no' : String(L.v), 'v'), el('span', MK_SHORT[k], 'mkl'), el('span', 'O ' + over + ' · U ' + (vals.length - over), 'ou'));
   if (L.bk) lr.append(el('span', 'O $' + (L.bk.over ? L.bk.over.toFixed(2) : '–') + ' · U $' + (L.bk.under ? L.bk.under.toFixed(2) : '–'), 'odds'));
   if (!ppBinary(k)) lr.append(step(-1), step(1));
-  who.append(nmr, lr, el('div', L.src + (nx ? ' · next: ' + (nx.home ? 'vs ' : '@ ') + nx.opp + ' ' + nx.day : ''), 'ppsrc'));
+  who.append(nmr, el('div', L.src + (nx ? ' · next: ' + (nx.home ? 'vs ' : '@ ') + nx.opp + ' ' + nx.day : ''), 'ppsrc'));
   top.append(ph, who);
   const pct = vals.length ? Math.round((100 * over) / vals.length) : 0;
   const st = el('div', null, 'ppst');
   const cell = (lab, v, cls) => { const d = el('div', null, cls || ''); d.append(el('span', lab), el('b', v)); return d; };
   const cls = (v) => (v == null ? '' : ppBinary(k) ? '' : v > L.v ? 'up' : v < L.v ? 'dn' : '');
   st.append(cell('Season avg', sAvg == null ? '–' : ppBinary(k) ? Math.round(sAvg * 100) + '%' : f1(sAvg), cls(sAvg)), cell('Graph avg', gAvg == null ? '–' : ppBinary(k) ? Math.round(gAvg * 100) + '%' : f1(gAvg), cls(gAvg)), cell('Hit rate', pct + '% (' + over + '/' + vals.length + ')', pct >= 60 ? 'up' : pct <= 40 ? 'dn' : ''));
-  card.append(top, st);
+  // Injury box: what the injury is, when he may be back, and our estimate of the chance he plays (from his status).
+  const injBox = (() => {
+    const sp = PM === 'nba' ? 'nba' : AT.sp, t = rows('troster').find((x) => x.sp === sp && x.code === r.team);
+    const e = t && (t.inj.find((x) => String(x[0]) === String(r.pid)) || t.inj.find((x) => norm(x[1]) === norm(r.player)));
+    const status = e ? e[3] : (PM !== 'nba' && AT.sp !== 'nfl' && r.status && !/active/i.test(r.status) ? r.status : '');
+    if (!status) return null;
+    const CH = [[/injured reserve|\bir\b|suspend|^out/i, 0], [/doubt/i, 15], [/question/i, 50], [/day/i, 65], [/prob/i, 85]];
+    const hit = CH.find(([re]) => re.test(status)), ch = hit ? hit[1] : 50;
+    const box = el('div', null, 'ppinjbox' + (ch === 0 ? ' out' : ''));
+    const head = el('div', null, 'ppinjh'); head.append(el('b', status), el('span', ch === 0 ? 'Not expected to play' : ch + '% chance to play', 'ppinjp'));
+    box.append(head);
+    const bits = [e && e[4] ? e[4] : '', e && e[5] && e[5] > (new Date().toISOString().slice(0, 10)) ? 'back around ' + e[5] : ''].filter(Boolean);
+    if (bits.length) box.append(el('div', bits.join(' · '), 'ppinjd'));
+    if (e && e[7]) box.append(el('div', e[7], 'ppinjn'));
+    return box;
+  })();
+  card.append(top, ...(injBox ? [injBox] : []), st);
   { const bkp = ppBookPanel(r, gs, k); if (bkp) card.append(bkp); }
   // In the news: recent ESPN articles tagged with this player (news.json, refreshed every 30 minutes)
   { const nw = rows('news').filter((x) => (x.athletes || []).some((a) => a[0] === String(r.pid))).slice(0, 3);
@@ -200,7 +216,11 @@ function ppBuild(box, r) {
   else if (PP.tab === 'sim') body.append(...ppSim(r, k, nx, tn));
   else if (PP.tab === 'split') body.append(...ppSplits(r, k, gs, L));
   else body.append(...ppTypes(r, nx));
+  // The line control (value, over / under, price, minus / plus) sits with the graph, and sticks under the stat tabs while you scroll.
+  const lineBar = el('div', null, 'pplinebar'); lineBar.append(lr);
+  if (['graph', 'split', 'sim'].includes(PP.tab)) body.prepend(lineBar);
   box.replaceChildren(mkbar, tabs, card, body);
+  requestAnimationFrame(() => { lineBar.style.top = 'calc(env(safe-area-inset-top, 0px) + ' + mkbar.offsetHeight + 'px)'; });
 }
 
 // ---- Graph tab

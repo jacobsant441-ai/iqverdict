@@ -277,13 +277,27 @@
     return ic;
   };
   // Season hit rate of a player prop as a whole percent (hit string like "6/6"), or null.
-  const hitPct = (i) => { const f = i.m.finder; const s = String((f && f.hit) || i.m.hit || ''); const m = s.match(/(\d+)\s*\/\s*(\d+)/); return m && +m[2] ? Math.round(100 * +m[1] / +m[2]) : null; };
+  // "Based on": how a player prop's hit rate is counted. Season average = games this season (the saved hit rate);
+  // Vs opponent = every logged game against the team he faces next (edges.js reads the game logs).
+  const BASIS = { v: (() => { try { return localStorage.getItem('ss_basis') === 'opp' ? 'opp' : 'season'; } catch (e) { return 'season'; } })() };
+  const oppRec = (i) => { const f = i.m.finder; return BASIS.v === 'opp' && f && window.SSE && window.SSE.oppHit ? window.SSE.oppHit(f) : null; };
+  // Sort key: season mode ranks by the hit rate; vs-opponent mode shrinks small samples (3/3 beats 1/1).
+  const rankKey = (i) => { const f = i.m.finder; if (BASIS.v === 'opp' && f && f.side) { const o = oppRec(i); return o && o.n ? (o.hit + 1) / (o.n + 2) : -1; } const p = hitPct(i); return p == null ? -1 : p / 100; };
+  const basisSel = (onChange) => {
+    const w = el('label', null, 'basissel'); w.append(el('span', 'Based on '));
+    const s = document.createElement('select'); s.setAttribute('aria-label', 'Hit rate based on');
+    [['season', 'Season average'], ['opp', 'Vs opponent']].forEach(([v, t]) => { const o = document.createElement('option'); o.value = v; o.textContent = t; s.append(o); });
+    s.value = BASIS.v; s.addEventListener('change', () => { BASIS.v = s.value; try { localStorage.setItem('ss_basis', BASIS.v); } catch (e) { /* not kept */ } onChange(); });
+    w.append(s); return w;
+  };
+  const hitPct = (i) => { const f = i.m.finder; if (BASIS.v === 'opp' && f && f.side) { const o = oppRec(i); return o && o.n ? Math.round(100 * o.hit / o.n) : null; } const s = String((f && f.hit) || i.m.hit || ''); const m = s.match(/(\d+)\s*\/\s*(\d+)/); return m && +m[2] ? Math.round(100 * +m[1] / +m[2]) : null; };
   const bbRow = (i) => {
     const b = el('button', null, 'bbr'); b.type = 'button';
     const f = i.m.finder, ic = bbIcon(i);
-    const sub = f ? `Hit ${f.hit} this season · avg ${f.avg}, last ${f.sp === 'nfl' ? 3 : 5} ${f.l5}${f.why && f.why.length ? ' · ' + f.why[0] : ''} · ${i.match}` : (i.m.hit ? 'Hit ' + i.m.hit + ' this season · ' : '') + i.match + (i.time ? ' · ' + i.time : '');
+    const orc = f && f.side ? oppRec(i) : null, oppMode = BASIS.v === 'opp' && f && f.side;
+    const sub = oppMode ? (orc && orc.n ? `Hit ${orc.hit}/${orc.n} against ${f.opp} · season avg ${f.avg}, last 5 ${f.l5} · ${i.match}` : `No past games against ${f.opp || 'this team'} · season avg ${f.avg} · ${i.match}`) : f ? `Hit ${f.hit} this season · avg ${f.avg}, last ${f.sp === 'nfl' ? 3 : 5} ${f.l5}${f.why && f.why.length ? ' · ' + f.why[0] : ''} · ${i.match}` : (i.m.hit ? 'Hit ' + i.m.hit + ' this season · ' : '') + i.match + (i.time ? ' · ' + i.time : '');
     const l = el('div', null, 'l'); l.append(el('b', i.m.pick), el('span', sub));
-    const r = el('div', null, 'r'); const hp = hitPct(i); r.append(el('b', (hp == null ? i.m.chance : hp) + '%', 'c ' + conf(hp == null ? i.m.chance : hp)), el('span', PUB || !i.m.price ? '' : (i.m.est ? '≈$' : '$') + i.m.price.toFixed(2) + (i.m.book && !i.m.est ? ' ' + i.m.book.replace(' (AU)', '') : '')));
+    const r = el('div', null, 'r'); const hp = hitPct(i), shown = hp == null && !oppMode ? i.m.chance : hp; r.append(el('b', shown == null ? '–' : shown + '%', 'c ' + conf(shown == null ? 0 : shown)), el('span', PUB || !i.m.price ? '' : (i.m.est ? '≈$' : '$') + i.m.price.toFixed(2) + (i.m.book && !i.m.est ? ' ' + i.m.book.replace(' (AU)', '') : '')));
     const v = !i.m.est && vlMap().get(i.sp + '|' + i.id + '|' + i.day + '|' + i.m.pick);
     if (v && Math.abs(num(v.price0) - i.m.price) >= 0.02) { const up = i.m.price > num(v.price0); r.append(el('small', (up ? '▲' : '▼') + ' from $' + num(v.price0).toFixed(2), 'bbmv ' + (up ? 'up' : 'dn'))); }
     const nw = f && f.side ? newsOf(f.pid) : [];
@@ -307,15 +321,23 @@
     const plays = [], alts = [];
     const props = bookPlays(day, ahead).filter((i) => i.sp === sp && i.id === id);
     if (!plays.length && !alts.length && !props.length) { card.append(el('p', 'No player stats for this game yet. Lines are fetched at 8:15 am and 8:15 pm Sydney time.', 'muted')); return card; }
-    const sec = (title, list, n) => {
+    const sec = (title, list, n, into = card) => {
       if (!list.length) return;
-      card.append(el('div', title + ' · ' + list.length, 'bbday bbsub'));
-      const box = el('div', null, 'gbrows'); list.slice(0, n).forEach((i) => box.append(bbRow(i))); card.append(box);
-      if (list.length > n) { const more = el('button', 'Show all ' + list.length + ' ›', 'bbmore'); more.type = 'button'; more.addEventListener('click', (e) => { e.stopPropagation(); box.replaceChildren(...list.map(bbRow)); more.remove(); }); card.append(more); }
+      into.append(el('div', title + ' · ' + list.length, 'bbday bbsub'));
+      const box = el('div', null, 'gbrows'); list.slice(0, n).forEach((i) => box.append(bbRow(i))); into.append(box);
+      if (list.length > n) { const more = el('button', 'Show all ' + list.length + ' ›', 'bbmore'); more.type = 'button'; more.addEventListener('click', (e) => { e.stopPropagation(); box.replaceChildren(...list.map(bbRow)); more.remove(); }); into.append(more); }
     };
     sec('Game markets', plays, 6);
     sec('Alt lines · our chance 75%+ at $1.30+', alts, 6);
-    props.sort((a, b) => (hitPct(b) || 0) - (hitPct(a) || 0)); sec('Player props · season hit rate', props, 10);
+    if (props.length) {
+      const pc = el('div', null, 'gbprops'); card.append(pc);
+      const paint = () => {
+        const body = el('div'); props.sort((a, b) => rankKey(b) - rankKey(a));
+        sec('Player props · ' + (BASIS.v === 'opp' ? 'hit rate against this opponent' : 'season hit rate'), props, 10, body);
+        pc.replaceChildren(basisSel(paint), ...body.childNodes);
+      };
+      paint();
+    }
     return card;
   }
 
@@ -520,6 +542,7 @@
     const SPN = { nba: 'NBA', nfl: 'NFL', fb: 'Football' };
     if (sps.length > 1) { chips.append(chip('All sports', BBF.sp === 'all', () => { BBF.sp = 'all'; })); sps.forEach((x) => chips.append(chip(SPN[x] || x.toUpperCase(), BBF.sp === x, () => { BBF.sp = x; }))); chips.append(el('i', null, 'bbsep')); }
     chips.append(chip('80%+ hit rate', BBF.hi, () => { BBF.hi = !BBF.hi; }));
+    chips.append(basisSel(() => dash.draw('bestall')));
     const out = [chips];
     if (!groups.some((g) => g.plays.length || g.alts.length || g.bprops.length)) out.push(el('p', 'Nothing matches these filters.', 'plnone'));
     groups.forEach((g) => {
@@ -528,7 +551,7 @@
       if (g.alts && g.alts.length) { out.push(el('div', 'Alt lines · ' + g.alts.length, 'bbday bbsub'), el('p', 'Alternate lines and totals from AU bookies (e.g. a bigger start than the main line) where our margin / total model gives 75%+ and the price is $1.30+, one per game and side. Uses the spread of real results this season (margins miss our projection by about 14 points, totals by 19).', 'muted bbnote')); out.push(...g.alts.map(bbRow)); }
       if (g.bprops && g.bprops.length) {
         // Player props in their own drop-down, best season hit rate first (then our chance).
-        const hr = (i) => { const m = String(i.m.hit || '').match(/(\d+)\/(\d+)/); return m && +m[2] ? +m[1] / +m[2] : 0; };
+        const hr = rankKey;
         // Game picker: all games, or one game's best props (tap a game).
         const gms = [...new Map(g.bprops.map((i) => [i.sp + '|' + i.id, i])).values()].sort((a, b) => String(a.time).localeCompare(String(b.time)));
         if (BBF.game && !gms.some((i) => i.sp + '|' + i.id === BBF.game)) BBF.game = '';

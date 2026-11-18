@@ -69,6 +69,8 @@
 <div class="topbar"><button type="button" class="backbtn" id="bbback" aria-label="Back">‹ Back</button></div>
 <section class="card hcard" id="hpod"><h2>Stat of the day</h2><div data-draw="hpod" data-source="games pred fixtures nflgames odds props propfind propbook altlines troster history hs_nba hs_nfl hs_nfl2 pubprops pubalts"></div></section>
 <section class="card bb bbpage"><h2>Best stats</h2><div data-draw="bestall" data-source="games pred fixtures nflgames odds history props propfind propbook altlines valuelog troster hs_nba hs_nfl hs_nfl2 news pubprops pubalts"></div></section>
+<section class="card bb bbpage edge"><h2>Beat their average against this team</h2><p class="muted">Players who average well above their season numbers in past games against the team they face next. Needs at least 3 games (2 in football and NFL).</p><div data-draw="edgeopp" data-source="games fixtures nflgames pgl socp nflp history table"></div></section>
+<section class="card bb bbpage edge"><h2>Beat their average at this ground</h2><p class="muted">Same idea at the home ground of the game they are about to play.</p><div data-draw="edgeground" data-source="games fixtures nflgames pgl socp nflp history table"></div></section>
 </div>
 <div class="view" id="view-player" hidden>
 <div class="topbar"><button type="button" class="backbtn" id="plback">‹ Back</button></div>
@@ -384,7 +386,7 @@ function emptyBox(sp) {
   if (nxt) { const b = el('button', 'Jump to ' + nxt.k); b.type = 'button'; b.addEventListener('click', () => { selDay = nxt.k; wkOff = Math.floor(nxt.i / 7); redrawAll(); }); d.append(b); }
   return d;
 }
-function redrawAll() { ['bestall', 'hslive', 'hpod', 'hgotn', 'hinj', 'hnews', 'hsicon', 'hscount', 'hstrip', 'rvboard', 'rvlist', 'rvrec', 'rvins', 'rvsum', 'rveye', 'rvhead', 'pgrid', 'fbgrid', 'nflgrid', 'ufcgrid', 'ufcstats', 'offview', 'plexp', 'appbar', 'rvall', 'rvstats', 'rvsum', 'rveye', 'rvhead', 'rvlive'].forEach((n) => dash.draw(n)); }
+function redrawAll() { ['bestall', 'edgeopp', 'edgeground', 'hslive', 'hpod', 'hgotn', 'hinj', 'hnews', 'hsicon', 'hscount', 'hstrip', 'rvboard', 'rvlist', 'rvrec', 'rvins', 'rvsum', 'rveye', 'rvhead', 'pgrid', 'fbgrid', 'nflgrid', 'ufcgrid', 'ufcstats', 'offview', 'plexp', 'appbar', 'rvall', 'rvstats', 'rvsum', 'rveye', 'rvhead', 'rvlive'].forEach((n) => dash.draw(n)); }
 function syncChrome() {
   const ab = document.getElementById('appbar'); if (!ab) return;
   const sh = (id) => { const e = document.getElementById(id); return e && !e.hidden; };
@@ -1896,7 +1898,7 @@ const restoreView = (p, fallback) => {
 };
 const BB = { prev: null };
 document.querySelectorAll('.mbwrap .mbhead').forEach((h) => h.addEventListener('click', () => { const w = h.closest('.mbwrap'), on = !w.classList.contains('open'); w.classList.toggle('open', on); h.setAttribute('aria-expanded', String(on)); if (on) dash.draw(w.id === 'mybetsrv' ? 'mybetsrv' : 'mybets'); }));
-const openBets = () => { if (sec !== 'bets') BB.prev = snapView(); sec = 'bets'; applyView(); dash.draw('bestall'); toView('view-bets'); };
+const openBets = () => { if (sec !== 'bets') BB.prev = snapView(); sec = 'bets'; applyView(); dash.draw('bestall'); dash.draw('edgeopp'); dash.draw('edgeground'); toView('view-bets'); };
 document.querySelectorAll('#bbback').forEach((b) => b.addEventListener('click', () => restoreView(BB.prev, { sec: 'start', sport: 'nba' })));
 const openPlayer = (name) => { if (sec !== 'player') PL.prev = snapView(); PL.name = name; sec = 'player'; applyView(); plDraw(); toView('view-player'); };
 document.querySelectorAll('#plback').forEach((b) => b.addEventListener('click', () => restoreView(PL.prev, { sec: 'home', sport: 'nba' })));
@@ -2729,4 +2731,4 @@ const openBetResults = () => { sec = 'review'; applyView(); setTimeout(() => { c
 window.SSX = { finalOf, navBack, navDepth: () => NAV.length, navList: () => NAV.map(pageKey), openBetResults, openBets, openGame: (sp, id, day) => { if (sp === 'ufc') return openFight(id); ssOpenDay(sp, day); if (sp === 'nba') goDetail(id); else if (sp === 'fb') fbNav.go(id); else nflNav.go(id); }, get current() { return current; }, el, rows, plCur, plNeed, atNeed, plTeamNames, plRow, plGames, h2hGames, plUpcoming, plDate, plDraw, atLabel, atKeys, atGames, atRow, badge, bdX, norm, f1, avatar, openTeam, openFighter, openPlayer, openAthlete, toView, MON, PL, AT, AT_DS, AT_HS, AT_CUR, get sec() { return sec; }, get selDay() { return selDay; }, get dataGen() { return dataGen; } };
 </script>
 <script src="player.js"></script>
-<script src="games.js"></script><script src="standings.js"></script>
+<script src="games.js"></script><script src="edges.js"></script><script src="standings.js"></script>

@@ -2339,3 +2339,26 @@ html.pwa .wlbar{padding-top:calc(env(safe-area-inset-top,0px) + 40px)!important}
 .plxgraph i.e{height:3px;background:#2a2e36}
 .plxgraph i.out{opacity:.35}
 .gdetail .hd .mid strong.fscore{font-size:2.1rem;font-weight:900;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+.edge details{border:1px solid var(--sb-line);border-radius:14px;background:var(--sb-panel);margin:0 0 8px;overflow:hidden}
+.edge details>summary{list-style:none;cursor:pointer;padding:10px 12px;display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:.85rem}
+.edge details>summary::-webkit-details-marker{display:none}
+.edge details[open]>summary{border-bottom:1px solid var(--sb-line)}
+.edge .bbr{border-radius:0}
+.basissel{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;color:var(--sb-muted);margin:2px 0 6px 6px}
+.basissel select{background:var(--sb-panel);color:var(--sb-fg,#fff);border:1px solid var(--sb-line);border-radius:10px;padding:5px 8px;font:inherit;font-weight:700}
+.gbprops>.basissel{margin:10px 0 0 0}
+.ppinjbox{margin:10px 0 2px;padding:9px 11px;border-radius:12px;border:1px solid rgba(242,185,59,.45);background:rgba(242,185,59,.08);font-size:.8rem;display:flex;flex-direction:column;gap:3px}
+.ppinjbox.out{border-color:rgba(255,90,95,.5);background:rgba(255,90,95,.08)}
+.ppinjh{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.ppinjp{font-weight:800}
+.ppinjd{color:var(--sb-fg,#fff)}
+.ppinjn{color:var(--sb-muted);line-height:1.35}
+.ppinjf{color:var(--sb-muted);font-size:.68rem;margin-top:2px}
+.ppmk{position:sticky;top:env(safe-area-inset-top,0px);z-index:12;background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);margin-left:-2px;margin-right:-2px;padding-left:36px;padding-right:2px}
+.pplinebar{position:sticky;top:calc(env(safe-area-inset-top,0px) + 44px);z-index:11;background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);padding:4px 2px 8px;margin-bottom:6px;border-bottom:1px solid var(--sb-line)}
+.pplinebar .ppln{margin-top:0}
+html body #view-player .topbar .backbtn,html body #view-athlete .topbar .backbtn{transform:translateY(-5px)}
+html.pwa body #view-player .topbar .backbtn,html.pwa body #view-athlete .topbar .backbtn{transform:translateY(-9px)}
+#view-player .topbar .backbtn,#view-athlete .topbar .backbtn{margin-left:10px}
+.ppmk{padding-left:46px}

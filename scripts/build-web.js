@@ -70,7 +70,7 @@ const logoFiles = fs.readdirSync(PUB).filter((f) => /^logos.*\.js$/.test(f));
 const logoV = Object.fromEntries(logoFiles.map((f) => [f, copy(f)]));
 fs.readdirSync(path.join(PUB, 'icons')).forEach((f) => copy(`icons/${f}`));
 // The page's own script files (loaded after the main page script, in this order).
-const PAGE_JS = ['player.js', 'games.js', 'standings.js'];
+const PAGE_JS = ['player.js', 'games.js', 'edges.js', 'standings.js'];
 // Each runs in its own scope (as in the local runtime), so their top-level names never clash with the page's.
 const wrapJs = (f) => { const dst = path.join(OUT, f); fs.writeFileSync(dst, '(function(){\n' + read(f) + '\n})();\n'); return hash(fs.readFileSync(dst)); };
 const pageJsV = Object.fromEntries(PAGE_JS.map((f) => [f, wrapJs(f)]));
@@ -82,11 +82,11 @@ page = page.replace(/<script src="(logos[^"]*\.js)"><\/script>/g, (m, f) => {
   if (!logoV[f]) throw new Error('page.html references a missing logo file: ' + f);
   return `<script defer src="${f}?v=${logoV[f]}"></script>`;
 });
-page = page.replace(/<script src="((?:player|games)\.js)"><\/script>/g, (m, f) => {
+page = page.replace(/<script src="((?:player|games|edges)\.js)"><\/script>/g, (m, f) => {
   if (!pageJsV[f]) throw new Error('page.html references a missing script: ' + f);
   return `<script src="${f}?v=${pageJsV[f]}"></script>`;
 });
-if (/<script src="(?!logos|player\.js|games\.js|standings\.js)/.test(page)) throw new Error('page.html references a script the web build does not ship');
+if (/<script src="(?!logos|player\.js|games\.js|edges\.js|standings\.js)/.test(page)) throw new Error('page.html references a script the web build does not ship');
 
 const shell = read('index.html');
 const fontLink = (shell.match(/<link href="https:\/\/fonts[^>]*>/) || [''])[0];
