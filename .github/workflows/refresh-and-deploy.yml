@@ -248,7 +248,10 @@ jobs:
           skip=false
           if [ "${{ github.event_name }}" = "schedule" ]; then
             git fetch -q origin odds-data --depth 1 2>/dev/null || true
-            last=$(git log -1 --format=%ct FETCH_HEAD 2>/dev/null || echo 0)
+            # when prices were really fetched (the newest "fetched" time in odds.json), NOT when the branch was last pushed:
+            # the results job also pushes to odds-data (track-record grading), which made the evening run look "already done" and skip
+            last=$(git show FETCH_HEAD:odds.json 2>/dev/null | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{try{const t=Math.max(...JSON.parse(s).map(r=>Date.parse(r.fetched)||0));console.log(Math.floor(t/1000)||0)}catch(e){console.log(0)}})")
+            last=${last:-0}
             [ $(( $(date +%s) - last )) -lt 14400 ] && skip=true
           fi
           echo "skip=$skip" >> "$GITHUB_OUTPUT"; echo "skip=$skip"
