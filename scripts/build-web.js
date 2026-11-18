@@ -46,7 +46,12 @@ let eagerKB = 0, lazyKB = 0;
 for (const id of Object.keys(manifest)) {
   const file = `data/${id}.json`;
   if (!fs.existsSync(path.join(PUB, file))) { console.warn('missing', file); continue; }
-  const v = copy(file);
+  let v = copy(file);
+  if (id === 'propbook') { // keep the shipped copy small: Cloudflare Pages refuses files over 25 MiB, and old days only matter to the track record (kept in full on the odds-data branch)
+    const dst = path.join(OUT, file), cut = Date.now() - 30 * 3600 * 1000;
+    const rowsB = JSON.parse(fs.readFileSync(dst, 'utf8')).filter((r) => !r.kick || Date.parse(r.kick) >= cut);
+    fs.writeFileSync(dst, JSON.stringify(rowsB)); v = hash(fs.readFileSync(dst));
+  }
   const kb = fs.statSync(path.join(PUB, file)).size / 1024;
   const lazy = kb > LAZY_KB;
   if (lazy) lazyKB += kb; else eagerKB += kb;
