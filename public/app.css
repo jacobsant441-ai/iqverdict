@@ -2363,3 +2363,6 @@ html.pwa body #view-player .topbar .backbtn,html.pwa body #view-athlete .topbar 
 #view-player .topbar .backbtn,#view-athlete .topbar .backbtn{margin-left:10px}
 .ppmk{padding-left:46px}
 .bbzf{display:block;font-style:normal;font-size:.72rem;color:#1fd56b;margin-top:2px;line-height:1.35}
+
+/* league headings (Scores tab): sit a little lower so the sticky league bar and the card above never cover the logo */
+.view>.lgh2,.scroll>.lgh2{margin-top:22px;padding-top:10px;scroll-margin-top:130px}
