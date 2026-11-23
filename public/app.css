@@ -2366,3 +2366,11 @@ html.pwa body #view-player .topbar .backbtn,html.pwa body #view-athlete .topbar 
 
 /* league headings (Scores tab): sit a little lower so the sticky league bar and the card above never cover the logo */
 .view>.lgh2,.scroll>.lgh2{margin-top:22px;padding-top:10px;scroll-margin-top:130px}
+
+/* One logo size scale for every sport:
+   sport header 48px (.hsi, .offic) · league heading 28px · inline league logo 18px (16px in text lines) · corner tag on cards 18px */
+.lgtag{width:18px;height:18px;padding:2px;border-radius:6px;top:6px;left:6px}
+.lgtag img{width:100%;height:100%}
+.gcard:has(>.lgtag){padding-top:26px!important}
+.offic{width:48px;height:48px;border:0;background:none;flex:none}
+.offic img{width:48px;height:48px;object-fit:cover;border-radius:50%}
