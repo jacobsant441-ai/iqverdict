@@ -5,6 +5,7 @@
 // Usage: node scripts/fetch-boxes.js 20261104      (the US date of the games; Sydney is the next day)
 const fs = require('fs');
 const path = require('path');
+const { secondChance } = require('./second-chance');
 
 const DATA = path.join(__dirname, '..', 'public', 'data');
 const SITE = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/';
@@ -54,9 +55,10 @@ const pair = (s) => String(s || '0-0').split('-').map(Number);
     };
     const ap = players(A.team.abbreviation, ac), hp = players(H.team.abbreviation, hc);
     const at = teamTot(A.team.abbreviation), ht = teamTot(H.team.abbreviation);
+    if ((s.plays || []).length > 50) { const scm = secondChance(s.plays); at.sc = scm[A.team.id] || 0; ht.sc = scm[H.team.id] || 0; } // worked out from the play-by-play
     at.bench = ap.filter((p) => !p.starter).reduce((t, p) => t + p.pts, 0); ht.bench = hp.filter((p) => !p.starter).reduce((t, p) => t + p.pts, 0);
     const row = { id, date, status: 'Final', away: ac, home: hc, away_name: A.team.name, home_name: H.team.name, away_pts: Number(A.score), home_pts: Number(H.score), away_team: at, home_team: ht,
-      away_players: ap, home_players: hp, note: 'ESPN box score (final). Second-chance points are not in the feed; bench points are the non-starters; possessions are estimated.', sport: 'nba' };
+      away_players: ap, home_players: hp, note: 'ESPN box score (final). Second-chance points are worked out from the play-by-play (not in the feed; usually exact, sometimes off by 1-2); bench points are the non-starters; possessions are estimated.', sport: 'nba' };
     const i = boxes.findIndex((b) => b.id === id && b.date === date); if (i >= 0) boxes[i] = row; else boxes.push(row);
     added++;
   }

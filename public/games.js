@@ -437,7 +437,7 @@
       const cards = d.a.judges.map((x, i) => x + '-' + d.b.judges[i]).join(', ');
       res.append(el('p', 'Judges’ scorecards (' + UFN(r.a) + ' first): ' + cards, 'muted'));
     }
-    if (r.pick) res.append(el('p', (hit === true ? '✓ ' : hit === false ? '✗ ' : '') + 'Our pick: ' + UFN(r.pick) + (r.pick_pct ? ' (' + Math.round(r.pick_pct) + '%, ' + (r.conf || '') + ')' : ''), 'ufpick ' + (hit === true ? 'hit' : hit === false ? 'miss' : '')));
+    if (r.pick) res.append(el('p', 'Our pick: ' + UFN(r.pick) + (r.pick_pct ? ' (' + Math.round(r.pick_pct) + '%, ' + (r.conf || '') + ')' : ''), 'ufpick ' + (hit === true ? 'hit' : hit === false ? 'miss' : '')));
     if (!d) res.append(el('p', 'Full stats and round details are added a few minutes after the fight ends.', 'muted'));
     // All stats
     const A = ufcSideStats(r, d, r.a), B = ufcSideStats(r, d, r.b);
@@ -952,7 +952,7 @@
     const txt = !done ? 'LIVE · ' + lr.status_text : 'FINAL' + (w ? ' · ' + w.split(' ').slice(-1)[0] + ' won' : '');
     if (pre) { pre.textContent = txt; pre.classList.add(done ? 'lvdone' : 'lvon'); }
     else { const t = el('span', txt, 'pre ' + (done ? 'lvdone' : 'lvon')); (head ? b : b.querySelector('.mid')).append(t); }
-    if (done && w && r.pick && pk) { const hit = nsim(w, r.pick); pk.textContent = (hit ? '✓ ' : '✕ ') + 'Pick ' + r.pick; pk.classList.add(hit ? 'lvhit' : 'lvmiss'); }
+    if (done && w && r.pick && pk) { const hit = nsim(w, r.pick); pk.textContent = 'Pick ' + r.pick; pk.classList.add(hit ? 'lvhit' : 'lvmiss'); }
     if (done && w && !head) { const tms = b.querySelectorAll('.tm'); if (tms.length === 2) { tms[0].classList.toggle('win', nsim(w, r.a)); tms[1].classList.toggle('win', nsim(w, r.b)); } }
     b.classList.add(done ? 'lvdone' : 'lvon');
   }
@@ -988,7 +988,7 @@
     let ex = {}; try { ex = JSON.parse(lr.extra || '{}') || {}; } catch (e) { /* none */ }
     const done = lr.state === 'post', tm = c.querySelector('.tm'), pk = c.querySelector('.pk');
     if (tm) tm.textContent = done ? 'FINAL' : 'LIVE · ' + lr.status_text;
-    if (done && ex.winner && pk) pk.textContent = (f.pick ? (nsim(ex.winner, f.pick) ? '✓ ' : '✗ ') : '') + 'Won: ' + ex.winner;
+    if (done && ex.winner && pk) pk.textContent = 'Won: ' + ex.winner;
     c.classList.add(done ? 'lvdone' : 'lvon'); return c;
   }
   // Home page cards: the live score and status for a game that is on (or just finished but not graded yet).
@@ -1014,7 +1014,7 @@
     if (ok == null) return null;
     const done = r.state === 'post';
     const p = el('p', null, 'lvplay ' + (ok ? 'ok' : 'no'));
-    p.append(el('b', (done ? (ok ? '✓ ' : '✕ ') : '') + 'Main play ' + m.pick), document.createTextNode(': ' + (done ? (ok ? 'won' : 'lost') + ' · ' : '') + txt + '.'));
+    p.append(el('b', 'Main play ' + m.pick), document.createTextNode(': ' + (done ? (ok ? 'won' : 'lost') + ' · ' : '') + txt + '.'));
     return p;
   }
 
@@ -1339,6 +1339,38 @@
     const s = p.s || {}, [fgm, fga] = bxPair(s['fieldGoalsMade-fieldGoalsAttempted']), [tpm, tpa] = bxPair(s['threePointFieldGoalsMade-threePointFieldGoalsAttempted']), [ftm, fta] = bxPair(s['freeThrowsMade-freeThrowsAttempted']);
     return { name: p.player, starter: String(p.starter) === 'true', min: bxN(s.minutes), pts: bxN(s.points), reb: bxN(s.rebounds), ast: bxN(s.assists), stl: bxN(s.steals), blk: bxN(s.blocks), tov: bxN(s.turnovers), pf: bxN(s.fouls), oc: String(s.oc) === '1', fgm, fga, tpm, tpa, ftm, fta, orb: bxN(s.offensiveRebounds), drb: bxN(s.defensiveRebounds), pm: bxN(s.plusMinus) };
   };
+  // ---- Soccer box score for a finished match (socbox.json, fetch-soc-boxes.js): team stats, then each side's players, then the goals and cards.
+  function socBox(id) {
+    const r = liveRows('socbox').find((q) => q.id === id); if (!r) return null;
+    const card = el('div', null, 'card socbox'); card.addEventListener('click', (e) => e.stopPropagation());
+    card.append(el('h2', 'Box score'));
+    const pc = (a, t) => (Number(t) ? Math.round((100 * Number(a)) / Number(t)) + '%' : '–'), v = (n) => (n == null || n === '' ? '–' : String(n));
+    const TC = [['Poss %', (x) => v(x.possessionPct && Math.round(Number(x.possessionPct)))], ['Shots', (x) => v(x.totalShots)], ['On target', (x) => v(x.shotsOnTarget)], ['Corners', (x) => v(x.wonCorners)], ['Fouls', (x) => v(x.foulsCommitted)], ['Yellow', (x) => v(x.yellowCards)], ['Red', (x) => v(x.redCards)], ['Offsides', (x) => v(x.offsides)],
+      ['Passes', (x) => (x.totalPasses == null ? '–' : x.accuratePasses + '/' + x.totalPasses)], ['Pass %', (x) => pc(x.accuratePasses, x.totalPasses)], ['Tackles', (x) => (x.totalTackles == null ? '–' : x.effectiveTackles + '/' + x.totalTackles)], ['Intercepts', (x) => v(x.interceptions)], ['Clearances', (x) => v(x.totalClearance)], ['Saves', (x) => v(x.saves)]];
+    const tt = el('table', null, 'lvbox fullbox'), hr = el('tr'); hr.append(el('th', 'Team')); TC.forEach(([h]) => hr.append(el('th', h, 'n'))); tt.append(hr);
+    [['home', r.home], ['away', r.away]].forEach(([k, nm]) => { const tr = el('tr'); tr.append(el('td', nm)); TC.forEach(([, f]) => tr.append(el('td', f(r.teams[k] || {}), 'n'))); tt.append(tr); });
+    const sc = el('div', null, 'scroll'); sc.append(tt); card.append(sc);
+    const PC = [['G', 'g'], ['A', 'a'], ['Shots', 'sh'], ['On tgt', 'sot'], ['Fouls', 'fc'], ['Fouled', 'fw'], ['Yel', 'yc'], ['Red', 'rc'], ['Offs', 'off_'], ['Saves', 'sv']];
+    const panes = {}, bar = el('div', null, 'lvtabs'); bar.setAttribute('role', 'tablist');
+    [['home', r.home], ['away', r.away]].forEach(([k, nm], i) => {
+      const ps = (r.players || []).filter((p) => p.side === k); if (!ps.length) return;
+      const b = el('button', nm, 'lvtab' + (i ? '' : ' on')); b.type = 'button'; bar.append(b);
+      const t = el('table', null, 'lvbox fullbox'), h2 = el('tr'); h2.append(el('th', 'Player')); PC.forEach(([h]) => h2.append(el('th', h, 'n'))); t.append(h2);
+      let last = null;
+      ps.slice().sort((x, y) => (y.starter ? 1 : 0) - (x.starter ? 1 : 0)).forEach((p) => {
+        if (!!p.starter !== last) { last = !!p.starter; const gr = el('tr', null, 'lvgrp'), td = el('td'); td.colSpan = PC.length + 1; td.append(el('span', last ? 'Starters' : 'Subs', 'lvgl')); gr.append(td); t.append(gr); }
+        const tr = el('tr'), n = el('td'); n.append(el('b', (p.num ? p.num + ' ' : '') + String(p.name || '').replace(/^(\S)\S*\s+(?=\S)/, '$1. ') + (p.pos ? ' (' + p.pos + ')' : ''))); tr.append(n);
+        PC.forEach(([, f]) => tr.append(el('td', String(p[f] || 0), 'n'))); t.append(tr);
+      });
+      const w = el('div', null, 'scroll'); w.append(t); const pane = el('div', null, 'lvpane'); pane.hidden = !!i; pane.append(w); panes[k] = pane;
+      b.addEventListener('click', (e) => { e.stopPropagation(); bar.querySelectorAll('.lvtab').forEach((q) => q.classList.toggle('on', q === b)); Object.entries(panes).forEach(([kk, d]) => { d.hidden = kk !== k; }); });
+    });
+    if (Object.keys(panes).length) { card.append(bar, ...Object.values(panes)); }
+    const ev = (r.events || []).filter((e) => /goal|card/i.test(e.type));
+    if (ev.length) { const ul = el('div', null, 'lvev'); ev.forEach((e) => { const d = el('div'); d.append(el('span', e.t, 't'), el('span', /red/i.test(e.type) ? '🟥' : /yellow/i.test(e.type) ? '🟨' : '⚽', 'i'), el('span', e.text)); ul.append(d); }); card.append(ul); }
+    return card;
+  }
+
   function boxTable(list) {
     const has = (k) => list.some((p) => p[k] != null);
     const sum = (k) => list.reduce((t, p) => t + (Number(p[k]) || 0), 0);
@@ -1368,7 +1400,7 @@
   // same rules as scripts/grade.js. The cloud grades it officially a few minutes later and its row replaces ours.
   const nday = (d) => String(d || '').replace(/^(\w+) 0(\d) /, '$1 $2 ').trim();
   const tHit = (lean, total, line) => { if (!Number.isFinite(total) || !Number.isFinite(Number(line)) || !/over|under/i.test(lean || '')) return ''; if (total === Number(line)) return 'push'; return (/over/i.test(lean) ? total > line : total < line) ? 'hit' : 'miss'; };
-  const tkn = (h) => (h === 'hit' ? '✓' : h === 'miss' ? '✗' : '');
+  const tkn = () => '';
   const NOTE = ' Graded from the live final score; the official grade confirms it shortly.';
   function provisional(off) {
     const hist = [], fin = [];
@@ -1576,5 +1608,5 @@
     p.dataset.ct = '1'; const card = p.closest('.hg, .gcard'); if (card && /\b(won|lost|rgres|lvdone)\b/.test(card.className)) return;
     const m = p.textContent.match(/(\d+(?:\.\d+)?)%/); if (!m) return; const v = +m[1]; p.classList.add(v >= 70 ? 'cHi' : v >= 60 ? 'cMd' : 'cLo'); });
   new MutationObserver(() => { clearTimeout(tintAll.t); tintAll.t = setTimeout(tintAll, 60); }).observe(document.body, { childList: true, subtree: true });
-  window.SSG = { boxTable, newsOf, newsItem, teamTabs, defCourt, b2bCard, b2bInfo, gameBets, ufcMethods, ufcTabs, liveHome, betPill, candidates, mainCard, pickMain, liveCard, liveDecor, liveUfc, liveUfcHome, ufcLiveCard, pastFight, ufcLive, merge, slipChips, provisional };
+  window.SSG = { boxTable, socBox, newsOf, newsItem, teamTabs, defCourt, b2bCard, b2bInfo, gameBets, ufcMethods, ufcTabs, liveHome, betPill, candidates, mainCard, pickMain, liveCard, liveDecor, liveUfc, liveUfcHome, ufcLiveCard, pastFight, ufcLive, merge, slipChips, provisional };
 })();

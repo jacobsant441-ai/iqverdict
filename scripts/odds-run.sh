@@ -24,4 +24,3 @@ if [ "$MODE" = am ]; then
 fi
 node scripts/prop-finder.js "$NBA_DAY" | sed -n 1p || true
 node scripts/nfl-prop-finder.js | sed -n 1p || true
-node scripts/value-log.js snap || true

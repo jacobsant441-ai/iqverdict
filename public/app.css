@@ -2374,3 +2374,21 @@ html.pwa body #view-player .topbar .backbtn,html.pwa body #view-athlete .topbar 
 .gcard:has(>.lgtag){padding-top:26px!important}
 .offic{width:48px;height:48px;border:0;background:none;flex:none}
 .offic img{width:48px;height:48px;object-fit:cover;border-radius:50%}
+
+/* top sport bar: the NRL and AFL pictures fill their whole circle, so they look bigger than the other sports; shrink them to match */
+html body .appbar .sports button.sp[data-k="nrl"] .c img,html body .appbar .sports button.sp[data-k="afl"] .c img{width:17px!important;height:17px!important;margin:0 2.5px}
+
+/* NBA team stats: one table, stats across the top, a row per team */
+.fullbox td.tstat{white-space:nowrap;text-align:left!important;min-width:9rem}
+.fullbox.nbtt th{text-align:left!important}
+.mk{display:none!important}
+/* bottom bar: four equal tabs (Review is gone), a smaller bar */
+html body .bnav{grid-template-columns:repeat(4,minmax(0,1fr))!important;width:min(340px,calc(100% - 40px))!important}
+
+/* wins green, losses red, draws grey, wherever a result letter shows */
+.rsW,td.W{color:#1fd56b!important;font-weight:800}.rsL,td.L{color:#ff5a5f!important;font-weight:800}.rsD,td.D{color:#a9aeb7!important;font-weight:800}
+/* team switch on the ladders: table sits straight under the tabs */
+.card>.lvtabs{margin:10px 0 0!important}.card>.lvpane>.scroll>table{margin:0}
+
+/* Games page cards: contents nudged a little to the left (all sports) */
+.pgrid .gcard,#pgrid .gcard{padding-left:10px!important;padding-right:22px!important}

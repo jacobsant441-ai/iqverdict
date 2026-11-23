@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="app.css">
 <div id="ssload" aria-live="polite" aria-label="Loading IQVerdict"><img src="icons/icon-512.png" alt="" width="96" height="96"><b>IQVerdict</b><span class="ldbar"><i></i></span><small id="ssloadmsg">Loading today's games…</small></div>
 <div class="nt">
-<nav class="bnav" id="bnav" aria-label="Sections"><button type="button" data-sec="start" class="on"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg>Home</button><button type="button" data-sec="home"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16M8.5 3v4M15.5 3v4"/></svg>Games</button><button type="button" data-sec="players"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.7 3.1-6 7-6s7 2.3 7 6"/></svg>Players</button><button type="button" data-sec="stand"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Standings</button><button type="button" data-sec="review"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m8.2 12.2 2.6 2.6 5-5.2"/></svg>Review</button></nav>
+<nav class="bnav" id="bnav" aria-label="Sections"><button type="button" data-sec="start" class="on"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg>Home</button><button type="button" data-sec="home"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16M8.5 3v4M15.5 3v4"/></svg>Games</button><button type="button" data-sec="players"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.7 3.1-6 7-6s7 2.3 7 6"/></svg>Players</button><button type="button" data-sec="stand"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Standings</button></nav>
 <span class="livetick" data-draw="livetick" data-source="livegames" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"></span>
 <div class="appbar" id="appbar" data-draw="appbar" data-source="games fixtures nflgames history schedule ufcfights"></div>
 <div class="ssearch" role="search"><label class="ssbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="ssq" type="search" placeholder="Search teams, players, fighters" aria-label="Search teams, players and fighters" autocomplete="off" spellcheck="false"></label><div class="ssres" id="ssres" role="listbox" aria-label="Search results" data-draw="ssearch" data-source="pidx nfltable table"></div></div>
@@ -10,7 +10,6 @@
 <div class="hsnone-all" id="hsempty" hidden><b>No games today.</b><span>Picks has the next games for every sport.</span><button type="button" class="hsgo2" id="hsemptygo">Go to Picks ›</button></div>
 <div class="hhero">
 <div class="hslive" data-draw="hslive" data-source="livegames schedule"></div>
-<section class="card hcard" id="hgotn"><h2>Game of the day</h2><div data-draw="hgotn" data-source="games pred teams fixtures nflgames odds propbook altlines history"></div></section>
 </div>
 <div class="hsgrid">
 <section class="hs" data-sp="nba"><header class="hsh"><span class="hsi" data-draw="hsicon" data-sp="nba"></span><div class="hst"><h2>NBA</h2><span class="hsc" data-draw="hscount" data-sp="nba" data-source="games schedule history">—</span></div><button type="button" class="hsgo" data-go-sp="nba" aria-label="Open NBA">Open <span aria-hidden="true">›</span></button></header><div class="hstrip" data-draw="hstrip" data-sp="nba" data-source="games schedule pred history final livegames"></div></section>
@@ -40,7 +39,7 @@
 <div class="gdetail nbahdw" data-draw="nbahd" data-source="games pred teams"></div>
 <div class="chips" id="chips" data-draw="chips" data-source="games"></div>
 <div class="rvres" data-draw="rvres" data-source="history archive"></div>
- <div id="detail" data-draw="detail" data-source="troster games teams ladder log notes pred players pstats top lineups slips plog history boxes props75 props livegames livebox pbp gzones schedule odds propbook altlines propfind valuelog news"></div>
+ <div id="detail" data-draw="detail" data-source="troster games teams ladder log notes pred players pstats top lineups slips plog history boxes props75 props livegames livebox pbp gzones schedule odds propbook altlines propfind news"></div>
 </section>
 
 </div>
@@ -54,7 +53,7 @@
 <div class="stats" id="fbstats" data-draw="fbstats" data-source="fixtures"></div>
 </header>
 <div class="lgbar" id="fblg" role="group" aria-label="League"><button type="button" data-lg="all" class="on" aria-pressed="true">All leagues</button><button type="button" data-lg="Premier League" style="--lg:#8b3fd9" aria-pressed="false"><i></i>Premier League</button><button type="button" data-lg="La Liga" style="--lg:#ee8707" aria-pressed="false"><i></i>La Liga</button><button type="button" data-lg="Champions League" style="--lg:#2b6cff" aria-pressed="false"><i></i>Champions League</button></div>
-<section class="sec" id="fbpicks"><h2>Picks at a glance</h2><p class="muted">Most likely result for each fixture. The bar and circle colour show confidence: green high, yellow medium, red low.</p><div id="fbgrid" data-draw="fbgrid" data-source="fixtures table history livegames"></div></section>
+<section class="sec" id="fbpicks"><h2>Picks at a glance</h2><p class="muted">Most likely result for each fixture. The bar and circle colour show confidence: green high, yellow medium, red low.</p><div id="fbgrid" data-draw="fbgrid" data-source="fixtures table history livegames socbox"></div></section>
 </div>
 <div class="view" id="fbgame" hidden>
 <section class="card sec">
@@ -68,7 +67,7 @@
 <div class="view" id="view-bets" hidden>
 <div class="topbar"><button type="button" class="backbtn" id="bbback" aria-label="Back">‹ Back</button></div>
 <section class="card hcard" id="hpod"><h2>Stat of the day</h2><div data-draw="hpod" data-source="games pred fixtures nflgames odds props propfind propbook altlines troster history hs_nba hs_nfl hs_nfl2 pubprops pubalts"></div></section>
-<section class="card bb bbpage"><h2>Best stats</h2><div data-draw="bestall" data-source="games pred fixtures nflgames odds history props propfind propbook altlines valuelog troster hs_nba hs_nfl hs_nfl2 news pubprops pubalts"></div></section>
+<section class="card bb bbpage"><h2>Best stats</h2><div data-draw="bestall" data-source="games pred fixtures nflgames odds history props propfind propbook altlines troster hs_nba hs_nfl hs_nfl2 news pubprops pubalts"></div></section>
 <section class="card bb bbpage edge"><h2>Beat their average against this team</h2><p class="muted">Players who average well above their season numbers in past games against the team they face next. Needs at least 3 games (2 in football and NFL).</p><div data-draw="edgeopp" data-source="games fixtures nflgames pgl socp nflp history table"></div></section>
 <section class="card bb bbpage edge"><h2>Beat their average at this ground</h2><p class="muted">Same idea at the home ground of the game they are about to play.</p><div data-draw="edgeground" data-source="games fixtures nflgames pgl socp nflp history table"></div></section>
 </div>
@@ -143,7 +142,7 @@
 <button type="button" class="backbtn" id="nflback">‹ Back to games</button>
 <h2 id="nfldtitle" data-draw="nfldtitle" data-source="nflgames">—</h2>
 <div class="rvres" data-draw="rvres" data-source="history archive"></div>
-<div id="nfldetail" class="gdetail" data-draw="nfldetail" data-source="nflgames nfltable nflinfo props75 livegames livebox odds propbook altlines valuelog history troster"></div>
+<div id="nfldetail" class="gdetail" data-draw="nfldetail" data-source="nflgames nfltable nflinfo props75 livegames livebox odds propbook altlines history troster"></div>
 </section>
 </div>
 </div>
@@ -158,8 +157,7 @@
 <div class="rvboard" id="rvboard" data-draw="rvboard" data-source="history"></div>
 </header>
 <div class="lgbar" id="rvsp" role="group" aria-label="Sport"><button type="button" data-rs="all" class="on" aria-pressed="true">All sports</button><button type="button" data-rs="nba" style="--lg:#1d6fe0" aria-pressed="false"><i></i>NBA</button><button type="button" data-rs="fb" style="--lg:#8b3fd9" aria-pressed="false"><i></i>Football</button><button type="button" data-rs="nfl" style="--lg:#2c7be5" aria-pressed="false"><i></i>NFL</button><button type="button" data-rs="ufc" style="--lg:#d20a0a" aria-pressed="false"><i></i>UFC</button></div>
-<section class="card sec mbwrap" id="trackrec"><button type="button" class="mbhead" aria-expanded="false"><h2>Our track record</h2><span class="mbsum" data-draw="trackrecsum" data-source="valuelog"></span><i class="mbchev" aria-hidden="true"></i></button><div class="mbbody"><div data-draw="trackrec" data-source="valuelog"></div></div></section>
-<section class="sec" id="rvlist"><h2>Every pick, graded</h2><p class="muted">✓ right, ✗ wrong. Tap a pick for the full game.</p><div data-draw="rvlist" data-source="history pidx hs_ufc archive"></div></section>
+<section class="sec" id="rvlist"><h2>Every pick, graded</h2><p class="muted">Tap a pick for the full game.</p><div data-draw="rvlist" data-source="history pidx hs_ufc archive"></div></section>
 
 <section class="card sec" id="rvrec"><h2>Our record</h2><p class="muted">Winner picks right, then side bets (totals, both teams to score, spreads). Pushes and coin tosses are not counted.</p><div class="scroll" data-draw="rvrec" data-source="history"></div></section>
 </div>
@@ -252,6 +250,13 @@ setInterval(() => { const b = sydHour() >= 16; if (b !== hrBand) { hrBand = b; r
 const nbaDay = (r) => normDay(r.date || NBA_DAY);
 const fbDay = (x) => normDay(String(x.time).split(',')[0]);
 const nflDay = (x) => normDay(String(x.kick).split(',')[0]);
+const lnTxt = (sp, x) => { // front-card lines: spread and total only
+  if (!x) return '';
+  if (sp === 'nba') return [x.fav && x.spread != null ? x.fav + ' -' + x.spread : '', x.total != null ? 'Total ' + x.total : ''].filter(Boolean).join(' · ');
+  if (sp === 'nfl') { const sh = x.spread_home; return [sh == null ? '' : sh < 0 ? NFLS(x.home) + ' ' + sh : sh > 0 ? NFLS(x.away) + ' -' + sh : 'Pick', x.total != null ? 'Total ' + x.total : ''].filter(Boolean).join(' · '); }
+  if (sp === 'fb') return x.total_line != null ? 'Total ' + x.total_line : '';
+  return '';
+};
 const gamesFor = (sp, day) => sp === 'nba' ? rows('games').filter((r) => nbaDay(r) === day) : sp === 'ufc' ? rows('ufcfights').filter((x) => normDay(x.date) === day) : sp === 'fb' ? rows('fixtures').filter((x) => fbDay(x) === day) : rows('nflgames').filter((x) => nflDay(x) === day);
 const SPN = { nba: 'NBA', fb: 'Football', nfl: 'NFL', ufc: 'UFC', nrl: 'NRL', afl: 'AFL' };
 const schedFor = (sp, day) => rows('schedule').filter((h) => (h.sport || 'nba') === sp && normDay(h.date) === day && !gamesFor(sp, day).some((g) => g.id === h.id || (sp === 'fb' && norm(g.home).slice(0, 5) === norm(h.home_name).slice(0, 5))));
@@ -281,9 +286,9 @@ const playerTable = (code, ps) => {
 };
 const boxPanel = (g) => {
   const body = el('div', null, 'bxbody');
-  const t = document.createElement('table'); const hr = document.createElement('tr'); [' ', g.away, g.home].forEach((c) => hr.append(thc(c))); t.append(hr);
-  TR.forEach(([lab, fn]) => { const tr = document.createElement('tr'); tr.append(tdc(lab), tdc(fn(g.away_team)), tdc(fn(g.home_team))); t.append(tr); });
-  const sc = el('div', null, 'scr'); sc.append(t);
+  const t = el('table', null, 'lvbox fullbox'), hr = el('tr'); hr.append(thc('Team')); TR.forEach(([lab]) => hr.append(el('th', lab, 'n'))); t.append(hr);
+  [[g.away, g.away_team], [g.home, g.home_team]].forEach(([nm, tm]) => { const tr = el('tr'); tr.append(el('td', nm)); TR.forEach(([, fn]) => tr.append(el('td', String(fn(tm)), 'n'))); t.append(tr); });
+  const sc = el('div', null, 'scroll'); sc.append(t);
   // the player box score shows in the Game tab's live card while the live feed still has the game; here only after that
   const lc0 = window.SSG && SSG.liveCard && SSG.liveCard('nba', g.id); const inGame = lc0 && !(lc0.dataset.post === '1' && finalOf(g.id)); // a finished game shows the full team and player box here
   body.append(sc); if (!inGame) body.append(boxTabs(g));
@@ -317,7 +322,7 @@ const boxTabs = (g) => {
 let fromRv = false;
 const openFromRv = (id) => { sport = 'nba'; sec = 'home'; applyView(); goDetail(id); fromRv = true; const bb = document.getElementById('backbtn'); if (bb) bb.textContent = '‹ Back to review'; };
 function histCard(h) {
-    const b0 = gcardBase(h.id, h.away, h.away_name || h.away, '', h.home, h.home_name || h.home, '', h.date, h.kick || '', (h.pick || '') + (h.pick_pct ? ' · ' + h.pick_pct + '%' : ''), h.pick === h.home ? 'home' : 'away');
+    const b0 = gcardBase(h.id, h.away, h.away_name || h.away, '', h.home, h.home_name || h.home, '', h.date, h.kick || '', '', null);
     const b = document.createElement('div'); b.className = 'pick tile gcard' + (h.status === 'Final' && (h.winner_hit === 'hit' || h.winner_hit === 'miss') ? ' rgres ' + h.winner_hit : ''); b.dataset.id = h.id; b.append(...b0.childNodes);
     if (h.league) b.prepend(lgIcon(h.league, 'lgtag'));
     if (!h.sport || h.sport === 'nba') { const bds = b.querySelectorAll('.bd'); if (bds[0]) bds[0].replaceWith(badge(h.away)); if (bds[1]) bds[1].replaceWith(badge(h.home)); }
@@ -327,7 +332,6 @@ function histCard(h) {
     const wc = el('span', 'Winner: ' + h.pick, 'chip'); if (h.winner_hit) wc.append(tick(h.winner_hit, h.winner_hit === 'hit' ? 'Right' : 'Wrong'));
     chips.append(el('span', 'Combined: ' + h.conf, 'chip ' + h.conf), wc);
     if (h.total_lean) { const tc = el('span', h.total_lean + (h.proj_total ? ' (proj ' + h.proj_total + ')' : ''), 'chip'); if (h.total_hit) tc.append(tick(h.total_hit, 'Posted total ' + h.posted_total)); chips.append(tc); }
-    ft.append(chips); b.append(ft);
     return b;
 }
 function histBox(sp, keep) {
@@ -338,8 +342,9 @@ function histBox(sp, keep) {
   const sum = el('div', null, 'histsum'); sum.append(el('b', 'Our plays · ' + selDay), el('span', fin.length ? wr + ' of ' + fin.length + ' winners right' + (tl.length ? ' · ' + tr + ' of ' + tl.length + ' total leans right' : '') : 'Results still to come'));
   const g = el('div', null, 'pgrid');
   g.append(...hs.map((h) => {
-    const b0 = gcardBase(h.id, h.away, h.away_name || h.away, '', h.home, h.home_name || h.home, '', h.date, h.kick || '', (h.pick || '') + (h.pick_pct ? ' · ' + h.pick_pct + '%' : ''), h.pick === h.home ? 'home' : 'away');
+    const b0 = gcardBase(h.id, h.away, h.away_name || h.away, '', h.home, h.home_name || h.home, '', h.date, h.kick || '', '', null);
     const b = document.createElement('div'); b.className = 'pick tile gcard'; b.dataset.id = h.id; b.append(...b0.childNodes);
+    if (h.sport === 'fb' && window.SSG && SSG.socBox) { let o = null; b.style.cursor = 'pointer'; b.addEventListener('click', () => { if (o) { o.remove(); o = null; } else { o = SSG.socBox(h.id); if (o) b.append(o); } }); } // tap a finished match for its box score
     if (h.league) b.prepend(lgIcon(h.league, 'lgtag'));
     if (!h.sport || h.sport === 'nba') { const bds = b.querySelectorAll('.bd'); if (bds[0]) bds[0].replaceWith(badge(h.away)); if (bds[1]) bds[1].replaceWith(badge(h.home)); }
     const strong = b.querySelector('.mid strong'), pre = b.querySelector('.mid .pre');
@@ -348,7 +353,6 @@ function histBox(sp, keep) {
     const wc = el('span', 'Winner: ' + h.pick, 'chip'); if (h.winner_hit) wc.append(tick(h.winner_hit, h.winner_hit === 'hit' ? 'Right' : 'Wrong'));
     chips.append(el('span', 'Combined: ' + h.conf, 'chip ' + h.conf), wc);
     if (h.total_lean) { const tc = el('span', h.total_lean + (h.proj_total ? ' (proj ' + h.proj_total + ')' : ''), 'chip'); if (h.total_hit) tc.append(tick(h.total_hit, 'Posted total ' + h.posted_total)); chips.append(tc); }
-    ft.append(chips); b.append(ft);
     return b;
   }));
   w.append(sum, g); return w;
@@ -434,7 +438,7 @@ dash.draw('appbar', (box) => {
   cal.append(calh, days);
   const sp = el('div', null, 'sports');
   [['nba', '🏀'], ['fb', '⚽'], ['nfl', '🏈'], ['ufc', '🥊'], ['nrl', ''], ['afl', '']].forEach(([k, ic]) => {
-    const b = el('button', null, 'sp' + (k === sport ? ' on' : '')); b.type = 'button';
+    const b = el('button', null, 'sp' + (k === sport ? ' on' : '')); b.type = 'button'; b.dataset.k = k;
     const c = el('span', null, 'c'); const ti = (window.TAB_ICONS && window.TAB_ICONS[k]) || (window.OFF_ICONS && window.OFF_ICONS[k]); if (ti) { const im = document.createElement('img'); im.src = ti; im.alt = SPN[k]; c.append(im); c.classList.add('ico'); } else c.textContent = ic; const off = k === 'nrl' || k === 'afl', n = off ? 0 : new Set([...gamesFor(k, selDay), ...histFor(k, selDay), ...schedFor(k, selDay)].map((g) => g.id)).size; if (off) c.append(el('em', 'Off')); else if (n) c.append(el('em', String(n))); // each game once (it can be in more than one list)
     b.append(c, el('span', SPN[k]));
     b.addEventListener('click', () => { sport = k; sec = 'home'; applyView(); }); sp.append(b);
@@ -481,7 +485,7 @@ dash.draw('stats', (box) => {
 const DRAW_pgrid = (box) => {
   const g = rows('games'), p = rows('pred'), tm = rows('teams');
   if (!g.length || !p.length) return;
-  const gd = g.filter((r) => nbaDay(r) === selDay && !done(r.id));
+  const gd = g.filter((r) => nbaDay(r) === selDay);
   const hh = document.querySelector('#picks h2'); if (hh) hh.textContent = selDay + ' · ' + gd.length + (gd.length === 1 ? ' game' : ' games');
   if (!gd.length) { box.replaceChildren(schedBox('nba') || doneBox('nba') || emptyBox('nba')); return; }
   const info = (gid, code) => tm.find((q) => q.game === gid && q.team === code) || {};
@@ -493,19 +497,19 @@ function nbaPickCard(r, goText, onOpen) {
   const info = (gid, code) => tm.find((q) => q.game === gid && q.team === code) || {};
     const x = p.find((q) => q.id === r.id); if (!x) return el('span', '');
     const b = el('button', null, 'pick tile gcard' + (r.id === current ? ' on' : '')); b.dataset.id = r.id; b.type = 'button';
-    const side = (code) => { const t = info(r.id, code); const d = el('div', null, 'tm' + (x.winner === code ? ' win' : '')); d.append(badge(code), el('b', t.name || code), el('span', t.record || '', 'rec')); return d; };
+    const side = (code) => { const t = info(r.id, code); const d = el('div', null, 'tm'); d.append(badge(code), el('b', t.name || code), el('span', t.record || '', 'rec')); return d; };
     const mid = el('div', null, 'mid');
     const f = finalOf(r.id);
     mid.append(el('span', nbaDay(r), 'dt'), el('strong', r.time.replace(' AM', ' am').replace(' PM', ' pm')), el('span', f ? (f.status === 'Final' ? 'FINAL' : 'LIVE ' + (f.note || '')) : 'PREGAME', 'pre'));
     if (f) mid.append(el('span', r.away + ' ' + f.away_pts + ' – ' + f.home_pts + ' ' + r.home, 'fsc'));
-    mid.append(el('span', x.winner + ' by ' + f1(x.margin) + ' · ' + x.ml_final_prob + '%', 'pk'));
+    mid.append(el('span', lnTxt('nba', r), 'pk'));
     const mu = el('div', null, 'mu'); mu.append(side(r.away), mid, side(r.home));
     const ft = el('div', null, 'ft');
     const chips = el('div', null, 'chips'); const fz = done(r.id), tot = fz ? fz.home_pts + fz.away_pts : null;
     const wc = el('span', 'Winner: ' + x.ml_pick, 'chip'); if (fz) wc.append(tick((fz.home_pts > fz.away_pts ? r.home : r.away) === x.ml_pick ? 'hit' : 'miss', 'Final: ' + (fz.home_pts > fz.away_pts ? r.home : r.away) + ' won'));
     const tc = el('span', x.total_lean + ' (proj ' + f1(x.proj_total) + ')', 'chip' + (x.total_lean === 'Lean over' ? ' cOver' : x.total_lean === 'Lean under' ? ' cUnder' : /coin/i.test(x.total_lean) ? ' cCoin' : '')); if (fz && /Lean (over|under)/.test(x.total_lean)) tc.append(tick(grade(x.total_lean === 'Lean over' ? 'over' : 'under', x.posted_total, tot), 'Final total ' + tot + ' against ' + f1(x.posted_total)));
     chips.append(el('span', 'Combined: ' + x.combined_conf, 'chip ' + x.combined_conf), tc); chips.append(el('span', x.underdog ? 'Underdog pick' : 'Favourite pick', 'chip ' + (x.underdog ? 'cDog' : 'cFav')));
-    ft.append(chips, el('span', goText || 'Open all stats ›', 'go'));
+    ft.append(el('span', goText || 'Open all stats ›', 'go'));
     b.append(mu, ft);
     if (window.SSG) SSG.liveDecor(b, 'nba', r.id);
     b.addEventListener('click', () => { (onOpen || goDetail)(r.id); });
@@ -564,11 +568,7 @@ function teamCard(t, g) {
   add('Away split', t.away_rec + (t.away_pf != null ? ', ' + f1(t.away_pf) + ' for / ' + f1(t.away_pa) + ' against' : ''));
   add('Avg game total', f1(t.avg_total));
   add('Over ' + f1(g.total), [t.t_over + ' over, ' + t.t_under + ' under in ' + t.n + ' games', fz ? tick(grade('over', g.total, tot), 'Final total ' + tot + ': ' + (tot > g.total ? 'over' : 'under')) : null]);
-  add('Alt totals (75%)', [altM(t.tot_over75, t.tot_over75_hit, 'over', tot, 'over'), '; ', altM(t.tot_under75, t.tot_under75_hit, 'under', tot, 'under')]);
-  add('Alt totals (100%)', [altM(t.tot_over100, t.tot_over100_hit, 'over', tot, 'over'), '; ', altM(t.tot_under100, t.tot_under100_hit, 'under', tot, 'under')]);
   add('Own points, implied ' + f1(t.imp), [t.p_over + ' over, ' + t.p_under + ' under; range ' + t.p_min + ' to ' + t.p_max, fz ? tick(grade('over', t.imp, mine), 'Scored ' + mine + ' against ' + f1(t.imp)) : null]);
-  add('Own-points alt (75%)', [altM(t.p_over75, t.p_over75_hit, 'over', mine, 'over'), '; ', altM(t.p_under75, t.p_under75_hit, 'under', mine, 'under')]);
-  add('Own-points alt (100%)', [altM(t.p_over100, t.p_over100_hit, 'over', mine, 'over'), '; ', altM(t.p_under100, t.p_under100_hit, 'under', mine, 'under')]);
   add('Spread ' + (t.spread_line > 0 ? '+' : '') + t.spread_line, ['covered in ' + t.cover + ' of ' + t.cover_n + ' games (by margin)', fz ? tick(mine - theirs + t.spread_line > 0 ? 'hit' : 'miss', 'Final margin ' + (mine - theirs > 0 ? '+' : '') + (mine - theirs)) : null]);
   c.append(kv);
   return c;
@@ -611,8 +611,7 @@ dash.draw('detail', (box) => {
       ['.lvtop', '.lvref'].forEach((s) => { const n = lv.querySelector(s); if (n) n.remove(); }); const lh = lv.querySelector('h2'); if (lh) lh.textContent = 'Box score';
       for (let i = out.length - 1; i >= 0; i--) { const h2 = out[i].querySelector && out[i].querySelector('h2'); if (h2 && h2.textContent === 'Box score') out.splice(i, 1); }
       if (lv.querySelector('.lvpane, .lvbox, table')) out.push(lv);
-    } else if (lv) out.push(lv); const mpc = !lv && !finalOf(current) && window.SSG && SSG.mainCard('nba', current, nbaDay(g)); if (mpc) out.push(mpc); const bb = !lv && !finalOf(current) && window.SSG && SSG.b2bCard && SSG.b2bCard(current, nbaDay(g)); if (bb) out.push(bb); } // Main play only before tip-off
-    out.push(pc);
+    } else if (lv) out.push(lv); const bb = !lv && !finalOf(current) && window.SSG && SSG.b2bCard && SSG.b2bCard(current, nbaDay(g)); if (bb) out.push(bb); } // Main play only before tip-off
   }
   {
     // Lineups and Injuries share one team switch: changing team in one changes the other.
@@ -683,9 +682,7 @@ dash.draw('detail', (box) => {
   const kv = el('dl', null, 'kv');
   kv.append(el('dt', 'Total'), el('dd', f1(g.total) + (fz ? ' · final ' + tot + ' (' + (tot > g.total ? 'over' : 'under') + ')' : '')), el('dt', 'Spread'), el('dd', g.fav + ' -' + g.spread), el('dt', 'Moneyline'), el('dd', g.ml),
     el('dt', 'Both teams\' games over ' + f1(g.total)), el('dd', g.comb_over + ' of ' + g.comb_n),
-    el('dt', 'Range of totals'), el('dd', g.min_total + ' to ' + g.max_total),
-    el('dt', 'Combined alt over'), ddOf(altM(g.over75, g.over75_hit, 'o', tot, 'over'), ' at 75%; ', altM(g.over100, g.over100_hit, 'o', tot, 'over'), ' at 100%'),
-    el('dt', 'Combined alt under'), ddOf(altM(g.under75, g.under75_hit, 'u', tot, 'under'), ' at 75%; ', altM(g.under100, g.under100_hit, 'u', tot, 'under'), ' at 100%'));
+    el('dt', 'Range of totals'), el('dd', g.min_total + ' to ' + g.max_total));
   top.append(kv);
   out.push(top);
 
@@ -740,8 +737,30 @@ dash.draw('detail', (box) => {
     lb.append(tr);
   });
   lt.append(lb);
-  const sc = el('div', null, 'scroll'); sc.append(lt); lad.append(sc);
+  { // team switch: both teams together, or one team's games on their own (same style as the own-points ladder)
+    const lines = rows('ladder').filter((r) => r.game === current).map((r) => r.line), bx = rows('boxes').filter((b) => b.id !== current);
+    const panes = [['Both teams', el('div', null, 'lvpane')]]; panes[0][1].append(el('div', null, 'scroll')); panes[0][1].firstChild.append(lt);
+    teams.slice().sort((x, y) => (x.team === g.away ? 0 : 1) - (y.team === g.away ? 0 : 1)).forEach((t) => {
+      const tots = bx.filter((b) => b.away === t.team || b.home === t.team).map((b) => b.away_pts + b.home_pts); if (tots.length < 3 || !lines.length) return;
+      const tb = document.createElement('table'); tb.innerHTML = '<thead><tr><th>Line</th><th>' + t.team + ' over</th><th>' + t.team + ' under</th><th>Over %</th><th>Under %</th></tr></thead>'; const bd = document.createElement('tbody');
+      lines.forEach((ln) => { const ov = tots.filter((v) => v > ln).length, op = Math.round(ov / tots.length * 100), tr = document.createElement('tr'); [f1(ln), ov + '/' + tots.length, tots.length - ov + '/' + tots.length, op + '%', 100 - op + '%'].forEach((v) => tr.append(el('td', v))); bd.append(tr); });
+      tb.append(bd); const sw = el('div', null, 'scroll'); sw.append(tb); const pn = el('div', null, 'lvpane'); pn.append(sw); panes.push([t.name || t.team, pn]);
+    });
+    if (panes.length > 1) { const bar = el('div', null, 'lvtabs'); bar.setAttribute('role', 'tablist'); panes.forEach(([nm, pn], i) => { pn.hidden = i > 0; const bt = el('button', nm, 'lvtab' + (i ? '' : ' on')); bt.type = 'button'; bt.addEventListener('click', () => { bar.querySelectorAll('.lvtab').forEach((x) => x.classList.toggle('on', x === bt)); panes.forEach((q) => { q[1].hidden = q[1] !== pn; }); }); bar.append(bt); }); lad.append(bar); }
+    panes.forEach((q) => lad.append(q[1]));
+  }
   out.push(lad);
+  { const prev = rows('boxes').filter((b) => b.id !== current), c2 = el('div', null, 'card'), tabs2 = []; c2.append(el('h2', 'Totals ladder: own points')); // each team's own points, same ladder style
+    teams.slice().sort((x, y) => (x.team === g.away ? 0 : 1) - (y.team === g.away ? 0 : 1)).forEach((t) => {
+      const pts = prev.filter((b) => b.away === t.team || b.home === t.team).map((b) => (b.away === t.team ? b.away_pts : b.home_pts)).filter((v) => v != null);
+      if (pts.length < 3 || t.imp == null) return;
+      const base = Math.round(t.imp / 5) * 5, pn = el('div', null, 'lvpane'); pn.hidden = c2.querySelector('.lvpane') != null; pn.dataset.t = t.team; tabs2.push([t.team, t.name || t.team, pn]);
+      const tb2 = document.createElement('table'); tb2.innerHTML = '<thead><tr><th>Line</th><th>Over</th><th>Under</th><th>Over %</th><th>Under %</th></tr></thead>'; const bd2 = document.createElement('tbody');
+      for (let k = -3; k <= 3; k++) { const ln = base + k * 5 + 0.5, ov = pts.filter((v) => v > ln).length, op = Math.round(ov / pts.length * 100), tr = document.createElement('tr'); [f1(ln), ov + '/' + pts.length, pts.length - ov + '/' + pts.length, op + '%', 100 - op + '%'].forEach((v) => tr.append(el('td', v))); bd2.append(tr); }
+      tb2.append(bd2); const s2 = el('div', null, 'scroll'); s2.append(tb2); pn.append(s2); c2.append(pn);
+    });
+    if (tabs2.length > 1) { const bar = el('div', null, 'lvtabs'); bar.setAttribute('role', 'tablist'); tabs2.forEach(([c, nm, pn], i) => { const b = el('button', nm, 'lvtab' + (i ? '' : ' on')); b.type = 'button'; b.addEventListener('click', () => { bar.querySelectorAll('.lvtab').forEach((x) => x.classList.toggle('on', x === b)); tabs2.forEach((q) => { q[2].hidden = q[2] !== pn; }); }); bar.append(b); }); c2.insertBefore(bar, c2.querySelector('.lvpane')); }
+    if (c2.querySelector('table')) out.push(c2); }
 
   const pls = rows('players').filter((q) => q.game === current).sort((x, y) => ({ High: 0, Medium: 1, Low: 2 }[x.alt_conf] - { High: 0, Medium: 1, Low: 2 }[y.alt_conf]) || y.n - x.n);
   if (pls.length) {
@@ -781,7 +800,7 @@ dash.draw('detail', (box) => {
   lt2.innerHTML = '<thead><tr><th>Opponent</th><th>Venue</th><th>Score</th><th>Total</th><th>Result</th></tr></thead>';
   const lb2 = document.createElement('tbody'); lt2.append(lb2);
   const [anm, hnm] = String(g.matchup || '').split(' @ '), ltog = el('div', null, 'pptabs');
-  const showT = (c) => { LOGT[current] = c; ltog.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.t === c)); lb2.replaceChildren(...lg.filter((r) => r.team === c).map((r) => { const tr = document.createElement('tr'); [r.opp, r.venue, r.pf + '-' + r.pa, String(r.total), r.result].forEach((v) => tr.append(el('td', v))); return tr; })); };
+  const showT = (c) => { LOGT[current] = c; ltog.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.t === c)); lb2.replaceChildren(...lg.filter((r) => r.team === c).map((r) => { const tr = document.createElement('tr'); [r.opp, r.venue, r.pf + '-' + r.pa, String(r.total), r.result].forEach((v, i) => tr.append(el('td', v, i === 4 ? v : ''))); return tr; })); };
   [[g.away, anm], [g.home, hnm]].forEach(([c, n]) => { const b = el('button', n || c); b.type = 'button'; b.dataset.t = c; b.addEventListener('click', () => showT(c)); ltog.append(b); });
   showT(LOGT[current] === g.home ? g.home : g.away);
   const sc2 = el('div', null, 'scroll'); sc2.append(lt2); ln.append(ltog, sc2);
@@ -825,7 +844,7 @@ dash.draw('detail', (box) => {
     const hr = rows('history').find((q) => q.id === current && (q.sport || 'nba') === 'nba' && normDay(q.date) === nbaDay(g));
     const bxg = rows('boxes').find((x) => x.id === current && normDay(x.date) === nbaDay(g)); if (bxg && !out.some((c) => c.querySelector && c.querySelector('h2') && c.querySelector('h2').textContent === 'Box score')) { const bc = el('div', null, 'card'); bc.append(el('h2', 'Box score')); const bw = el('div', null, 'bx'); bw.append(boxPanel(bxg)); bc.append(bw); out.push(bc); }
   }
-  const ORD = ['Live', 'Main play', 'Most likely outcome', 'Lineups', 'Injuries', 'Final result', 'Why it went this way', 'Box score', 'Starting lineups', 'Injuries, lineups, props', '', 'Lines', '#grid', 'Totals ladder: both teams\' games', 'Every tracked player, this season', 'Game logs and common opponents', 'Highest-confidence props', 'Player props (most confident first)', 'How this prediction works', 'Same-game slips'];
+  const ORD = ['Live', 'Main play', 'Most likely outcome', 'Lineups', 'Injuries', 'Final result', 'Why it went this way', 'Box score', 'Starting lineups', 'Injuries, lineups, props', '', 'Lines', '#grid', 'Totals ladder: both teams\' games', 'Totals ladder: own points', 'Every tracked player, this season', 'Game logs and common opponents', 'Highest-confidence props', 'Player props (most confident first)', 'How this prediction works', 'Same-game slips'];
   const rank = (c) => { if (c.classList.contains('grid')) return ORD.indexOf('#grid'); const h = c.querySelector('h2'); const t = h ? h.textContent : (c.classList.contains('warn') ? '' : null); if (t === 'Back-to-backs') return 99; const i = t == null ? -1 : ORD.indexOf(t); return i < 0 ? 40 : i; };
   const f0 = finalOf(current);
   const npanHasRes = (cards) => cards.some((c) => { const h = c.querySelector && c.querySelector('h2'); return h && (h.textContent === 'Box score' || h.textContent === 'Why it went this way'); });
@@ -850,7 +869,7 @@ dash.draw('detail', (box) => {
   const keyed = out.map((c, i) => [rank(c), i, c]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
   out.length = 0; keyed.forEach((x) => out.push(x[2]));
   const NT = [['res', 'Result'], ...(f0 && f0.status === 'Final' && npanHasRes(out) ? [] : [['pick', 'Game']]), ['lines', 'Lines'], ['teams', 'Teams'], ['inj', 'Injuries & lineups'], ['bets', 'Best stats']]; // Props tab removed at the owner's request
-  const NM = { 'Best stats': 'bets', 'Final result': 'res', 'Why it went this way': 'res', 'Box score': 'res', 'Most likely outcome': 'pick', 'How this prediction works': 'pick', 'Lines': 'lines', 'Totals ladder: both teams\' games': 'lines', 'Game logs and common opponents': 'teams', 'Defence by court zone': 'teams', 'Injuries, lineups, props': 'inj', 'Starting lineups': 'inj', 'Same-game slips': 'props', 'Every tracked player, this season': 'props', 'Highest-confidence props': 'props' };
+  const NM = { 'Best stats': 'bets', 'Final result': 'res', 'Why it went this way': 'res', 'Box score': 'res', 'Most likely outcome': 'pick', 'How this prediction works': 'pick', 'Lines': 'lines', 'Totals ladder: both teams\' games': 'lines', 'Totals ladder: own points': 'lines', 'Game logs and common opponents': 'teams', 'Defence by court zone': 'teams', 'Injuries, lineups, props': 'inj', 'Starting lineups': 'inj', 'Same-game slips': 'props', 'Every tracked player, this season': 'props', 'Highest-confidence props': 'props' };
   const npan = {};
   out.forEach((c) => { const h = c.querySelector && c.querySelector('h2'); const t = h ? h.textContent : ''; const k = c.classList && c.classList.contains('grid') ? 'teams' : (NM[t] || (/^Player props/.test(t) ? 'props' : 'pick')); (npan[k] = npan[k] || el('div', null, 'nbapanel')).append(c); });
   if (rvInTabs()) { const rb = el('div', null, 'rvres'); rb.append(...rvBanner(), el('p', 'The other tabs show the full pre-game breakdown exactly as it was when we made the pick.', 'muted rvrnote')); if (npan.res) npan.res.prepend(rb); else npan.res = rb; }
@@ -994,7 +1013,8 @@ function nflMore(x) {
     ['30+ point games', A.p30, H.p30],
     ['Games of 20 or fewer points', A.u20, H.u20],
     ['Highest score', A.best, H.best]]));
-  sec('Recent games', tbl(['', 'Last three'], [[NFLS(x.away), (A.last || []).join(' · ')], [NFLS(x.home), (H.last || []).join(' · ')]]));
+  const lastEl = (l) => { const w = el('span'); (l || []).forEach((g, i) => { if (i) w.append(document.createTextNode(' · ')); const m = /^(.*?)\b([WLD])\b(.*)$/.exec(g); if (!m) { w.append(document.createTextNode(g)); return; } w.append(document.createTextNode(m[1]), el('b', m[2], 'rs' + m[2]), document.createTextNode(m[3])); }); return w; };
+  sec('Recent games', tbl(['', 'Last three'], [[NFLS(x.away), lastEl(A.last)], [NFLS(x.home), lastEl(H.last)]]));
   const I = rows('nflinfo').find((q) => q.id === x.id);
   if (I) {
     const a = I.away, h = I.home, nz = (v, u) => (v == null ? '–' : v + (u || ''));
@@ -1129,11 +1149,11 @@ const DRAW_fbgrid = (box) => {
     g.append(...f.filter((x) => x.league === L).map((x) => {
       const [dt, tm] = tsplit(x.time);
       const win = /draw/i.test(x.pick) ? null : x.pick.indexOf(x.home) === 0 ? 'home' : 'away';
-      const b = gcardBase(x.id, fbAbbr(x.away), x.away, fbRec(x.away, x.league), fbAbbr(x.home), x.home, fbRec(x.home, x.league), dt, tm, x.pick + ' · ' + Math.round(x.pick_pct) + '%', win);
+      const b = gcardBase(x.id, fbAbbr(x.away), x.away, fbRec(x.away, x.league), fbAbbr(x.home), x.home, fbRec(x.home, x.league), dt, tm, lnTxt('fb', x), null);
       const ft = el('div', null, 'ft'); const chips = el('div', null, 'chips');
       const gp = x.goals_play; if (gp) chips.append(el('span', 'Main: ' + gp.pick + ' · ' + gp.pct + '%' + (gp.price ? ' · ' + (gp.est ? '≈$' : '$') + gp.price.toFixed(2) : ''), 'chip gpchip ' + gp.conf));
       chips.append(el('span', x.confidence === 'Low' ? 'Close call' : x.confidence, 'chip ' + x.confidence), el('span', 'BTTS: ' + x.btts_pick + ' (' + x.p_btts + '%)', 'chip'), el('span', 'Goals: ' + x.ou_pick + (x.p_o25 != null ? ' (' + x.p_o25 + '% over)' : ''), 'chip'));
-      ft.append(chips, el('span', 'Open all stats ›', 'go')); b.append(ft);
+      ft.append(el('span', 'Open all stats ›', 'go')); b.append(ft);
       if (window.SSG) SSG.liveDecor(b, 'fb', x);
       b.addEventListener('click', () => fbNav.go(x.id));
       b.prepend(lgIcon(x.league, 'lgtag'));
@@ -1195,7 +1215,7 @@ dash.draw('fbdetail', (box) => {
   const [dt, tm] = tsplit(x.time);
   const hd = el('div', null, 'hd');
   const side = (code, name, rec) => { const d = el('div', null, 'tm'); d.append(bdX(code), el('b', name), el('span', rec, 'muted')); return d; };
-  const mid = el('div', null, 'mid'); mid.append(lgLabel(x.league, 'muted'), el('strong', tm), el('span', dt, 'muted'), el('span', x.pick + ' · ' + Math.round(x.pick_pct) + '%', 'muted'));
+  const mid = el('div', null, 'mid'); mid.append(lgLabel(x.league, 'muted'), el('strong', tm), el('span', dt, 'muted'));
   hd.append(side(HC, x.home, fbRec(x.home, x.league)), mid, side(AC, x.away, fbRec(x.away, x.league)));
   const tbl = (head, data) => { const t = document.createElement('table'); const hr = document.createElement('tr'); head.forEach((c, i) => hr.append(el('th', c, i ? 'n' : ''))); t.append(hr);
     data.forEach((r) => { const tr = document.createElement('tr'); r.forEach((c, i) => { const td = document.createElement('td'); if (i) td.className = 'n'; if (c instanceof Node) td.append(c); else td.textContent = String(c ?? '–'); tr.append(td); }); t.append(tr); }); const w = el('div', null, 'scroll'); w.append(t); return w; };
@@ -1228,9 +1248,7 @@ dash.draw('fbdetail', (box) => {
     [['Both score', x.p_btts], ['Over 1.5', x.p_o15], ['Over 2.5', x.p_o25], ['Over 3.5', x.p_o35]].forEach(([l, v]) => { if (v == null) return; const d = el('div'); d.append(el('span', l), el('b', v + '%')); all.append(d); });
     mc.append(all);
     mc.append(el('p', 'From our own goals model: scoring and conceding rates at home and away, shots on target for and against, past meetings and players out. No bookmaker odds go into it.', 'muted'));
-    put('pick', mc);
   }
-  put('pick', card('Most likely outcome', bar, leg, kv));
   // Lineups: projected XI with faces; tap a player for their page.
   const lc = el('div', null, 'card nblu'); lc.append(el('h2', 'Lineups'));
   const sides = [[HC, x.home, x.home_xi, x.home_news], [AC, x.away, x.away_xi, x.away_news]];
@@ -1390,15 +1408,15 @@ const DRAW_nflgrid = (box) => {
   box.replaceChildren(...g.map((x) => {
     const T = rows('nfltable'); const rec = (c) => (T.find((t) => t.team === c) || {}).record || '';
     const tp = x.kick.split(', ');
-    const b = gcardBase(x.id, x.away, NFLN(x.away), rec(x.away), x.home, NFLN(x.home), rec(x.home), tp[0], (tp[1] || '').replace('am', ' am').replace('pm', ' pm').replace('  ', ' '), NFLS(x.pick) + ' · ' + x.pick_pct + '%', x.pick === x.home ? 'home' : 'away');
+    const b = gcardBase(x.id, x.away, NFLN(x.away), rec(x.away), x.home, NFLN(x.home), rec(x.home), tp[0], (tp[1] || '').replace('am', ' am').replace('pm', ' pm').replace('  ', ' '), '', null);
     const odds = el('div', null, 'odds');
     const fav = x.spread_home < 0 ? NFLS(x.home) + ' ' + x.spread_home : x.spread_home > 0 ? NFLS(x.away) + ' -' + x.spread_home : 'Pick';
     const o = (k, v) => { const s = el('span'); s.append(k + ' ', el('b', String(v))); return s; };
-    odds.append(o('Spread', fav), o('Total', x.total), o('Proj', x.proj_away + ' - ' + x.proj_home));
+    odds.append(o('Spread', fav), o('Total', x.total));
     const ft = el('div', null, 'ft'); const chips = el('div', null, 'chips');
     chips.append(el('span', x.conf === 'Low' ? 'Close call' : x.conf, 'chip ' + x.conf), el('span', x.total_lean, 'chip'));
     if (x.title) chips.append(el('span', x.title.replace(' Football', ''), 'chip Projected'));
-    ft.append(chips, el('span', 'Open all stats ›', 'go'));
+    ft.append(el('span', 'Open all stats ›', 'go'));
     const hr = rows('history').find((h) => h.sport === 'nfl' && h.id === x.id && normDay(h.date) === nflDay(x));
     if (hr && (hr.status === 'Final' || hr.status === 'Live')) {
       const st = b.querySelector('.mid strong'), pre = b.querySelector('.mid .pre');
@@ -1424,7 +1442,7 @@ dash.draw('nfldetail', (box) => {
   const tp = x.kick.split(', ');
   const hd = el('div', null, 'hd');
   const side = (code) => { const d = el('div', null, 'tm'); d.append(bdX(code), el('b', NFLN(code)), el('span', rec(code), 'muted')); return d; };
-  const mid = el('div', null, 'mid'); mid.append(el('span', x.title || x.day, 'muted'), el('strong', (tp[1] || '')), el('span', tp[0], 'muted'), el('span', NFLS(x.pick) + ' · ' + x.pick_pct + '%', 'muted'));
+  const mid = el('div', null, 'mid'); mid.append(el('span', x.title || x.day, 'muted'), el('strong', (tp[1] || '')), el('span', tp[0], 'muted'));
   hd.append(side(x.home), mid, side(x.away));
   const more = nflMore(x); more.open = true;
   const p75 = propsCard(x.id, 'nfl');
@@ -1535,9 +1553,8 @@ function ufcCard(r) {
   const mid = el('div', null, 'mid');
   mid.append(el('span', r.date, 'dt'), el('strong', r.card || 'TBC'), el('span', [r.weight, r.rounds ? r.rounds + '\u00a0rds' : ''].filter(Boolean).join(' · '), 'pre'));
   mid.append(el('span', ufcPrices(r), 'fsc'));
-  mid.append(el('span', r.pick ? r.pick + ' · ' + r.pick_pct + '%' : 'no pick yet', 'pk'));
   const mu = el('div', null, 'mu'); const ovr = (nm, v) => ((ufcProfile(ufcIdOf(nm)) || {}).rec) || v; // overall pro record on the card
-  mu.append(side(r.a, ovr(r.a, r.a_rec), '#c8102e', r.pick === r.a), mid, side(r.b, ovr(r.b, r.b_rec), '#1d428a', r.pick === r.b));
+  mu.append(side(r.a, ovr(r.a, r.a_rec), '#c8102e', false), mid, side(r.b, ovr(r.b, r.b_rec), '#1d428a', false));
   const ft = el('div', null, 'ft'); const chips = el('div', null, 'chips');
   chips.append(el('span', 'Confidence: ' + r.conf, 'chip ' + r.conf));
   const pc = el('span', 'Pick: ' + (r.pick || 'TBC'), 'chip'); if (r.status === 'Final' && r.result) pc.append(tick(r.result === r.pick ? 'hit' : 'miss', 'Winner: ' + r.result + (r.method ? ' by ' + r.method : '')));
@@ -2059,7 +2076,7 @@ const hsWord = (sp, n) => (sp === 'ufc' ? (n === 1 ? 'fight' : 'fights') : sp ==
 const hsRes = (sp, id, day) => rows('history').find((h) => h.sport === sp && h.id === id && normDay(h.date) === day && (h.status === 'Final' || h.status === 'Live'));
 const hsFbDone = (day) => rows('history').filter((h) => h.sport === 'fb' && normDay(h.date) === day && h.status === 'Final' && !gamesFor('fb', day).some((x) => x.id === h.id));
 const hsUp = (sp, day) => hsGames(sp, day).length + schedFor(sp, day).length + (sp === 'fb' ? hsFbDone(day).length : 0);
-const hsTick = (h) => (h.winner_hit === 'hit' ? '✓ ' : h.winner_hit === 'miss' ? '✗ ' : '');
+const hsTick = () => '';
 const hsResCls = (h) => (h && h.winner_hit === 'hit' ? 'won' : h && h.winner_hit === 'miss' ? 'lost' : '');
 const hsDay = () => dayAt(0).key;
 // Days Home shows for a sport: today (with results) until 11 pm Sydney and tomorrow, each in its own row;
@@ -2103,16 +2120,16 @@ const hsCards = (sp, day) => {
     hsGames('nba', day).slice().sort((a, b) => (done(a.id, day) ? 1 : 0) - (done(b.id, day) ? 1 : 0)).forEach((g) => {
       const p = rows('pred').find((x) => x.id === g.id); const f = done(g.id, day); const hr = f && hsRes('nba', g.id, day);
       const tm = f ? 'Final · ' + f.away_pts + '-' + f.home_pts : g.time;
-      { const c = hsCard(hsResCls(hr), tm, hsTeams(g.away, g.home, '@'), p ? (hr ? hsTick(hr) : '') + p.winner + ' by ' + f1(p.margin) + (p.ml_final_prob ? ' · ' + p.ml_final_prob + '%' : '') : 'Open breakdown', () => { ssOpenDay('nba', day); goDetail(g.id); }); if (!f && window.SSG) SSG.liveHome(c, 'nba', g.id, day); out.push(c); }
+      { const c = hsCard(hsResCls(hr), tm, hsTeams(g.away, g.home, '@'), lnTxt('nba', g) || 'Open breakdown', () => { ssOpenDay('nba', day); goDetail(g.id); }); if (!f && window.SSG) SSG.liveHome(c, 'nba', g.id, day); out.push(c); }
     });
   } else if (sp === 'fb') {
-    const fbRes = (h) => hsCard(hsResCls(h), lgLine(h.league, 'FT ' + h.home_pts + '-' + h.away_pts), hsTwoL(h.home, h.home_name, h.away, h.away_name), hsTick(h) + (h.pick_text || h.pick) + (h.pick_pct ? ' · ' + Math.round(h.pick_pct) + '%' : ''), () => { ssOpenDay('fb', day); });
-    hsGames('fb', day).forEach((x) => { const h = hsRes('fb', x.id, day); if (h && h.status === 'Final') fin.push(fbRes(h)); else { const c = hsCard('', lgLine(x.league, tsplit(x.time)[1]), hsTwoL(fbAbbr(x.home), x.home, fbAbbr(x.away), x.away), x.pick ? x.pick + (x.pick_pct ? ' · ' + Math.round(x.pick_pct) + '%' : '') : 'Open breakdown', () => { ssOpenDay('fb', day); fbNav.go(x.id); }); if (window.SSG) SSG.liveHome(c, 'fb', x, day); out.push(c); } });
-    hsFbDone(day).forEach((h) => fin.push(hsCard(hsResCls(h), lgLine(h.league, 'FT ' + h.home_pts + '-' + h.away_pts), hsTwoL(h.home, h.home_name, h.away, h.away_name), hsTick(h) + (h.pick_text || h.pick) + (h.pick_pct ? ' · ' + Math.round(h.pick_pct) + '%' : ''), () => { ssOpenDay('fb', day); })));
+    const fbRes = (h) => hsCard(hsResCls(h), lgLine(h.league, 'FT ' + h.home_pts + '-' + h.away_pts), hsTwoL(h.home, h.home_name, h.away, h.away_name), '', () => { ssOpenDay('fb', day); });
+    hsGames('fb', day).forEach((x) => { const h = hsRes('fb', x.id, day); if (h && h.status === 'Final') fin.push(fbRes(h)); else { const c = hsCard('', lgLine(x.league, tsplit(x.time)[1]), hsTwoL(fbAbbr(x.home), x.home, fbAbbr(x.away), x.away), lnTxt('fb', x) || 'Open breakdown', () => { ssOpenDay('fb', day); fbNav.go(x.id); }); if (window.SSG) SSG.liveHome(c, 'fb', x, day); out.push(c); } });
+    hsFbDone(day).forEach((h) => fin.push(hsCard(hsResCls(h), lgLine(h.league, 'FT ' + h.home_pts + '-' + h.away_pts), hsTwoL(h.home, h.home_name, h.away, h.away_name), '', () => { ssOpenDay('fb', day); })));
   } else if (sp === 'nfl') {
-    hsGames('nfl', day).forEach((x) => { const hr = hsRes('nfl', x.id, day); const c = (hsCard(hsResCls(hr), hr ? (hr.status === 'Final' ? 'Final · ' : 'Live · ') + hr.away_pts + '-' + hr.home_pts : String(x.kick).split(',').slice(1).join(',').trim() || x.title || '', hsTwoL(x.away, x.away_name, x.home, '@ ' + x.home_name), (hr ? hsTick(hr) : '') + (x.pick ? x.pick + (x.pick_pct ? ' · ' + Math.round(x.pick_pct) + '%' : '') : 'Open breakdown'), () => { ssOpenDay('nfl', day); nflNav.go(x.id); })); if (!(hr && hr.status === 'Final') && window.SSG) SSG.liveHome(c, 'nfl', x.id, day); out.push(c); });
+    hsGames('nfl', day).forEach((x) => { const hr = hsRes('nfl', x.id, day); const c = (hsCard(hsResCls(hr), hr ? (hr.status === 'Final' ? 'Final · ' : 'Live · ') + hr.away_pts + '-' + hr.home_pts : String(x.kick).split(',').slice(1).join(',').trim() || x.title || '', hsTwoL(x.away, x.away_name, x.home, '@ ' + x.home_name), lnTxt('nfl', x) || 'Open breakdown', () => { ssOpenDay('nfl', day); nflNav.go(x.id); })); if (!(hr && hr.status === 'Final') && window.SSG) SSG.liveHome(c, 'nfl', x.id, day); out.push(c); });
   } else if (sp === 'ufc') {
-    hsGames('ufc', day).slice().sort((a, b) => (a.order || 99) - (b.order || 99)).forEach((f) => out.push(SSG.liveUfcHome(hsCard('', (f.card || '') + (f.weight ? ' · ' + f.weight : ''), hsTwo(f.a, 'vs ' + f.b), f.status === 'Final' && f.result ? (f.pick ? (f.result === f.pick ? '✓ ' : '✗ ') : '') + 'Won: ' + f.result : f.pick ? f.pick + (f.pick_pct ? ' · ' + Math.round(f.pick_pct) + '%' : '') : 'Open card', () => { selDay = day; sport = 'ufc'; openFight(f.id); }), f)));
+    hsGames('ufc', day).slice().sort((a, b) => (a.order || 99) - (b.order || 99)).forEach((f) => out.push(SSG.liveUfcHome(hsCard('', (f.card || '') + (f.weight ? ' · ' + f.weight : ''), hsTwo(f.a, 'vs ' + f.b), f.status === 'Final' && f.result ? 'Won: ' + f.result : f.pick ? f.pick + (f.pick_pct ? ' · ' + Math.round(f.pick_pct) + '%' : '') : 'Open card', () => { selDay = day; sport = 'ufc'; openFight(f.id); }), f)));
   }
   schedFor(sp, day).forEach((h) => out.push(hsCard('sched', h.kick || 'Scheduled', sp === 'nba' ? hsTeams(h.away, h.home, '@') : hsTwo(h.away_name || h.away, '@ ' + (h.home_name || h.home)), 'Scheduled · picks to come', () => { ssOpenDay(sp, day); })));
   // live games first, then games still to play, then finished ones
@@ -2140,7 +2157,7 @@ dash.draw('livetick', {
     try {
       if (document.hidden) return;
       // every 3 minutes: pick up newly graded games and box scores (hosted site: only re-downloads what changed)
-      if (++n % 12 === 0 && dash.refreshMany) dash.refreshMany(['history', 'final', 'nflresults', 'ufcfights', 'boxes', 'pact', 'archive', 'results', 'bets', 'odds', 'props', 'props75', 'propbook', 'altlines', 'propfind', 'valuelog', 'lineups', 'notes', 'troster']);
+      if (++n % 12 === 0 && dash.refreshMany) dash.refreshMany(['history', 'final', 'nflresults', 'ufcfights', 'boxes', 'pact', 'archive', 'results', 'bets', 'odds', 'props', 'props75', 'propbook', 'altlines', 'propfind', 'lineups', 'notes', 'troster']);
       if (!liveWanted()) { if (n % 4 === 0) { dash.refresh('livegames'); dash.refresh('livebox'); } return; } // idle: look once a minute for a game starting
       dash.refresh('livegames'); dash.refresh('livebox');
     } catch (e) {}
@@ -2148,7 +2165,7 @@ dash.draw('livetick', {
   update: () => {},
   unmount: (el, t) => clearInterval(t),
 });
-document.addEventListener('visibilitychange', () => { if (!document.hidden) try { dash.refresh('livegames'); dash.refresh('livebox'); if (dash.refreshMany) dash.refreshMany(['odds', 'props', 'props75', 'propbook', 'altlines', 'propfind', 'valuelog', 'lineups', 'notes', 'troster', 'history', 'final']); } catch (e) {} }); // coming back to the app: pick up fresh prices without a manual reload
+document.addEventListener('visibilitychange', () => { if (!document.hidden) try { dash.refresh('livegames'); dash.refresh('livebox'); if (dash.refreshMany) dash.refreshMany(['odds', 'props', 'props75', 'propbook', 'altlines', 'propfind', 'lineups', 'notes', 'troster', 'history', 'final']); } catch (e) {} }); // coming back to the app: pick up fresh prices without a manual reload
 document.querySelectorAll('.hsgo').forEach((b) => b.addEventListener('click', () => hsOpen(b.dataset.goSp)));
 document.querySelectorAll('#hsemptygo').forEach((b) => b.addEventListener('click', () => { sec = 'home'; applyView(); }));
 // ---- photos
@@ -2501,7 +2518,7 @@ dash.draw('rvins', (box) => {
   }));
 });
 // Sport logos on the Review filter (style only).
-(() => { const set = () => document.querySelectorAll('#rvsp button[data-rs] i').forEach((i) => { const src = window.TAB_ICONS && window.TAB_ICONS[i.parentElement.dataset.rs]; if (src) { i.style.backgroundImage = 'url("' + src + '")'; i.classList.add('ico'); } }); set(); document.addEventListener('DOMContentLoaded', set); window.addEventListener('load', set); })();
+(() => { const set = () => document.querySelectorAll('#rvsp button[data-rs] i').forEach((i) => { const src = window.TAB_ICONS && window.TAB_ICONS[i.parentElement.dataset.rs]; if (src) { i.style.setProperty('background-image', 'url("' + src + '")', 'important'); i.style.setProperty('background-color', '#16181d', 'important'); i.style.setProperty('background-size', 'cover', 'important'); i.style.setProperty('background-position', 'center', 'important'); i.style.setProperty('background-repeat', 'no-repeat', 'important'); i.classList.add('ico'); } }); set(); document.addEventListener('DOMContentLoaded', set); window.addEventListener('load', set); })();
 document.querySelectorAll('#rvsp button').forEach((b) => b.addEventListener('click', () => {
   rvSp = b.dataset.rs;
   document.querySelectorAll('#rvsp button').forEach((x) => { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
@@ -2690,18 +2707,11 @@ dash.draw('fghero', (box) => {
   mid.append(el('div', 'VS', 'fgvs'), el('div', r.event_name || '', 'ev'), el('div', normDay(r.date) + (r.kick ? ' · ' + r.kick : ''), 'when'), el('div', [r.weight, r.rounds ? r.rounds + ' rounds' : ''].filter(Boolean).join(' · '), 'wc'));
   if (r.card) mid.append(el('span', r.title ? 'Title fight' : r.card, 'ct'));
   if (window.SSG) SSG.liveUfc(mid, r, true);
-  top.append(fgPhoto(r.a, 'red', fin ? r.result === r.a : r.pick === r.a), mid, fgPhoto(r.b, 'blue', fin ? r.result === r.b : r.pick === r.b));
+  top.append(fgPhoto(r.a, 'red', fin ? r.result === r.a : false), mid, fgPhoto(r.b, 'blue', fin ? r.result === r.b : false));
   const pk = el('div', null, 'fgpick');
-  const ln = el('div', null, 'ln'); const l1 = el('span'); l1.append(document.createTextNode('Our pick: '), el('b', r.pick || 'none yet')); ln.append(l1, el('span', r.pick ? (r.pick_pct ? r.pick_pct + '% · ' : '') + (r.conf && r.conf !== 'None' ? r.conf + ' confidence' : '') : 'Made once odds are posted'));
-  pk.append(ln);
-  if (r.pick && r.pick_pct) {
-    const pa = r.pick === r.a ? r.pick_pct : 100 - r.pick_pct;
-    const bar = el('div', null, 'fgbar'), ia = el('i', null, 'a'), ib = el('i', null, 'b'); ia.style.width = pa + '%'; ib.style.width = (100 - pa) + '%'; bar.append(ia, ib); if (pa < 50) bar.classList.add('flip');
-    const pc = el('div', null, 'fgpct'); pc.append(el('span', r.a.split(' ').slice(-1)[0] + ' ' + Math.round(pa) + '%'), el('span', Math.round(100 - pa) + '% ' + r.b.split(' ').slice(-1)[0])); pk.append(bar, pc);
-  }
   const odds = r.a_price ? 'Best price ' + ufcPx(r.a_price, r.a_book) + ' / ' + ufcPx(r.b_price, r.b_book) + (ufcRounds(r) ? ' · ' + ufcRounds(r) : '') : r.a_odds != null ? 'Odds ' + ufcOdds(r.a_odds) + ' / ' + ufcOdds(r.b_odds) : 'Odds not posted yet';
   pk.append(el('div', odds, 'muted'));
-  if (fin) { const hit = r.pick ? r.result === r.pick : null; pk.append(el('div', (hit === true ? '✓ ' : hit === false ? '✗ ' : '') + 'Result: ' + r.result + (r.method ? ' by ' + r.method : ''), 'fgres ' + (hit === true ? 'hit' : hit === false ? 'miss' : ''))); }
+  if (fin) { const hit = r.pick ? r.result === r.pick : null; pk.append(el('div', 'Result: ' + r.result + (r.method ? ' by ' + r.method : ''), 'fgres ' + (hit === true ? 'hit' : hit === false ? 'miss' : ''))); }
   box.replaceChildren(top, pk, ...(window.SSG ? [SSG.ufcLiveCard(r)].filter(Boolean) : []));
 });
 dash.draw('fgtape', (box) => { const r = fgRow(); if (!r) { box.replaceChildren(); return; } box.replaceChildren(ufcTape(r)); });

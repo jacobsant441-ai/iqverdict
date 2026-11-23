@@ -7,7 +7,7 @@
 # Usage: bash scripts/odds-branch.sh pull|push
 set -euo pipefail
 cd "$(dirname "$0")/.."
-FILES=(odds.json props.json propbook.json altlines.json valuelog.json)
+FILES=(odds.json props.json propbook.json altlines.json)
 case "${1:-}" in
   pull)
     if ! git fetch -q origin odds-data 2>/dev/null; then echo "odds-data: no branch yet, nothing to pull"; exit 0; fi

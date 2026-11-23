@@ -30,8 +30,6 @@ BOOL_COLS = {"starter"}
 EXTRA_MANIFEST = {
     "livegames": {"title": "Live games", "description": "Live scores from BigQuery (local feed).", "updated": ""},
     "livebox": {"title": "Live box scores", "description": "Live box scores from BigQuery (local feed).", "updated": ""},
-    # private, Mac only: listed here (not in manifest.json) so the cloud's manifest updates never clash with local edits
-    "valuelog": {"title": "Track record", "description": "Every bet we rated, settled from results (value-log.js).", "updated": ""},
     "news": {"title": "News", "description": "Latest ESPN headlines for every sport (fetch-news.js, every 30 minutes).", "updated": ""},
 }
 
@@ -150,7 +148,6 @@ def settle_bets():
             r = subprocess.run(["node", "scripts/export-public.js", "--upload"], cwd=str(ROOT.parent), capture_output=True, text=True, timeout=120, env=ENV)
             if r.returncode:
                 sys.stderr.write("[public] export failed: " + (r.stderr.strip() or r.stdout.strip())[:200] + "\n")
-        # (the track record, valuelog.json, is graded in the cloud now and pulled from the odds-data branch above)
         if f.exists() and f.read_bytes() != before and before:
             bk = Path.home() / "Desktop" / "IQVerdict" / "backups"
             if bk.is_dir():

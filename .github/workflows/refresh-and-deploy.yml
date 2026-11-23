@@ -100,14 +100,10 @@ jobs:
           # NBA slate dates: a Sydney day D is the US evening of D-1. Do the older day first.
           retry node scripts/fetch-boxes.js "$(TZ=Australia/Sydney date -d '2 days ago' +%Y%m%d)"
           retry node scripts/fetch-boxes.js "$(TZ=Australia/Sydney date -d yesterday +%Y%m%d)"
+          node scripts/fetch-soc-boxes.js || echo "::warning::soccer box scores failed"
           # starting lineups: ESPN depth charts before tip, actual starters once the game is on
           node scripts/fetch-lineups.js || echo "::warning::lineups failed"
           node scripts/fetch-game-zones.js || echo "::warning::per-game defence zones failed"
-      - name: Grade the bookmaker track record (odds-data branch)
-        run: |
-          bash scripts/odds-branch.sh pull
-          node scripts/value-log.js grade || echo "::warning::track record grading failed"
-          bash scripts/odds-branch.sh push
       - name: Commit changed data
         id: commit
         run: |

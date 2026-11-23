@@ -39,7 +39,6 @@ PRIVATE.forEach((id) => delete manifest[id]);
 // News (fetch-news.js) isn't listed in manifest.json (the Mac's local server lists it): include it when the file is there.
 // Cleaned public copies of the owner's picks (export-public.js: no stakes, no prices): include them when present.
 [['pubprops', 'Player props we picked (public)'], ['pubalts', 'Alt lines we picked (public)']].forEach(([id, t]) => { if (!manifest[id] && fs.existsSync(path.join(PUB, 'data', id + '.json'))) manifest[id] = { title: t, description: 'Cleaned public copy from export-public.js.', updated: { at: new Date().toISOString(), by: 'build' } }; });
-if (!manifest.valuelog && fs.existsSync(path.join(PUB, 'data', 'valuelog.json'))) manifest.valuelog = { title: 'Track record', description: 'Every bet we rated, settled from results (value-log.js).', updated: { at: new Date().toISOString(), by: 'build' } };
 if (!manifest.news && fs.existsSync(path.join(PUB, 'data', 'news.json'))) manifest.news = { title: 'News', description: 'Latest ESPN headlines for every sport (fetch-news.js).', updated: { at: new Date().toISOString(), by: 'build' } };
 const web = {};
 let eagerKB = 0, lazyKB = 0;
@@ -51,11 +50,6 @@ for (const id of Object.keys(manifest)) {
     const dst = path.join(OUT, file), cut = Date.now() - 30 * 3600 * 1000;
     const rowsB = JSON.parse(fs.readFileSync(dst, 'utf8')).filter((r) => !r.kick || Date.parse(r.kick) >= cut);
     fs.writeFileSync(dst, JSON.stringify(rowsB)); v = hash(fs.readFileSync(dst));
-  }
-  if (id === 'valuelog') { // the track record grows ~2 MiB a day and would pass Cloudflare's 25 MiB file limit: settled bets ship only the fields the site reads (the full log stays on the odds-data branch)
-    const dst = path.join(OUT, file), KEEP = ['sp', 'day', 'game', 'pick', 'market', 'src', 'our', 'price', 'status', 'result', 'kick', 'match', 'point', 'book'];
-    const slim = JSON.parse(fs.readFileSync(dst, 'utf8')).map((r) => { if (r.status === 'open') { const { graded, our0, ...rest } = r; return rest; } const o = {}; KEEP.forEach((k) => { if (r[k] !== undefined) o[k] = r[k]; }); return o; });
-    fs.writeFileSync(dst, JSON.stringify(slim)); v = hash(fs.readFileSync(dst));
   }
   const kb = fs.statSync(path.join(PUB, file)).size / 1024;
   const lazy = kb > LAZY_KB;
